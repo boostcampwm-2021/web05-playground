@@ -32,7 +32,7 @@
 </br></br>
 
 ## Tech Stack
-![image](https://user-images.githubusercontent.com/52440150/139372318-bbfb73a9-062a-42cb-befd-8018ab0cad5a.png)
+![image](https://user-images.githubusercontent.com/67899069/139397137-d7861d58-a20f-412c-98a7-1fb1ab72c697.png)
 
 </br></br>
 
