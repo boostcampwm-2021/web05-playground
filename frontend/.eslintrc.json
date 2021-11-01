@@ -8,19 +8,15 @@
         "plugin:prettier/recommended",
         "plugin:@typescript-eslint/recommended"
     ],
+    "parserOptions": { 
+        "ecmaVersion": 2020
+    },
     "rules": {
         "linebreak-style": 0,
-        "import/prefer-default-export": 0,
+        "import/prefer-default-export": "off",
         "prettier/prettier": 0,
         "import/extensions": [
-            "error",
-            "always",
-            {
-                "js": "never",
-                "jsx": "never",
-                "ts": "never",
-                "tsx": "never"
-            }
+           "off"
         ],
         "no-use-before-define": 0,
         "import/no-unresolved": 0,
