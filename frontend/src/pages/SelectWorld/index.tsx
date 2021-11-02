@@ -110,10 +110,22 @@ const dummy2 = {
     ],
 };
 
+interface IWorld {
+    wid: number;
+    name: string;
+    port: number;
+    thumbnail: string;
+    email: string;
+}
+
+interface IData {
+    worldList: IWorld[];
+}
+
 const SelectWorld = ({ history }: any) => {
-    const [data, setWorldList] = useState<any>(dummy2); // 이 부분은 useQuery로 대체
+    const [data, setWorldList] = useState<IData>(dummy2); // 이 부분은 useQuery로 대체
     // const { loading, error, data } = useQuery(getWorldList);
-    const [curWorld, setCurWorld] = useState<any>(0);
+    const [curWorld, setCurWorld] = useState<number>(0);
 
     // if (loading) return <p>Loading...</p>;
     // if (error) return <p>Error :(</p>;
