@@ -8,7 +8,7 @@
 
 ## Contributors
 
-|[<img src="https://github.com/0505eok.png" width="100px">](https://github.com/0505eok)|[<img src="https://github.com/jhLim97.png" width="100px">](https://github.com/kimsungho97)|[<img src="https://github.com/jhLim97.png" width="100px">](https://github.com/jhLim97)|[<img src="https://github.com/minjaec023.png" width="100px">](https://github.com/minjaec023)|
+|[<img src="https://github.com/0505eok.png" width="100px">](https://github.com/0505eok)|[<img src="https://github.com/kimsungho97.png" width="100px">](https://github.com/kimsungho97)|[<img src="https://github.com/jhLim97.png" width="100px">](https://github.com/jhLim97)|[<img src="https://github.com/minjaec023.png" width="100px">](https://github.com/minjaec023)|
 |:---:|:---:|:---:|:---:|
 |[J026 김민석](https://github.com/0505eok) | [J033 김성호](https://github.com/kimsungho97) | [J174 임준혁](https://github.com/jhLim97) | [J194 조민재](https://github.com/minjaec023)|
 
