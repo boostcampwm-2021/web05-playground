@@ -4,6 +4,7 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { RecoilRoot } from 'recoil';
 
 import ExchangeRates from './components/ExchangeRates';
+import Login from './pages/Login';
 
 import './reset.css';
 
@@ -18,6 +19,7 @@ function App() {
             <RecoilRoot>
                 <BrowserRouter>
                     <Route exact path="/" component={ExchangeRates} />
+                    <Route exact path="/login" component={Login} />
                 </BrowserRouter>
             </RecoilRoot>
         </ApolloProvider>
