@@ -63,7 +63,6 @@ const World = styled.div<{ thumbnail: string }>`
     font-size: 80px;
 `;
 
-// 쿼리 이름 정하기
 const getWorldList = gql`
     query Query {
         worldList {
@@ -77,7 +76,6 @@ const getWorldList = gql`
 `;
 
 const dummy2 = {
-    // 쿼리 결과
     worldList: [
         {
             wid: 1,
@@ -123,12 +121,8 @@ interface IData {
 }
 
 const SelectWorld = ({ history }: any) => {
-    const [data, setWorldList] = useState<IData>(dummy2); // 이 부분은 useQuery로 대체
-    // const { loading, error, data } = useQuery(getWorldList);
+    const [data, setWorldList] = useState<IData>(dummy2);
     const [curWorld, setCurWorld] = useState<number>(0);
-
-    // if (loading) return <p>Loading...</p>;
-    // if (error) return <p>Error :(</p>;
 
     const nextClick = () => {
         let cur = curWorld + 1;

@@ -12,7 +12,7 @@ import SelectWorld from './pages/SelectWorld';
 import './reset.css';
 
 const client = new ApolloClient({
-    uri: 'https://48p1r2roz4.sse.codesandbox.io', // 우리 url로 수정해야함
+    uri: process.env.REACT_APP_BASE_URL,
     cache: new InMemoryCache(),
 });
 
