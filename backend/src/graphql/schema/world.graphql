@@ -1,0 +1,21 @@
+type IWorld {
+    wid: String!
+    email: String!
+    name: String!
+    port: Int!
+    thumbnail: String!
+}
+
+type IObject {
+    oid: Int!
+    bid: Int!
+    x: Int!
+    y: Int!
+    url: String!
+    fileurl: String
+}
+
+type Query {
+    worldList: [IWorld!]!
+    objectList: [IObject!]!
+}
