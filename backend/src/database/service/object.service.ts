@@ -13,10 +13,10 @@ export const getObjectList = async (): Promise<Array<IObject>> => {
     return results;
 };
 
-export const getObjectListByWid = async (
-    wid: number,
+export const getObjectListByBid = async (
+    bid: number,
 ): Promise<Array<IObject>> => {
-    const sql = `SELECT * FROM Object WHERE wid=${wid}`;
+    const sql = `SELECT * FROM Object WHERE bid=${bid}`;
 
     const [objects] = await pool.query(sql);
     const parsedObject = JSON.parse(JSON.stringify(objects));
