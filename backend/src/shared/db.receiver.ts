@@ -1,4 +1,5 @@
 import { IObject } from 'src/database/entities/Object';
+import { IUser } from 'src/database/entities/User';
 import { IWorld } from 'src/database/entities/World';
 
 export enum STATUS_CODE {
@@ -9,5 +10,8 @@ export enum STATUS_CODE {
 export interface Receiver {
     status: STATUS_CODE;
     err?: string;
-    data: Array<IObject> | Array<IWorld>;
+    objectArr?: Array<IObject>
+    worldArr?: Array<IWorld>
+    userArr?: Array<IUser>
+    user?: IUser;
 }

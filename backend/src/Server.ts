@@ -19,7 +19,6 @@ import BaseRouter from './routes';
 import Socket from './socket/socket';
 
 const socket = new Socket(8000);
-socket.listen();
 socket.connect();
 
 const app = express();
