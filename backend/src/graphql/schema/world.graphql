@@ -1,21 +1,22 @@
 type IWorld {
-    wid: String!
-    email: String!
+    id: Int!
+    uid: Int
     name: String!
     port: Int!
     thumbnail: String!
 }
 
 type IObject {
-    oid: Int!
+    id: Int!
     bid: Int!
     x: Int!
     y: Int!
-    url: String!
-    fileurl: String
+    imageUrl: String!
+    fileUrl: String
 }
 
 type Query {
     worldList: [IWorld!]!
     objectList: [IObject!]!
+    objectListByBid(bid: Int!): [IObject!]!
 }

@@ -1,33 +1,33 @@
 export interface IObject {
-    oid: number;
+    id: number;
     bid: number;
     x: number;
     y: number;
-    url: string;
-    fileurl?: string;
+    imageUrl: string;
+    fileUrl?: string;
 }
 
 export class Object implements IObject {
-    public oid: number;
+    public id: number;
     public bid: number;
     public x: number;
     public y: number;
-    public url: string;
-    public fileurl?: string;
+    public imageUrl: string;
+    public fileUrl?: string;
 
     constructor(
-        oid: number,
+        id: number,
         bid: number,
         x: number,
         y: number,
-        url: string,
-        fileurl?: string,
+        imageUrl: string,
+        fileUrl?: string,
     ) {
-        this.oid = oid;
+        this.id = id;
         this.bid = bid;
         this.x = x;
         this.y = y;
-        this.url = url;
-        this.fileurl = fileurl;
+        this.imageUrl = imageUrl;
+        this.fileUrl = fileUrl;
     }
 }
