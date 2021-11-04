@@ -6,7 +6,7 @@ const worldResolver: IResolvers = {
     Query: {
         async worldList(): Promise<Array<object>> {
             const result = await getWorldList();
-            if (result.status == STATUS_CODE.SUCCESS) return result.data;
+            if (result.status == STATUS_CODE.SUCCESS && result.worldArr !== undefined) return result.worldArr;
             else throw new Error(result.err);
         },
     },

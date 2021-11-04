@@ -5,14 +5,13 @@ import { pool } from '../connection';
 export const getObjectList = async (): Promise<Receiver> => {
     const result: Receiver = {
         status: STATUS_CODE.SUCCESS,
-        data: [],
     };
 
     try {
         const sql = `SELECT id, bid, x, y, image_url as imageUrl, file_url as fileUrl FROM object`;
         const [objects] = await pool.query(sql);
 
-        result.data = JSON.parse(JSON.stringify(objects));
+        result.objectArr = JSON.parse(JSON.stringify(objects));
         return result;
     } catch (err) {
         result.status = STATUS_CODE.FAIL;
@@ -24,13 +23,12 @@ export const getObjectList = async (): Promise<Receiver> => {
 export const getObjectListByBid = async (bid: number): Promise<Receiver> => {
     const result: Receiver = {
         status: STATUS_CODE.SUCCESS,
-        data: [],
     };
     try {
         const sql = `SELECT id, bid, x, y, image_url as imageUrl, file_url as fileUrl FROM object WHERE bid= ?`;
         const [objects] = await pool.query(sql, [bid]);
 
-        result.data = JSON.parse(JSON.stringify(objects));
+        result.objectArr = JSON.parse(JSON.stringify(objects));
         return result;
     } catch (err) {
         result.status = STATUS_CODE.FAIL;

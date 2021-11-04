@@ -1,11 +1,27 @@
+import { userListError } from '@shared/constants';
+import { Receiver, STATUS_CODE } from '@shared/db.receiver';
 import { pool } from '../connection';
-import { IUser } from '../entities/User';
 
-export const getUser = async (email: string): Promise<IUser> => {
-    const sql = `SELECT * FROM User WHERE email = ?`;
+export const getUser = async (email: string): Promise<Receiver> => {
+    const result: Receiver = {
+        status: STATUS_CODE.SUCCESS,
+    };
+    try {
+        const sql = `SELECT id, email, nickname, x, y, image_url as imageUrl FROM world_user WHERE email = ?`;
+        const [user] = await pool.query(sql, [email]);
+        const data = JSON.parse(JSON.stringify(user));
 
-    const [user] = await pool.query(sql, [email]);
-    const parsedUser = JSON.parse(JSON.stringify(user))[0];
+        if(data.length === 0) {
+            result.status = STATUS_CODE.FAIL;
+            return result;
+        }
 
-    return parsedUser;
+        result.user = JSON.parse(JSON.stringify(user))[0];
+        return result;
+    } catch(err) {
+        console.log(err)
+        result.status = STATUS_CODE.FAIL;
+        result.err = userListError;
+        return result;
+    }
 };
