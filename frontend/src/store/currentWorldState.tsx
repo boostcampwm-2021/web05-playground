@@ -4,10 +4,10 @@ const currentWorldState = atom({
     key: 'currentWorldState',
     default: {
         wid: 1,
-        name: 'world1',
+        name: 'default',
         port: 1,
         thumbnail: '/assets/world1',
-        email: 'user1',
+        email: 'default',
     },
 });
 
