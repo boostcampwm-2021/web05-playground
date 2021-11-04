@@ -6,11 +6,12 @@ import { RecoilRoot } from 'recoil';
 
 import ExchangeRates from './components/ExchangeRates';
 import SelectWorld from './pages/SelectWorld';
+import World from './pages/World';
 
 import './reset.css';
 
 const client = new ApolloClient({
-    uri: 'https://48p1r2roz4.sse.codesandbox.io', // 우리 url로 수정해야함
+    uri: process.env.REACT_APP_BASE_URI,
     cache: new InMemoryCache(),
 });
 
@@ -21,13 +22,7 @@ function App() {
                 <BrowserRouter>
                     <Route exact path="/" component={ExchangeRates} />
                     <Route exact path="/selectworld" component={SelectWorld} />
-                    <Route
-                        exact
-                        path="/world"
-                        component={({ location }: any) => {
-                            return <div>포트 번호 : {location.state.port}</div>;
-                        }}
-                    />
+                    <Route exact path="/world" component={World} />
                 </BrowserRouter>
             </RecoilRoot>
         </ApolloProvider>
