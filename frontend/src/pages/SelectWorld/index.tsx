@@ -1,11 +1,14 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-/* eslint-disable no-console */
 /* eslint-disable react/button-has-type */
 import React, { useState } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import styled from 'styled-components';
+
+import { useRecoilState } from 'recoil';
+import { Redirect } from 'react-router-dom';
+import currentWorldState from '../../store/currentWorldState';
 
 const Logo = styled.div`
     position: absolute;
@@ -63,7 +66,6 @@ const World = styled.div<{ thumbnail: string }>`
     font-size: 80px;
 `;
 
-// 쿼리 이름 정하기
 const getWorldList = gql`
     query Query {
         worldList {
@@ -77,7 +79,6 @@ const getWorldList = gql`
 `;
 
 const dummy2 = {
-    // 쿼리 결과
     worldList: [
         {
             wid: 1,
@@ -123,12 +124,10 @@ interface IData {
 }
 
 const SelectWorld = ({ history }: any) => {
-    const [data, setWorldList] = useState<IData>(dummy2); // 이 부분은 useQuery로 대체
-    // const { loading, error, data } = useQuery(getWorldList);
+    const [data, setWorldList] = useState<IData>(dummy2);
     const [curWorld, setCurWorld] = useState<number>(0);
-
-    // if (loading) return <p>Loading...</p>;
-    // if (error) return <p>Error :(</p>;
+    const [currentWorld, setCurrentWorld] =
+        useRecoilState<IWorld>(currentWorldState);
 
     const nextClick = () => {
         let cur = curWorld + 1;
@@ -143,9 +142,9 @@ const SelectWorld = ({ history }: any) => {
     };
 
     const redirectWorld = () => {
+        setCurrentWorld(data.worldList[curWorld]);
         history.push({
             pathname: '/world',
-            state: { port: data.worldList[curWorld].port },
         });
     };
 
