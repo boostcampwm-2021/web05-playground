@@ -1,28 +1,40 @@
+import { objectListError } from '@shared/constants';
+import { Receiver, STATUS_CODE } from '@shared/db.receiver';
 import { pool } from '../connection';
-import { IObject } from '../entities/Object';
 
-export const getObjectList = async (): Promise<Array<IObject>> => {
-    const sql = `SELECT * FROM Object`;
+export const getObjectList = async (): Promise<Receiver> => {
+    const result: Receiver = {
+        status: STATUS_CODE.SUCCESS,
+        data: [],
+    };
 
-    const [objects] = await pool.query(sql);
-    const parsedObject = JSON.parse(JSON.stringify(objects));
+    try {
+        const sql = `SELECT id, bid, x, y, image_url as imageUrl, file_url as fileUrl FROM object`;
+        const [objects] = await pool.query(sql);
 
-    const results: Array<IObject> = parsedObject.map((_object: IObject) => {
-        return _object;
-    });
-    return results;
+        result.data = JSON.parse(JSON.stringify(objects));
+        return result;
+    } catch (err) {
+        result.status = STATUS_CODE.FAIL;
+        result.err = objectListError;
+        return result;
+    }
 };
 
-export const getObjectListByBid = async (
-    bid: number,
-): Promise<Array<IObject>> => {
-    const sql = `SELECT * FROM Object WHERE bid=${bid}`;
+export const getObjectListByBid = async (bid: number): Promise<Receiver> => {
+    const result: Receiver = {
+        status: STATUS_CODE.SUCCESS,
+        data: [],
+    };
+    try {
+        const sql = `SELECT id, bid, x, y, image_url as imageUrl, file_url as fileUrl FROM object WHERE bid= ?`;
+        const [objects] = await pool.query(sql, [bid]);
 
-    const [objects] = await pool.query(sql);
-    const parsedObject = JSON.parse(JSON.stringify(objects));
-
-    const results: Array<IObject> = parsedObject.map((_object: IObject) => {
-        return _object;
-    });
-    return results;
+        result.data = JSON.parse(JSON.stringify(objects));
+        return result;
+    } catch (err) {
+        result.status = STATUS_CODE.FAIL;
+        result.err = objectListError;
+        return result;
+    }
 };

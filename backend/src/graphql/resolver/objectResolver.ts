@@ -1,5 +1,5 @@
+import { STATUS_CODE } from '@shared/db.receiver';
 import { IResolvers } from 'graphql-tools';
-import { IObject } from 'src/database/entities/Object';
 import {
     getObjectList,
     getObjectListByBid,
@@ -7,12 +7,16 @@ import {
 
 const objectResolver: IResolvers = {
     Query: {
-        async objectList(): Promise<Array<IObject>> {
-            return await getObjectList();
+        async objectList(): Promise<Array<object>> {
+            const result = await getObjectList();
+            if (result.status == STATUS_CODE.SUCCESS) return result.data;
+            else throw new Error(result.err);
         },
-        //async objectListByBid(_: void, { bid }): Promise<Array<IObject>> {
-        //    return await getObjectListByBid(bid);
-        //},
+        async objectListByBid(_: void, bid: number): Promise<Array<object>> {
+            const result = await getObjectListByBid(bid);
+            if (result.status == STATUS_CODE.SUCCESS) return result.data;
+            else throw new Error(result.err);
+        },
     },
 };
 
