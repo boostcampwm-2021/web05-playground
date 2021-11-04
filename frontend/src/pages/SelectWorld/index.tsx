@@ -1,11 +1,13 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-/* eslint-disable no-console */
 /* eslint-disable react/button-has-type */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import styled from 'styled-components';
+
+import { useRecoilState } from 'recoil';
+import currentWorldState from '../../store/currentWorldState';
 
 const Logo = styled.div`
     position: absolute;
@@ -81,29 +83,15 @@ const dummy2 = {
             wid: 1,
             name: 'world1',
             port: 1,
-            thumbnail: '/assets/world1',
+            thumbnail: '/assets/world-park',
             email: 'user1',
         },
         {
             wid: 2,
             name: 'world2',
             port: 2,
-            thumbnail: '/assets/world2',
+            thumbnail: '/assets/world-winter',
             email: 'user2',
-        },
-        {
-            wid: 3,
-            name: 'world3',
-            port: 3,
-            thumbnail: '/assets/world3',
-            email: 'user3',
-        },
-        {
-            wid: 4,
-            name: 'world4',
-            port: 4,
-            thumbnail: '/assets/world4',
-            email: 'user4',
         },
     ],
 };
@@ -123,7 +111,14 @@ interface IData {
 const SelectWorld = ({ history }: any) => {
     const [data, setWorldList] = useState<IData>(dummy2);
     const [curWorld, setCurWorld] = useState<number>(0);
+    const [currentWorld, setCurrentWorld] =
+        useRecoilState<IWorld>(currentWorldState);
 
+    useEffect(() => {
+        if (currentWorld.name !== 'default')
+            history.push({ pathname: '/world' });
+    }, [currentWorld]);
+  
     const nextClick = () => {
         let cur = curWorld + 1;
         if (cur >= data.worldList.length) cur = 0;
@@ -137,10 +132,7 @@ const SelectWorld = ({ history }: any) => {
     };
 
     const redirectWorld = () => {
-        history.push({
-            pathname: '/world',
-            state: { port: data.worldList[curWorld].port },
-        });
+        setCurrentWorld(data.worldList[curWorld]);
     };
 
     return (

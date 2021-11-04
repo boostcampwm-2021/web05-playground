@@ -8,11 +8,12 @@ import ExchangeRates from './components/ExchangeRates';
 
 import Login from './pages/Login';
 import SelectWorld from './pages/SelectWorld';
+import World from './pages/World';
 
 import './reset.css';
 
 const client = new ApolloClient({
-    uri: process.env.REACT_APP_BASE_URL,
+    uri: process.env.REACT_APP_BASE_URI,
     cache: new InMemoryCache(),
 });
 
@@ -24,13 +25,7 @@ function App() {
                     <Route exact path="/" component={ExchangeRates} />
                     <Route exact path="/login" component={Login} />
                     <Route exact path="/selectworld" component={SelectWorld} />
-                    <Route
-                        exact
-                        path="/world"
-                        component={({ location }: any) => {
-                            return <div>포트 번호 : {location.state.port}</div>;
-                        }}
-                    />
+                    <Route exact path="/world" component={World} />
                 </BrowserRouter>
             </RecoilRoot>
         </ApolloProvider>
