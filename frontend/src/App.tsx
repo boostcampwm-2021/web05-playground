@@ -5,12 +5,14 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { RecoilRoot } from 'recoil';
 
 import ExchangeRates from './components/ExchangeRates';
+
+import Login from './pages/Login';
 import SelectWorld from './pages/SelectWorld';
 
 import './reset.css';
 
 const client = new ApolloClient({
-    uri: 'https://48p1r2roz4.sse.codesandbox.io', // 우리 url로 수정해야함
+    uri: process.env.REACT_APP_BASE_URL,
     cache: new InMemoryCache(),
 });
 
@@ -20,6 +22,7 @@ function App() {
             <RecoilRoot>
                 <BrowserRouter>
                     <Route exact path="/" component={ExchangeRates} />
+                    <Route exact path="/login" component={Login} />
                     <Route exact path="/selectworld" component={SelectWorld} />
                     <Route
                         exact
