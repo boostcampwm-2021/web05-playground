@@ -16,6 +16,11 @@ import schema from './graphql/schema';
 
 import BaseRouter from './routes';
 
+import Socket from './socket/socket';
+
+const socket = new Socket(8000);
+socket.connect();
+
 const app = express();
 
 const server = new ApolloServer({
