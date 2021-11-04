@@ -132,7 +132,7 @@ const SelectWorld = ({ history }: any) => {
         if (currentWorld.name !== 'default')
             history.push({ pathname: '/world' });
     }, [currentWorld]);
-
+  
     const nextClick = () => {
         let cur = curWorld + 1;
         if (cur >= data.worldList.length) cur = 0;
