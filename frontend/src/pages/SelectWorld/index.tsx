@@ -68,48 +68,25 @@ const World = styled.div<{ thumbnail: string }>`
 const getWorldList = gql`
     query Query {
         worldList {
-            wid
-            thumbnail
-            port
+            id
+            uid
             name
-            email
+            port
+            thumbnail
         }
     }
 `;
 
-const dummy2 = {
-    worldList: [
-        {
-            wid: 1,
-            name: 'world1',
-            port: 1,
-            thumbnail: '/assets/world-park',
-            email: 'user1',
-        },
-        {
-            wid: 2,
-            name: 'world2',
-            port: 2,
-            thumbnail: '/assets/world-winter',
-            email: 'user2',
-        },
-    ],
-};
-
 interface IWorld {
-    wid: number;
+    id: number;
+    uid: number;
     name: string;
     port: number;
     thumbnail: string;
-    email: string;
-}
-
-interface IData {
-    worldList: IWorld[];
 }
 
 const SelectWorld = ({ history }: any) => {
-    const [data, setWorldList] = useState<IData>(dummy2);
+    const { loading, error, data } = useQuery(getWorldList);
     const [curWorld, setCurWorld] = useState<number>(0);
     const [currentWorld, setCurrentWorld] =
         useRecoilState<IWorld>(currentWorldState);
@@ -118,7 +95,10 @@ const SelectWorld = ({ history }: any) => {
         if (currentWorld.name !== 'default')
             history.push({ pathname: '/world' });
     }, [currentWorld]);
-  
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error :(</p>;
+
     const nextClick = () => {
         let cur = curWorld + 1;
         if (cur >= data.worldList.length) cur = 0;

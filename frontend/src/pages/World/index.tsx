@@ -26,11 +26,11 @@ const World = ({ history }: any) => {
     useEffect(() => {
         window.onpopstate = () => {
             setCurrentWorld({
-                wid: 1,
+                id: 1,
+                uid: 1,
                 name: 'default',
                 port: 1,
                 thumbnail: '/assets/world1',
-                email: 'default',
             });
             history.push('/selectworld');
         };

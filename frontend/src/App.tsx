@@ -22,7 +22,7 @@ function App() {
         <ApolloProvider client={client}>
             <RecoilRoot>
                 <BrowserRouter>
-                    <Route exact path="/" component={ExchangeRates} />
+                    <Route exact path="/" component={Login} />
                     <Route exact path="/login" component={Login} />
                     <Route exact path="/selectworld" component={SelectWorld} />
                     <Route exact path="/world" component={World} />
