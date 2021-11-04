@@ -15,6 +15,11 @@ const worldsInfo: any = {
 
 const World = ({ history }: any) => {
     const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
+    if (currentWorld.name === 'default') {
+        history.push('/selectworld');
+        return <></>;
+    }
+
     const [mapLayers, setMapLayer] = useState<any>(
         worldsInfo[currentWorld.name].layers,
     );
