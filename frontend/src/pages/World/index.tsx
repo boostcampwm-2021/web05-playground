@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import currentWorldState from '../../store/currentWorldState';
 
@@ -13,17 +13,25 @@ const worldsInfo: any = {
     world2: worldWinter,
 };
 
-const World = () => {
-    const currentWorld = useRecoilValue(currentWorldState);
+const World = ({ history }: any) => {
+    const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
     const [mapLayers, setMapLayer] = useState<any>(
         worldsInfo[currentWorld.name].layers,
     );
-
     useEffect(() => {
-        setMapLayer(worldsInfo[currentWorld.name].layers);
-    }, [currentWorld]);
+        window.onpopstate = () => {
+            setCurrentWorld({
+                wid: 1,
+                name: 'default',
+                port: 1,
+                thumbnail: '/assets/world1',
+                email: 'default',
+            });
+            history.push('/selectworld');
+        };
+    }, []);
 
-    return <WorldBackground data={mapLayers} key={currentWorld.wid} />;
+    return <WorldBackground data={mapLayers} />;
 };
 
 export default World;

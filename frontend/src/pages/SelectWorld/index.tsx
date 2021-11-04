@@ -2,12 +2,11 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/button-has-type */
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, gql } from '@apollo/client';
 import styled from 'styled-components';
 
 import { useRecoilState } from 'recoil';
-import { Redirect } from 'react-router-dom';
 import currentWorldState from '../../store/currentWorldState';
 
 const Logo = styled.div`
@@ -129,6 +128,11 @@ const SelectWorld = ({ history }: any) => {
     const [currentWorld, setCurrentWorld] =
         useRecoilState<IWorld>(currentWorldState);
 
+    useEffect(() => {
+        if (currentWorld.name !== 'default')
+            history.push({ pathname: '/world' });
+    }, [currentWorld]);
+
     const nextClick = () => {
         let cur = curWorld + 1;
         if (cur >= data.worldList.length) cur = 0;
@@ -143,9 +147,6 @@ const SelectWorld = ({ history }: any) => {
 
     const redirectWorld = () => {
         setCurrentWorld(data.worldList[curWorld]);
-        history.push({
-            pathname: '/world',
-        });
     };
 
     return (
