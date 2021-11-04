@@ -1,0 +1,22 @@
+type IWorld {
+    id: Int!
+    uid: Int
+    name: String!
+    port: Int!
+    thumbnail: String!
+}
+
+type IObject {
+    id: Int!
+    bid: Int!
+    x: Int!
+    y: Int!
+    imageUrl: String!
+    fileUrl: String
+}
+
+type Query {
+    worldList: [IWorld!]!
+    objectList: [IObject!]!
+    objectListByBid(bid: Int!): [IObject!]!
+}
