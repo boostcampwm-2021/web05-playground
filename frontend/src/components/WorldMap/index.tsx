@@ -22,8 +22,6 @@ interface IProps {
     data: ILayer[];
 }
 
-let cnt = 0;
-const backgroundImageList: HTMLImageElement[] = [];
 const WorldBackground = (props: IProps) => {
     const layers = props.data;
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -42,6 +40,8 @@ const WorldBackground = (props: IProps) => {
     };
 
     useEffect(() => {
+        const backgroundImageList: HTMLImageElement[] = [];
+        let cnt = 0;
         layers.forEach((layer) => {
             const backgroundImg = new Image();
             backgroundImg.src = layer.imgSrc;
@@ -49,7 +49,7 @@ const WorldBackground = (props: IProps) => {
                 cnt++;
                 backgroundImageList.push(backgroundImg);
                 if (cnt === layers.length) {
-                    setTileBackground(backgroundImageList);
+                    setTileBackground([...backgroundImageList]);
                 }
             };
         });
@@ -65,7 +65,6 @@ const WorldBackground = (props: IProps) => {
 
         ctx = canvas.getContext('2d');
         drawGame();
-        return () => drawGame();
     }, [tileBackground]);
 
     const drawGame = () => {
@@ -89,7 +88,7 @@ const WorldBackground = (props: IProps) => {
                         spriteTileSize;
                     sourceX = (tileVal % layer.columnCount) * spriteTileSize;
                     ctx.drawImage(
-                        backgroundImageList[indexOfLayers],
+                        tileBackground[indexOfLayers],
                         sourceX,
                         sourceY,
                         spriteTileSize,
