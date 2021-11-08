@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
+import { RouteComponentProps } from 'react-router';
 
 import currentWorldState from '../../store/currentWorldState';
 
@@ -13,16 +14,14 @@ const worldsInfo: any = {
     world2: worldWinter,
 };
 
-const World = ({ history }: any) => {
+const World = (props: RouteComponentProps) => {
     const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
     if (currentWorld.name === 'default') {
-        history.push('/selectworld');
+        props.history.push('/selectworld');
         return <></>;
     }
 
-    const [mapLayers, setMapLayer] = useState<any>(
-        worldsInfo[currentWorld.name].layers,
-    );
+    const [mapLayers, setMapLayer] = useState(worldsInfo[currentWorld.name].layers);
     useEffect(() => {
         window.onpopstate = () => {
             setCurrentWorld({
@@ -32,7 +31,7 @@ const World = ({ history }: any) => {
                 port: 1,
                 thumbnail: '/assets/world1',
             });
-            history.push('/selectworld');
+            props.history.push('/selectworld');
         };
     }, []);
 
