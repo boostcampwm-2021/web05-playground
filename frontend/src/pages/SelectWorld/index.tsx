@@ -1,16 +1,13 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { RouteComponentProps } from 'react-router';
-import { useRecoilState } from 'recoil';
 import { getWorldList } from '../../utils/query';
 import { WorldSelector } from '../../components/SelectWorld';
-import currentWorldState from '../../store/currentWorldState';
 
 const SelectWorld = (props: RouteComponentProps) => {
     const { loading, error, data } = useQuery(getWorldList);
-    const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error :(</p>;
