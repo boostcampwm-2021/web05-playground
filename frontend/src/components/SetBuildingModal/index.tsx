@@ -100,6 +100,8 @@ export default setBuildingModal;
 
 const ModalDiv = styled.div`
     position: absolute;
+    z-index: 3;
+
     top: 50%;
     left: 50%;
     width: 400px;
