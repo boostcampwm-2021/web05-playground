@@ -27,8 +27,6 @@ const WorldBackground = (props: IProps) => {
     const tileSize = 32;
     const OBJECT = 1;
 
-    // 기존에는 useState로 관리했는데, 상태변경이 없으면 굳이?? 이유가 있을까
-    // 리렌더링 될때만 값을 새로 선언하는게 문제라면 useMemo를 적용해봐도 되지 않을까?
     const objectLayer = layers[OBJECT].data;
 
     let ctx: CanvasRenderingContext2D | null;
@@ -57,10 +55,6 @@ const WorldBackground = (props: IProps) => {
         window.addEventListener('mousedown', processBuild);
         window.addEventListener('mousemove', updatePosition);
 
-        // clear 먼저 하고 그리는 방식을 생각하자
-        // 지금은 계속 위에 쌓고있다.
-        // drawPossibleBuildArea();
-
         return () => {
             window.removeEventListener('mousedown', processBuild);
             window.removeEventListener('mousemove', updatePosition);
@@ -68,29 +62,22 @@ const WorldBackground = (props: IProps) => {
     }, [selectedBuilding]);
 
     const processBuild = () => {
-        if (isBuilding) {
-            if (isPosssibleArea(buildTargetX, buildTargetY)) {
-                // drawBuilding();
-            }
-            isBuilding = false;
-            return;
-        }
-        isBuilding = true;
+        if (isBuilding || selectedBuilding.buildingSrc === 'none') return;
+        isBuilding = !isBuilding;
 
-        const selectedBuildingInfo = {
-            buildingSrc: 'none',
-            locationX: -1,
-            locationY: -1,
-            isLocated: false,
-        };
-        setSelectedBuilding(selectedBuildingInfo);
+        setSelectedBuilding({
+            ...selectedBuilding,
+            locationX: buildTargetX,
+            locationY: buildTargetY,
+            isLocated: true,
+        });
     };
 
     const updatePosition = (e: MouseEvent) => {
         buildTargetX = Math.floor(e.pageX / tileSize);
         buildTargetY = Math.floor(e.pageY / tileSize);
 
-        if (!ctx || selectedBuilding.buildingSrc === 'none') return;
+        if (!ctx || selectedBuilding.buildingSrc === 'none' || selectedBuilding.isLocated) return;
         const buildObject = new Image();
         buildObject.src = selectedBuilding.buildingSrc;
 
@@ -109,10 +96,6 @@ const WorldBackground = (props: IProps) => {
         );
     };
 
-    const getIndex = (x: number, y: number) => {
-        return y * commonWidth + x;
-    };
-
     const drawBuilding = () => {
         if (!ctx) return;
         ctx.fillStyle = '#C6FCAC';
@@ -122,6 +105,10 @@ const WorldBackground = (props: IProps) => {
             tileSize * 5,
             tileSize * 5,
         );
+    };
+
+    const getIndex = (x: number, y: number) => {
+        return y * commonWidth + x;
     };
 
     const isPosssibleArea = (col: number, row: number) => {
@@ -135,18 +122,6 @@ const WorldBackground = (props: IProps) => {
             }
         }
         return true;
-    };
-
-    const drawPossibleBuildArea = () => {
-        if (!ctx) return;
-        ctx.fillStyle = '#C6FCAC';
-        for (let col = 1; col < window.innerHeight; col += 3) {
-            for (let row = 1; row < window.innerWidth; row += 3) {
-                if (isPosssibleArea(col, row)) {
-                    ctx.fillRect(col * tileSize, row * tileSize, tileSize * 2, tileSize * 2);
-                }
-            }
-        }
     };
 
     return <BuildingCanvas id="canvas" ref={canvasRef} />;
