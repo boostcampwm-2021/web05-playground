@@ -1,7 +1,11 @@
+/* eslint-disable consistent-return */
 /* eslint-disable no-plusplus */
 /* eslint-disable react/destructuring-assignment */
 import React, { useRef, useEffect } from 'react';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
+
+import selectedBuildingState from '../../store/selectedBuildingState';
 
 interface ILayer {
     data: number[];
@@ -18,8 +22,9 @@ interface IProps {
 const WorldBackground = (props: IProps) => {
     const layers = props.data;
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const tileSize = 32;
+    const [selectedBuilding, setSelectedBuilding] = useRecoilState(selectedBuildingState);
 
+    const tileSize = 32;
     const OBJECT = 1;
 
     // 기존에는 useState로 관리했는데, 상태변경이 없으면 굳이?? 이유가 있을까
@@ -35,6 +40,10 @@ const WorldBackground = (props: IProps) => {
     // 건물을 불러와서 초기 데이터 넣을때는 로딩 페이지가 필요
     const buildingData = new Array(commonWidth * commonHeight).fill(0);
 
+    let isBuilding = false;
+    let buildTargetX = -1;
+    let buildTargetY = -1;
+
     useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;
         if (canvas === null) {
@@ -45,18 +54,72 @@ const WorldBackground = (props: IProps) => {
 
         ctx = canvas.getContext('2d');
 
+        window.addEventListener('mousedown', processBuild);
+        window.addEventListener('mousemove', updatePosition);
+
         // clear 먼저 하고 그리는 방식을 생각하자
         // 지금은 계속 위에 쌓고있다.
-        drawPossibleBuildArea();
-    }, []);
+        // drawPossibleBuildArea();
+
+        return () => {
+            window.removeEventListener('mousedown', processBuild);
+            window.removeEventListener('mousemove', updatePosition);
+        };
+    }, [selectedBuilding]);
+
+    const processBuild = () => {
+        if (isBuilding) {
+            if (isPosssibleArea(buildTargetX, buildTargetY)) {
+                // drawBuilding();
+            }
+            isBuilding = false;
+            return;
+        }
+        isBuilding = true;
+        setSelectedBuilding('none');
+    };
+
+    const updatePosition = (e: MouseEvent) => {
+        buildTargetX = Math.floor(e.pageX / tileSize);
+        buildTargetY = Math.floor(e.pageY / tileSize);
+
+        if (!ctx || selectedBuilding === 'none') return;
+        const buildObject = new Image();
+        buildObject.src = selectedBuilding;
+
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+        if (isPosssibleArea(buildTargetX, buildTargetY)) {
+            drawBuilding();
+        }
+
+        ctx.drawImage(
+            buildObject,
+            buildTargetX * tileSize - tileSize * 2,
+            buildTargetY * tileSize - tileSize * 2,
+            tileSize * 4,
+            tileSize * 4,
+        );
+    };
 
     const getIndex = (x: number, y: number) => {
         return y * commonWidth + x;
     };
 
+    const drawBuilding = () => {
+        if (!ctx) return;
+        ctx.fillStyle = '#C6FCAC';
+        ctx.fillRect(
+            buildTargetX * tileSize - tileSize * 2.5,
+            buildTargetY * tileSize - tileSize * 2.5,
+            tileSize * 5,
+            tileSize * 5,
+        );
+    };
+
     const isPosssibleArea = (col: number, row: number) => {
-        for (let i = col; i < col + 2; i++) {
-            for (let j = row; j < row + 2; j++) {
+        for (let i = col - 2; i < col + 2; i++) {
+            for (let j = row - 2; j < row + 2; j++) {
                 const objectVal = objectLayer[getIndex(i, j)];
                 const buildingVal = buildingData[getIndex(i, j)];
                 if (objectVal !== 0 || buildingVal !== 0) {
