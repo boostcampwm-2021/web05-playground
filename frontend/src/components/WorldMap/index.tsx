@@ -98,8 +98,10 @@ const WorldBackground = (props: IProps) => {
     return <Canvas id="canvas" ref={canvasRef} />;
 };
 
+export default WorldBackground;
+
 const Canvas = styled.canvas`
+    position: fixed;
     margin-left: 0px;
     overflow: hidden;
 `;
-export default WorldBackground;
