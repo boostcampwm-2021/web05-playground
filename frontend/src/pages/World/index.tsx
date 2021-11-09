@@ -13,7 +13,7 @@ import SetBuildingModal from '../../components/SetBuildingModal';
 
 import worldPark from '../../map-files/world-park.json';
 import worldWinter from '../../map-files/world-winter.json';
-import selectedBuildingState from '../../store/selectedBuildingState';
+import buildBuildingState from '../../store/buildBuildingState';
 
 interface customWorldInfo {
     [world: string]: typeof worldPark;
@@ -26,7 +26,7 @@ const worldsInfo: customWorldInfo = {
 const World = (props: RouteComponentProps) => {
     const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
     const currentModal = useRecoilValue(currentModalState);
-    const selectedBuilding = useRecoilValue(selectedBuildingState);
+    const buildBuilding = useRecoilValue(buildBuildingState);
 
     if (currentWorld.name === 'default') {
         props.history.push('/selectworld');
@@ -57,7 +57,7 @@ const World = (props: RouteComponentProps) => {
             <Building data={mapLayers} />
             {currentModal !== 'none' ? <Modal /> : <></>}
             <NavigationBar />
-            {selectedBuilding.isLocated ? <SetBuildingModal /> : <></>}
+            {buildBuilding.isLocated ? <SetBuildingModal /> : <></>}
         </>
     );
 };

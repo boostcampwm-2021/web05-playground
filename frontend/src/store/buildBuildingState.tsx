@@ -1,13 +1,14 @@
 import { atom } from 'recoil';
 
-const selectedBuildingState = atom({
-    key: 'selectedBuildingState',
+const buildBuildingState = atom({
+    key: 'buildBuildingState',
     default: {
         buildingSrc: 'none',
         locationX: -1,
         locationY: -1,
         isLocated: false,
+        isBuilding: false,
     },
 });
 
-export default selectedBuildingState;
+export default buildBuildingState;

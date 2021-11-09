@@ -4,7 +4,7 @@ import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import currentModalState from '../../store/currentModalState';
-import selectedBuildingState from '../../store/selectedBuildingState';
+import buildBuildingState from '../../store/buildBuildingState';
 
 interface customEventTarget extends EventTarget {
     src: string;
@@ -16,7 +16,7 @@ interface customMouseEvent extends React.MouseEvent<HTMLButtonElement, MouseEven
 
 const Modal = () => {
     const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
-    const setSelectedBuilding = useSetRecoilState(selectedBuildingState);
+    const setBuildBuilding = useSetRecoilState(buildBuildingState);
 
     const selectBuilding = (e: customMouseEvent) => {
         const selectedBuildingInfo = {
@@ -24,15 +24,16 @@ const Modal = () => {
             locationX: -1,
             locationY: -1,
             isLocated: false,
+            isBuilding: true,
         };
-        setSelectedBuilding(selectedBuildingInfo);
+        setBuildBuilding(selectedBuildingInfo);
     };
 
     return (
         <ModalDiv>
             <BackBtn src="/assets/nextbtn.png" onClick={() => setCurrentModal('none')} />
             {currentModal}
-            <button type="button" onClick={selectBuilding}>
+            <button type="button" onMouseDown={selectBuilding}>
                 <img src="/assets/home.png" alt="빌드 가능한 빌딩 이미지" />
             </button>
         </ModalDiv>

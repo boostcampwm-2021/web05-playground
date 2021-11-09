@@ -2,10 +2,11 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-
 import React, { useState } from 'react';
-
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
+
+import buildBuildingState from '../../store/buildBuildingState';
 
 interface customEventTarget extends EventTarget {
     value: string;
@@ -23,6 +24,8 @@ const setBuildingModal = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [range, setRange] = useState('private');
+    const buildBuilding = useRecoilValue(buildBuildingState);
+
     const setFunctions: customSetFunctions = {
         title: setTitle,
         description: setDescription,
@@ -32,20 +35,32 @@ const setBuildingModal = () => {
         setFunctions[e.target.id](e.target.value);
     };
 
-    const clicked = (e: customMouseEvent) => {
+    const rangeClicked = (e: customMouseEvent) => {
         const { value } = e.target;
         setRange(value);
+    };
+
+    const completeBuild = () => {
+        if (title === '' || description === '') alert('값을 모두 입력해주세요');
+        else {
+            console.log(
+                `이름 : ${title}\n설명 : ${description}\n공개범위 : ${range}\n좌표 : ${JSON.stringify(
+                    buildBuilding,
+                )}`,
+            );
+            alert('추가되었습니다.');
+        }
     };
 
     return (
         <ModalDiv>
             <ElementDiv>
                 <TitleTag>건물이름</TitleTag>
-                <InputTitle onChange={(e) => changed(e)} id="title" />
+                <InputTitle onChange={changed} id="title" />
             </ElementDiv>
             <ElementDiv>
                 <TitleTag>설명</TitleTag>
-                <InputDescription id="description" onChange={(e) => changed(e)} />
+                <InputDescription id="description" onChange={changed} />
             </ElementDiv>
             <ElementDiv>
                 <TitleTag>공개여부</TitleTag>
@@ -57,9 +72,7 @@ const setBuildingModal = () => {
                             value="private"
                             id="range"
                             defaultChecked
-                            onClick={(e: customMouseEvent) => {
-                                clicked(e);
-                            }}
+                            onClick={rangeClicked}
                         />
                         private
                     </div>
@@ -69,28 +82,14 @@ const setBuildingModal = () => {
                             name="range"
                             value="public"
                             id="range"
-                            onClick={(e: customMouseEvent) => {
-                                clicked(e);
-                            }}
+                            onClick={rangeClicked}
                         />
                         public
                     </div>
                 </RadioWrapper>
             </ElementDiv>
             <BtnWrapper>
-                <StyledBtn
-                    onClick={() => {
-                        if (title === '' || description === '') alert('값을 모두 입력해주세요');
-                        else {
-                            console.log(
-                                `이름 : ${title}\n설명 : ${description}\n공개범위 : ${range}`,
-                            );
-                            alert('추가되었습니다.');
-                        }
-                    }}
-                >
-                    확인
-                </StyledBtn>
+                <StyledBtn onClick={completeBuild}>확인</StyledBtn>
             </BtnWrapper>
         </ModalDiv>
     );
