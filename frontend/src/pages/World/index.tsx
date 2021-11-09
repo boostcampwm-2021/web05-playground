@@ -5,6 +5,7 @@ import { RouteComponentProps } from 'react-router';
 import currentWorldState from '../../store/currentWorldState';
 
 import WorldBackground from '../../components/WorldMap';
+import NavigationBar from '../../components/NavigationBar';
 
 import worldPark from '../../map-files/world-park.json';
 import worldWinter from '../../map-files/world-winter.json';
@@ -35,7 +36,12 @@ const World = (props: RouteComponentProps) => {
         };
     }, []);
 
-    return <WorldBackground data={mapLayers} />;
+    return (
+        <>
+            <WorldBackground data={mapLayers} />
+            <NavigationBar />
+        </>
+    );
 };
 
 export default World;
