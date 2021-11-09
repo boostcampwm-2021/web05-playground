@@ -1,16 +1,24 @@
 import React from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import styled from 'styled-components';
 
 import currentModalState from '../../store/currentModalState';
+import selectedBuildingState from '../../store/selectedBuildingState';
 
 const Modal = () => {
     const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
+    const setSelectedBuilding = useSetRecoilState(selectedBuildingState);
+
     return (
         <ModalDiv>
             <BackBtn src="/assets/nextbtn.png" onClick={() => setCurrentModal('none')} />
             {currentModal}
+            <img
+                src="/assets/home.png"
+                onMouseDown={() => setSelectedBuilding('/assets/home.png')}
+                alt="빌드 가능한 빌딩 이미지"
+            />
         </ModalDiv>
     );
 };
