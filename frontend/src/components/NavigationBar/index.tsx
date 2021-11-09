@@ -1,8 +1,11 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable no-template-curly-in-string */
 import React from 'react';
+import { useRecoilState } from 'recoil';
 
 import styled from 'styled-components';
+
+import currentModalState from '../../store/currentModalState';
 
 const icons = [
     'voiceChat',
@@ -15,6 +18,7 @@ const icons = [
 ];
 
 const NavigationBar = () => {
+    const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
     return (
         <FixedDiv>
             <SideDiv>
@@ -34,7 +38,8 @@ const NavigationBar = () => {
                             key={icon}
                             src={`/assets/${icon}.png`}
                             onClick={() => {
-                                console.log(icon);
+                                if (currentModal === icon) setCurrentModal('none');
+                                else setCurrentModal(icon);
                             }}
                         />
                     );
