@@ -9,11 +9,15 @@ import WorldBackground from '../../components/WorldMap';
 import Building from '../../components/Building';
 import NavigationBar from '../../components/NavigationBar';
 import Modal from '../../components/Modal';
+import SetBuildingModal from '../../components/SetBuildingModal';
 
 import worldPark from '../../map-files/world-park.json';
 import worldWinter from '../../map-files/world-winter.json';
 
-const worldsInfo: any = {
+interface customWorldInfo {
+    [world: string]: typeof worldPark;
+}
+const worldsInfo: customWorldInfo = {
     world1: worldPark,
     world2: worldWinter,
 };
@@ -48,8 +52,9 @@ const World = (props: RouteComponentProps) => {
         <>
             <WorldBackground data={mapLayers} />
             <Building data={mapLayers} />
-            {currentModal !== 'none' ? <Modal /> : <div>{currentModal}</div>}
+            {currentModal !== 'none' ? <Modal /> : <></>}
             <NavigationBar />
+            <SetBuildingModal />
         </>
     );
 };

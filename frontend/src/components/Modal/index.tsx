@@ -34,6 +34,7 @@ const ModalDiv = styled.div`
     background: #c4c4c4;
     right: 0;
     top: 0px;
+    border: 3px solid black;
 `;
 
 const BackBtn = styled.img`
