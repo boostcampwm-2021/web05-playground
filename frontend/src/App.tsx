@@ -4,8 +4,6 @@ import { BrowserRouter, Route } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { RecoilRoot } from 'recoil';
 
-import ExchangeRates from './components/ExchangeRates';
-
 import Login from './pages/Login';
 import SelectWorld from './pages/SelectWorld';
 import World from './pages/World';

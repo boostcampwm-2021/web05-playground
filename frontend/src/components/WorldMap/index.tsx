@@ -5,11 +5,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 
-const Canvas = styled.canvas`
-    margin-left: 0px;
-    overflow: hidden;
-`;
-
 interface ILayer {
     data: number[];
     height: number;
@@ -83,9 +78,7 @@ const WorldBackground = (props: IProps) => {
                 let tileVal = layer.data[getIndex(row, col)];
                 if (tileVal !== 0) {
                     tileVal -= 1;
-                    sourceY =
-                        Math.floor(tileVal / layer.columnCount) *
-                        spriteTileSize;
+                    sourceY = Math.floor(tileVal / layer.columnCount) * spriteTileSize;
                     sourceX = (tileVal % layer.columnCount) * spriteTileSize;
                     ctx.drawImage(
                         tileBackground[indexOfLayers],
@@ -102,8 +95,11 @@ const WorldBackground = (props: IProps) => {
             }
         }
     };
-
     return <Canvas id="canvas" ref={canvasRef} />;
 };
 
+const Canvas = styled.canvas`
+    margin-left: 0px;
+    overflow: hidden;
+`;
 export default WorldBackground;
