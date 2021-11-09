@@ -13,6 +13,7 @@ import SetBuildingModal from '../../components/SetBuildingModal';
 
 import worldPark from '../../map-files/world-park.json';
 import worldWinter from '../../map-files/world-winter.json';
+import selectedBuildingState from '../../store/selectedBuildingState';
 
 interface customWorldInfo {
     [world: string]: typeof worldPark;
@@ -25,6 +26,7 @@ const worldsInfo: customWorldInfo = {
 const World = (props: RouteComponentProps) => {
     const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
     const currentModal = useRecoilValue(currentModalState);
+    const selectedBuilding = useRecoilValue(selectedBuildingState);
 
     if (currentWorld.name === 'default') {
         props.history.push('/selectworld');
@@ -50,11 +52,12 @@ const World = (props: RouteComponentProps) => {
 
     return (
         <>
+            {/* 아래 recoil 두 가지 상태에따라 맵이 다시 그려지니까 상태관련된 것은 하위컴포넌트 or 다른 곳으로 빼자 */}
             <WorldBackground data={mapLayers} />
             <Building data={mapLayers} />
             {currentModal !== 'none' ? <Modal /> : <></>}
             <NavigationBar />
-            <SetBuildingModal />
+            {selectedBuilding.isLocated ? <SetBuildingModal /> : <></>}
         </>
     );
 };

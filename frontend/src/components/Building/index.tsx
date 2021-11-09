@@ -76,16 +76,23 @@ const WorldBackground = (props: IProps) => {
             return;
         }
         isBuilding = true;
-        setSelectedBuilding('none');
+
+        const selectedBuildingInfo = {
+            buildingSrc: 'none',
+            locationX: -1,
+            locationY: -1,
+            isLocated: false,
+        };
+        setSelectedBuilding(selectedBuildingInfo);
     };
 
     const updatePosition = (e: MouseEvent) => {
         buildTargetX = Math.floor(e.pageX / tileSize);
         buildTargetY = Math.floor(e.pageY / tileSize);
 
-        if (!ctx || selectedBuilding === 'none') return;
+        if (!ctx || selectedBuilding.buildingSrc === 'none') return;
         const buildObject = new Image();
-        buildObject.src = selectedBuilding;
+        buildObject.src = selectedBuilding.buildingSrc;
 
         ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 

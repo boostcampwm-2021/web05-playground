@@ -6,19 +6,35 @@ import styled from 'styled-components';
 import currentModalState from '../../store/currentModalState';
 import selectedBuildingState from '../../store/selectedBuildingState';
 
+interface customEventTarget extends EventTarget {
+    src: string;
+}
+
+interface customMouseEvent extends React.MouseEvent<HTMLButtonElement, MouseEvent> {
+    target: customEventTarget;
+}
+
 const Modal = () => {
     const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
     const setSelectedBuilding = useSetRecoilState(selectedBuildingState);
+
+    const selectBuilding = (e: customMouseEvent) => {
+        const selectedBuildingInfo = {
+            buildingSrc: e.target.src,
+            locationX: -1,
+            locationY: -1,
+            isLocated: false,
+        };
+        setSelectedBuilding(selectedBuildingInfo);
+    };
 
     return (
         <ModalDiv>
             <BackBtn src="/assets/nextbtn.png" onClick={() => setCurrentModal('none')} />
             {currentModal}
-            <img
-                src="/assets/home.png"
-                onMouseDown={() => setSelectedBuilding('/assets/home.png')}
-                alt="빌드 가능한 빌딩 이미지"
-            />
+            <button type="button" onClick={selectBuilding}>
+                <img src="/assets/home.png" alt="빌드 가능한 빌딩 이미지" />
+            </button>
         </ModalDiv>
     );
 };
