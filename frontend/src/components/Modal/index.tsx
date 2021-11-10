@@ -1,41 +1,19 @@
 import React from 'react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
 
 import styled from 'styled-components';
 
+import BuildBuilding from './BuildBuilding';
+
 import currentModalState from '../../store/currentModalState';
-import buildBuildingState from '../../store/buildBuildingState';
-
-interface customEventTarget extends EventTarget {
-    src: string;
-}
-
-interface customMouseEvent extends React.MouseEvent<HTMLButtonElement, MouseEvent> {
-    target: customEventTarget;
-}
 
 const Modal = () => {
     const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
-    const setBuildBuilding = useSetRecoilState(buildBuildingState);
-
-    const selectBuilding = (e: customMouseEvent) => {
-        const selectedBuildingInfo = {
-            buildingSrc: e.target.src,
-            locationX: -1,
-            locationY: -1,
-            isLocated: false,
-            isBuilding: true,
-        };
-        setBuildBuilding(selectedBuildingInfo);
-    };
 
     return (
         <ModalDiv>
             <BackBtn src="/assets/nextbtn.png" onClick={() => setCurrentModal('none')} />
-            {currentModal}
-            <button type="button" onMouseDown={selectBuilding}>
-                <img src="/assets/home.png" alt="빌드 가능한 빌딩 이미지" />
-            </button>
+            {currentModal === 'buildBuilding' ? <BuildBuilding /> : <div>{currentModal}</div>}
         </ModalDiv>
     );
 };
