@@ -22,6 +22,7 @@ export const getUserInfo = async (email: string): Promise<IUser> => {
     if (userInfo.status === STATUS_CODE.FAIL) throw new Error(userListError);
     return userInfo.user;
 };
+
 export const addUser = (user: IUser, userMap: Map<number, IUser>): void => {
     userMap.set(user.id, user);
 };

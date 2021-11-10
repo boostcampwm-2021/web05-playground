@@ -1,6 +1,6 @@
 import { userListError } from '@shared/constants';
 import { Receiver, STATUS_CODE } from '@shared/db.receiver';
-import { pool } from '../connection';
+import { pool2 } from '../connection';
 
 export const getUser = async (email: string): Promise<Receiver> => {
     const result: Receiver = {
@@ -8,7 +8,7 @@ export const getUser = async (email: string): Promise<Receiver> => {
     };
     try {
         const sql = `SELECT id, email, nickname, x, y, image_url as imageUrl FROM world_user WHERE email = ?`;
-        const [user] = await pool.query(sql, [email]);
+        const [user] = await pool2.query(sql, [email]);
         const data = JSON.parse(JSON.stringify(user));
 
         if(data.length === 0) {

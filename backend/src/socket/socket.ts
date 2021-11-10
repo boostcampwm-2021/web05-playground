@@ -47,6 +47,7 @@ export default class RoomSocket {
         const user = await getUserInfo(data);
         socket.uid = user.id;
         addUser(user, this.userMap);
+        console.log(this.userMap);
         this.io.emit('user', this.userMap);
     }
 
@@ -57,6 +58,8 @@ export default class RoomSocket {
 
     deleteUserHandler(socket: MySocket) {
         if (socket.uid !== undefined) deleteUser(socket.uid, this.userMap);
+        this.io.emit('user', this.userMap);
+        console.log(this.userMap);
         console.log(`${socket.id} 끊어졌습니다.`);
     }
 }
