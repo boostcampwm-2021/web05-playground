@@ -11,15 +11,15 @@ export const getUser = async (email: string): Promise<Receiver> => {
         const [user] = await pool2.query(sql, [email]);
         const data = JSON.parse(JSON.stringify(user));
 
-        if(data.length === 0) {
+        if (data.length === 0) {
             result.status = STATUS_CODE.FAIL;
             return result;
         }
 
         result.user = JSON.parse(JSON.stringify(user))[0];
         return result;
-    } catch(err) {
-        console.log(err)
+    } catch (err) {
+        console.log(err);
         result.status = STATUS_CODE.FAIL;
         result.err = userListError;
         return result;

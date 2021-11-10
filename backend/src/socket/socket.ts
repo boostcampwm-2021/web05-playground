@@ -48,7 +48,7 @@ export default class RoomSocket {
         socket.uid = user.id;
         addUser(user, this.userMap);
         console.log(this.userMap);
-        this.io.emit('user', this.userMap);
+        this.io.emit('user', JSON.stringify(Array.from(this.userMap)));
     }
 
     async moveHandler(data: UserMove, socket: MySocket) {
