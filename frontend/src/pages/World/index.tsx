@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { RouteComponentProps } from 'react-router';
 import { useQuery } from '@apollo/client';
 
 import currentWorldState from '../../store/currentWorldState';
 import currentModalState from '../../store/currentModalState';
 import buildBuildingState from '../../store/buildBuildingState';
+import socketClientState from '../../store/socketClientState';
 
 import WorldBackground from '../../components/WorldMap';
 import Building from '../../components/Building';
@@ -18,6 +19,8 @@ import worldWinter from '../../map-files/world-winter.json';
 
 import { getBuildingList } from '../../utils/query';
 
+import { socketClient, setSocket } from '../../socket/socket';
+
 interface customWorldInfo {
     [world: string]: typeof worldPark;
 }
@@ -25,7 +28,6 @@ const worldsInfo: customWorldInfo = {
     world1: worldPark,
     world2: worldWinter,
 };
-
 const World = (props: RouteComponentProps) => {
     const { loading, error, data } = useQuery(getBuildingList);
     const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
@@ -52,6 +54,8 @@ const World = (props: RouteComponentProps) => {
             });
             props.history.push('/selectworld');
         };
+        setSocket(process.env.REACT_APP_BASE_SOCKET_URI!);
+        return () => socketClient.disconnect();
     }, []);
 
     if (loading) return <p>Loading...</p>;

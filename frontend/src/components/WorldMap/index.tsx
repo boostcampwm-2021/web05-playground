@@ -4,8 +4,8 @@
 /* eslint-disable no-plusplus */
 import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
-import io, { Socket } from 'socket.io-client';
-import { DefaultEventsMap } from '@socket.io/component-emitter';
+
+import { socketClient } from '../../socket/socket';
 
 interface ILayer {
     data: number[];
@@ -20,18 +20,17 @@ interface IProps {
 }
 
 interface IUser {
-    id: number,
-    email: string,
-    nickname: string,
-    x: number,
-    y: number,
-    imageurl: string,
+    id: number;
+    email: string;
+    nickname: string;
+    x: number;
+    y: number;
+    imageurl: string;
 }
 
 const WorldBackground = (props: IProps) => {
     const layers = props.data;
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    // let socketClient: Socket<DefaultEventsMap, DefaultEventsMap>;
     const [tileBackground, setTileBackground] = useState<HTMLImageElement[]>();
     const commonWidth = layers[0].width;
     const tileSize = 32;
@@ -61,19 +60,11 @@ const WorldBackground = (props: IProps) => {
             };
         });
 
-        const socketClient = io(process.env.REACT_APP_BASE_SOCKET_URI!); 
-        socketClient.emit('user', ('minjaec023@gmail.com'))
-
-        
+        socketClient.emit('user', 'minjaec023@gmail.com');
         socketClient.on('user', (data: Array<IUser>) => {
             console.log(data);
-        })
-
-        return () => {
-            if(socketClient !== undefined) socketClient.close();
-        }
-
-    }, []);
+        });
+    }, [socketClient]);
 
     useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;
@@ -86,8 +77,6 @@ const WorldBackground = (props: IProps) => {
         ctx = canvas.getContext('2d');
         drawGame();
     }, [tileBackground]);
-    
-    
 
     const drawGame = () => {
         if (!ctx || !tileBackground) return;
