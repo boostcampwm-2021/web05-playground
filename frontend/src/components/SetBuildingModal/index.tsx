@@ -29,6 +29,7 @@ const setBuildingModal = () => {
     const setFunctions: customSetFunctions = {
         title: setTitle,
         description: setDescription,
+        password: setRange,
     };
 
     const changed = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -40,14 +41,20 @@ const setBuildingModal = () => {
         setRange(value);
     };
 
+    const cancleBuild = () => {
+        const selectedBuildingInfo = {
+            buildingSrc: 'none',
+            locationX: -1,
+            locationY: -1,
+            isLocated: false,
+            isBuilding: false,
+        };
+        setBuildBuilding(selectedBuildingInfo);
+    };
+
     const completeBuild = () => {
         if (title === '' || description === '') alert('값을 모두 입력해주세요');
         else {
-            console.log(
-                `이름 : ${title}\n설명 : ${description}\n공개범위 : ${range}\n좌표 : ${JSON.stringify(
-                    buildBuilding,
-                )}`,
-            );
             const selectedBuildingInfo = {
                 buildingSrc: 'none',
                 locationX: -1,
@@ -96,7 +103,12 @@ const setBuildingModal = () => {
                     </div>
                 </RadioWrapper>
             </ElementDiv>
+            <ElementDiv>
+                <TitleTag>비밀번호</TitleTag>
+                <InputPassword id="password" onChange={changed} readOnly={range === 'public'} />
+            </ElementDiv>
             <BtnWrapper>
+                <StyledBtn onClick={cancleBuild}>취소</StyledBtn>
                 <StyledBtn onClick={completeBuild}>확인</StyledBtn>
             </BtnWrapper>
         </ModalDiv>
@@ -147,10 +159,18 @@ const InputDescription = styled.textarea`
     resize: none;
 `;
 
+const InputPassword = styled.input`
+    border: 0;
+    border-bottom: black 1px solid;
+    background-color: #c4c4c4;
+    height: 20px;
+    width: 200px;
+`;
+
 const BtnWrapper = styled.div`
     display: flex;
     flex-direction: row;
-    justify-content: end;
+    justify-content: space-between;
     width: 300px;
 `;
 
