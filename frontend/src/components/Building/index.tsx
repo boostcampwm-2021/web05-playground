@@ -1,42 +1,27 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-plusplus */
 /* eslint-disable react/destructuring-assignment */
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import buildBuildingState from '../../store/buildBuildingState';
 
-interface ILayer {
-    data: number[];
-    height: number;
-    width: number;
-    imgSrc: string;
-    columnCount: number;
-}
+import { IBuilding, IProps } from '../../utils/model';
 
-interface IProps {
-    data: ILayer[];
-}
+const commonWidth = 70;
+const commonHeight = 50;
+const tileSize = 32;
+const OBJECT = 1;
+let ctx: CanvasRenderingContext2D | null;
 
 const WorldBackground = (props: IProps) => {
-    const layers = props.data;
+    const { layers, buildingList } = props;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [buildBuilding, setBuildBuilding] = useRecoilState(buildBuildingState);
-
-    const tileSize = 32;
-    const OBJECT = 1;
+    const [buildingData, setBuildingData] = useState(new Array(commonWidth * commonHeight).fill(0));
 
     const objectLayer = layers[OBJECT].data;
-
-    let ctx: CanvasRenderingContext2D | null;
-
-    const commonWidth = 70;
-    const commonHeight = 50;
-
-    // 0으로 초기화 및 기존에 건설된 건물 정보 포함
-    // 건물을 불러와서 초기 데이터 넣을때는 로딩 페이지가 필요
-    const buildingData = new Array(commonWidth * commonHeight).fill(0);
 
     let buildTargetX = -1;
     let buildTargetY = -1;
@@ -48,9 +33,15 @@ const WorldBackground = (props: IProps) => {
         }
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-
         ctx = canvas.getContext('2d');
 
+        buildingList.forEach((building) => {
+            fillBuildingPosition(building);
+            drawOriginBuildings(building);
+        });
+    }, []);
+
+    useEffect(() => {
         window.addEventListener('mousedown', processBuild);
         window.addEventListener('mousemove', updatePosition);
 
@@ -59,6 +50,17 @@ const WorldBackground = (props: IProps) => {
             window.removeEventListener('mousemove', updatePosition);
         };
     }, [buildBuilding]);
+
+    const fillBuildingPosition = (building: IBuilding) => {
+        const { x, y } = building;
+        const buildingSize = 4;
+        for (let i = x; i < x + buildingSize; i++) {
+            for (let j = y; j < y + buildingSize; j++) {
+                const index = getIndex(i, j);
+                buildingData[index] = 1;
+            }
+        }
+    };
 
     const isValidPosition = () => {
         return (
@@ -99,16 +101,18 @@ const WorldBackground = (props: IProps) => {
         buildTargetX = Math.floor(e.pageX / tileSize);
         buildTargetY = Math.floor(e.pageY / tileSize);
 
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        drawBuildingOfMove();
+        drawPossibleBox();
+    };
+
+    const drawBuildingOfMove = () => {
+        if (!ctx) return;
+
+        ctx.globalAlpha = 1.0;
+        const buildingOutputSize = tileSize * 4;
         const buildObject = new Image();
         buildObject.src = buildBuilding.buildingSrc;
-
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-
-        if (isPosssibleArea(buildTargetX, buildTargetY)) {
-            drawBuilding();
-        }
-
-        const buildingOutputSize = tileSize * 4;
         ctx.drawImage(
             buildObject,
             buildTargetX * tileSize - buildingOutputSize / 2,
@@ -118,10 +122,12 @@ const WorldBackground = (props: IProps) => {
         );
     };
 
-    const drawBuilding = () => {
+    const drawPossibleBox = () => {
         if (!ctx) return;
+
         const possibleAreaOutputSize = tileSize * 5;
-        ctx.fillStyle = '#C6FCAC';
+        ctx.fillStyle = isPosssibleArea(buildTargetX, buildTargetY) ? '#C6FCAC' : '#F35F5F';
+        ctx.globalAlpha = 0.5;
         ctx.fillRect(
             buildTargetX * tileSize - possibleAreaOutputSize / 2,
             buildTargetY * tileSize - possibleAreaOutputSize / 2,
@@ -146,6 +152,26 @@ const WorldBackground = (props: IProps) => {
             }
         }
         return true;
+    };
+
+    const drawOriginBuildings = (building: IBuilding) => {
+        if (!ctx) return;
+
+        const buildingObject = new Image();
+        buildingObject.src = building.url;
+
+        buildingObject.onload = () => {
+            if (!ctx) return;
+
+            const buildingOutputSize = tileSize * 4;
+            ctx.drawImage(
+                buildingObject,
+                building.x * tileSize - buildingOutputSize / 2,
+                building.y * tileSize - buildingOutputSize / 2,
+                buildingOutputSize,
+                buildingOutputSize,
+            );
+        };
     };
 
     return <BuildingCanvas id="canvas" ref={canvasRef} />;

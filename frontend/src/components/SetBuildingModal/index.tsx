@@ -3,7 +3,7 @@
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import buildBuildingState from '../../store/buildBuildingState';
@@ -24,7 +24,7 @@ const setBuildingModal = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [range, setRange] = useState('private');
-    const buildBuilding = useRecoilValue(buildBuildingState);
+    const [buildBuilding, setBuildBuilding] = useRecoilState(buildBuildingState);
 
     const setFunctions: customSetFunctions = {
         title: setTitle,
@@ -48,6 +48,14 @@ const setBuildingModal = () => {
                     buildBuilding,
                 )}`,
             );
+            const selectedBuildingInfo = {
+                buildingSrc: 'none',
+                locationX: -1,
+                locationY: -1,
+                isLocated: false,
+                isBuilding: false,
+            };
+            setBuildBuilding(selectedBuildingInfo);
             alert('추가되었습니다.');
         }
     };

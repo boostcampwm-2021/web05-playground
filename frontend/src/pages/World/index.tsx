@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { RouteComponentProps } from 'react-router';
+import { useQuery } from '@apollo/client';
 
 import currentWorldState from '../../store/currentWorldState';
 import currentModalState from '../../store/currentModalState';
+import buildBuildingState from '../../store/buildBuildingState';
 
 import WorldBackground from '../../components/WorldMap';
 import Building from '../../components/Building';
@@ -13,7 +15,8 @@ import SetBuildingModal from '../../components/SetBuildingModal';
 
 import worldPark from '../../map-files/world-park.json';
 import worldWinter from '../../map-files/world-winter.json';
-import buildBuildingState from '../../store/buildBuildingState';
+
+import { getBuildingList } from '../../utils/query';
 
 interface customWorldInfo {
     [world: string]: typeof worldPark;
@@ -24,6 +27,7 @@ const worldsInfo: customWorldInfo = {
 };
 
 const World = (props: RouteComponentProps) => {
+    const { loading, error, data } = useQuery(getBuildingList);
     const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
     const currentModal = useRecoilValue(currentModalState);
     const buildBuilding = useRecoilValue(buildBuildingState);
@@ -50,11 +54,14 @@ const World = (props: RouteComponentProps) => {
         };
     }, []);
 
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error :(</p>;
+
     return (
         <>
             {/* 아래 recoil 두 가지 상태에따라 맵이 다시 그려지니까 상태관련된 것은 하위컴포넌트 or 다른 곳으로 빼자 */}
             <WorldBackground data={mapLayers} />
-            <Building data={mapLayers} />
+            <Building layers={mapLayers} buildingList={data.buildingList} />
             {currentModal !== 'none' ? <Modal /> : <></>}
             <NavigationBar />
             {buildBuilding.isLocated ? <SetBuildingModal /> : <></>}
