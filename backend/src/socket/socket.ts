@@ -36,11 +36,13 @@ export default class RoomSocket {
         const user = await getUserInfo(data);
         socket.uid = user.id;
         addUser(user, this.userList);
+        console.log(this.userList);
         this.io.emit('user', this.userList);
     }
 
     deleteUserHandler(socket: MySocket) {
         if(socket.uid !== undefined) this.userList = deleteUser(socket.uid, this.userList);
+        console.log(this.userList)
         console.log(`${socket.id} 끊어졌습니다.`);
     }
 }
