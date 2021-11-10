@@ -14,10 +14,12 @@ const commonHeight = 50;
 const tileSize = 32;
 const OBJECT = 1;
 let ctx: CanvasRenderingContext2D | null;
+let checkingCtx: CanvasRenderingContext2D | null;
 
 const WorldBackground = (props: IProps) => {
     const { layers, buildingList } = props;
     const canvasRef = useRef<HTMLCanvasElement>(null);
+    const checkingRef = useRef<HTMLCanvasElement>(null);
     const [buildBuilding, setBuildBuilding] = useRecoilState(buildBuildingState);
     const [buildingData, setBuildingData] = useState(new Array(commonWidth * commonHeight).fill(0));
 
@@ -28,12 +30,18 @@ const WorldBackground = (props: IProps) => {
 
     useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;
-        if (canvas === null) {
+        const checkingCanvas: HTMLCanvasElement | null = checkingRef.current;
+        if (canvas === null || checkingCanvas === null) {
             return;
         }
+
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
+        checkingCanvas.width = window.innerWidth;
+        checkingCanvas.height = window.innerHeight;
+
         ctx = canvas.getContext('2d');
+        checkingCtx = checkingCanvas.getContext('2d');
 
         buildingList.forEach((building) => {
             fillBuildingPosition(building);
@@ -84,7 +92,11 @@ const WorldBackground = (props: IProps) => {
             return;
         }
 
-        if (isValidPosition() && isPosssibleArea(buildTargetX, buildTargetY)) {
+        if (
+            isValidPosition() &&
+            isPosssibleArea(buildTargetX, buildTargetY) &&
+            checkingCtx !== null
+        ) {
             setBuildBuilding({
                 ...buildBuilding,
                 locationX: buildTargetX,
@@ -92,28 +104,30 @@ const WorldBackground = (props: IProps) => {
                 isLocated: true,
                 isBuilding: false,
             });
+            checkingCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         }
     };
 
     const updatePosition = (e: MouseEvent) => {
-        if (!ctx || !buildBuilding.isBuilding) return;
+        if (!checkingCtx || !buildBuilding.isBuilding) return;
 
         buildTargetX = Math.floor(e.pageX / tileSize);
         buildTargetY = Math.floor(e.pageY / tileSize);
 
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        checkingCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
         drawBuildingOfMove();
         drawPossibleBox();
     };
 
     const drawBuildingOfMove = () => {
-        if (!ctx) return;
+        if (!checkingCtx) return;
 
-        ctx.globalAlpha = 1.0;
+        checkingCtx.globalAlpha = 1.0;
         const buildingOutputSize = tileSize * 4;
         const buildObject = new Image();
         buildObject.src = buildBuilding.buildingSrc;
-        ctx.drawImage(
+        checkingCtx.drawImage(
             buildObject,
             buildTargetX * tileSize - buildingOutputSize / 2,
             buildTargetY * tileSize - buildingOutputSize / 2,
@@ -123,12 +137,12 @@ const WorldBackground = (props: IProps) => {
     };
 
     const drawPossibleBox = () => {
-        if (!ctx) return;
+        if (!checkingCtx) return;
 
         const possibleAreaOutputSize = tileSize * 5;
-        ctx.fillStyle = isPosssibleArea(buildTargetX, buildTargetY) ? '#C6FCAC' : '#F35F5F';
-        ctx.globalAlpha = 0.5;
-        ctx.fillRect(
+        checkingCtx.fillStyle = isPosssibleArea(buildTargetX, buildTargetY) ? '#C6FCAC' : '#F35F5F';
+        checkingCtx.globalAlpha = 0.5;
+        checkingCtx.fillRect(
             buildTargetX * tileSize - possibleAreaOutputSize / 2,
             buildTargetY * tileSize - possibleAreaOutputSize / 2,
             possibleAreaOutputSize,
@@ -174,7 +188,12 @@ const WorldBackground = (props: IProps) => {
         };
     };
 
-    return <BuildingCanvas id="canvas" ref={canvasRef} />;
+    return (
+        <>
+            <BuildingCanvas id="canvas" ref={canvasRef} />
+            <CheckingCanvas id="checkingCanvas" ref={checkingRef} />
+        </>
+    );
 };
 
 export default WorldBackground;
@@ -182,6 +201,13 @@ export default WorldBackground;
 const BuildingCanvas = styled.canvas`
     position: absolute;
     z-index: 1;
+    margin-left: 0px;
+    overflow: hidden;
+`;
+
+const CheckingCanvas = styled.canvas`
+    position: absolute;
+    z-index: 2;
     margin-left: 0px;
     overflow: hidden;
 `;
