@@ -1,6 +1,10 @@
-import { buildingListError, addBuildingError } from '@shared/constants';
+import {
+    buildingListError,
+    addBuildingError,
+    buildingUrlError,
+} from '@shared/constants';
 import { Receiver, STATUS_CODE } from '@shared/db.receiver';
-import { pool2 } from '../connection';
+import { pool1, pool2 } from '../connection';
 import { IBuilding } from '../entities/Building';
 
 export const getBuildingList = async (): Promise<Receiver> => {
@@ -44,6 +48,24 @@ export const addBuilding = async (data: IBuilding): Promise<Receiver> => {
     } catch (err) {
         result.status = STATUS_CODE.FAIL;
         result.err = addBuildingError;
+        return result;
+    }
+};
+
+export const getBuildingUrl = async (): Promise<Receiver> => {
+    const result: Receiver = {
+        status: STATUS_CODE.SUCCESS,
+    };
+
+    try {
+        const sql = `SELECT id, url FROM building`;
+        const [urls] = await pool1.query(sql);
+
+        result.buildingUrl = JSON.parse(JSON.stringify(urls));
+        return result;
+    } catch (err) {
+        result.status = STATUS_CODE.FAIL;
+        result.err = buildingUrlError;
         return result;
     }
 };
