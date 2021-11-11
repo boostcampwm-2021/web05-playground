@@ -122,3 +122,13 @@ table {
     border-collapse: collapse;
     border-spacing: 0;
 }
+
+img:hover {
+    transform: scale(1.2);
+    cursor: pointer;
+}
+
+input,
+textarea:focus {
+    outline: none;
+}

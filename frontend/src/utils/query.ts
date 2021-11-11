@@ -11,3 +11,13 @@ export const getWorldList = gql`
         }
     }
 `;
+
+export const getBuildingList = gql`
+    query Query {
+        buildingList {
+            x
+            y
+            url
+        }
+    }
+`;

@@ -5,3 +5,31 @@ export interface IWorld {
     port: number;
     thumbnail: string;
 }
+
+interface ILayer {
+    data: number[];
+    height: number;
+    width: number;
+    imgSrc: string;
+    columnCount: number;
+}
+
+export interface IBuilding {
+    id: number;
+    x: number;
+    y: number;
+    uid: number;
+    description: string;
+    scope: string;
+    password: string;
+    imageUrl: string;
+}
+
+export interface IWorldInfo {
+    buildings: IBuilding[];
+}
+
+export interface IProps {
+    layers: ILayer[];
+    buildingList: IBuilding[];
+}
