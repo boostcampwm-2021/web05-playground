@@ -6,6 +6,7 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import userState from '../../store/userState';
+import { socketClient } from '../../socket/socket';
 
 interface ILayer {
     data: number[];
@@ -17,6 +18,15 @@ interface ILayer {
 
 interface IProps {
     data: ILayer[];
+}
+
+interface IUser {
+    id: number;
+    email: string;
+    nickname: string;
+    x: number;
+    y: number;
+    imageurl: string;
 }
 
 const WorldBackground = (props: IProps) => {
@@ -51,7 +61,7 @@ const WorldBackground = (props: IProps) => {
                 }
             };
         });
-    }, []);
+    }, [socketClient]);
 
     useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;
@@ -110,6 +120,8 @@ const WorldBackground = (props: IProps) => {
     return <Canvas id="canvas" ref={canvasRef} />;
 };
 
+export default WorldBackground;
+
 const Canvas = styled.canvas`
     bottom: 0;
     left: 0;
@@ -117,4 +129,3 @@ const Canvas = styled.canvas`
     right: 0;
     top: 0;
 `;
-export default WorldBackground;

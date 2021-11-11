@@ -52,9 +52,11 @@ const NavigationBar = () => {
 export default NavigationBar;
 
 const FixedDiv = styled.div`
+    position: fixed;
+    z-index: 3;
+
     width: 100vw;
     height: 80px;
-    position: fixed;
     left: 0;
     bottom: 0;
     background: #f1ea65;

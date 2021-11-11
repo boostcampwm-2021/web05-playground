@@ -2,20 +2,19 @@ import 'graphql-import-node';
 import { GraphQLSchema } from 'graphql';
 import { makeExecutableSchema } from 'graphql-tools';
 
-import * as worldTypes from './schema/world.graphql';
-import * as objectTypes from './schema/object.graphql';
-
 import worldResolver from './resolver/worldResolver';
-import objectResolver from './resolver/objectResolver';
-import { type } from 'os';
+import buildingResolver from './resolver/buildingResolver';
 
-//const typeDefs = { world: worldTypes, object: objectTypes };
-const typeDefs = worldTypes;
-const resolvers = [worldResolver, objectResolver];
+import queryTypeDefs from './schema/queries';
+import worldTypeDef from './schema/world';
+import buildingTypeDef from './schema/building';
+
+const typeDefs = [queryTypeDefs, worldTypeDef, buildingTypeDef];
+const resolvers = [worldResolver, buildingResolver];
 
 const schema: GraphQLSchema = makeExecutableSchema({
-    typeDefs: typeDefs,
-    resolvers: resolvers,
+    typeDefs,
+    resolvers,
 });
 
 export default schema;
