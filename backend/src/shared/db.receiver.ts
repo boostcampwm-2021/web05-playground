@@ -13,6 +13,7 @@ export interface Receiver {
     err?: string;
     objectArr?: Array<IObject>;
     buildingArr?: Array<IBuilding>;
+    addedBuilding?: IBuilding;
     worldArr?: Array<IWorld>;
     userArr?: Array<IUser>;
     user?: IUser;
