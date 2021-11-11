@@ -3,7 +3,7 @@ import { Server, Socket } from 'socket.io';
 import * as http from 'http';
 
 import { getUserInfo, addUser, deleteUser } from './socket.user';
-import { getBuildinginfo } from './socket.building';
+import { addBuildingInfo, getBuildingInfo } from './socket.building';
 
 import { IUser } from '../database/entities/User';
 import { IBuilding } from 'src/database/entities/Building';
@@ -39,6 +39,9 @@ export default class RoomSocket {
                 this.addUserHandler(data, socket),
             );
             socket.on('enterWorld', () => this.getWorldHandler());
+            socket.on('buildBuilding', (data: IBuilding) =>
+                this.buildBuildingHandler(data),
+            );
             socket.on('disconnect', () => this.deleteUserHandler(socket));
         });
     }
@@ -62,8 +65,14 @@ export default class RoomSocket {
 
     async getBuildingHandler() {
         // 이미 워커로 들어온 상태이므로 select all
-        const buildings = await getBuildinginfo();
+        const buildings = await getBuildingInfo();
         return buildings;
+    }
+
+    async buildBuildingHandler(data: IBuilding) {
+        const addedBuilding = await addBuildingInfo(data);
+        console.log(addedBuilding);
+        this.io.emit('buildBuilding', addedBuilding);
     }
 
     deleteUserHandler(socket: MySocket) {
