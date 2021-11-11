@@ -15,14 +15,18 @@ interface ILayer {
 }
 
 export interface IBuilding {
-    id?: number;
+    id: number;
     x: number;
     y: number;
-    uid?: number;
-    description?: string;
-    scope?: string;
-    password?: string;
-    url: string;
+    uid: number;
+    description: string;
+    scope: string;
+    password: string;
+    imageUrl: string;
+}
+
+export interface IWorldInfo {
+    buildings: IBuilding[];
 }
 
 export interface IProps {
