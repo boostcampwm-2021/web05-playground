@@ -5,6 +5,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { socketClient } from '../../socket/socket';
+
 import buildBuildingState from '../../store/buildBuildingState';
 
 import { IBuilding, IProps } from '../../utils/model';
@@ -47,6 +49,15 @@ const Building = (props: IProps) => {
             fillBuildingPosition(building);
             drawOriginBuildings(building);
         });
+
+        if (socketClient === undefined) return;
+        socketClient.on('buildBuilding', (data: IBuilding) => {
+            drawOriginBuildings(data);
+        });
+
+        return () => {
+            socketClient.removeListener('buildBuilding');
+        };
     }, [buildingList]);
 
     useEffect(() => {

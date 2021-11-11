@@ -6,6 +6,8 @@ import React, { useState } from 'react';
 import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import { socketClient } from '../../socket/socket';
+
 import buildBuildingState from '../../store/buildBuildingState';
 
 interface customEventTarget extends EventTarget {
@@ -24,12 +26,13 @@ const setBuildingModal = () => {
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [range, setRange] = useState('private');
+    const [password, setPassword] = useState('');
     const [buildBuilding, setBuildBuilding] = useRecoilState(buildBuildingState);
 
     const setFunctions: customSetFunctions = {
         title: setTitle,
         description: setDescription,
-        password: setRange,
+        password: setPassword,
     };
 
     const changed = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -55,6 +58,18 @@ const setBuildingModal = () => {
     const completeBuild = () => {
         if (title === '' || description === '') alert('값을 모두 입력해주세요');
         else {
+            // title => 건물이름이 있어야됨, uid는 수정
+            const buildingInfo = {
+                x: buildBuilding.locationX,
+                y: buildBuilding.locationY,
+                uid: 1,
+                description,
+                scope: range,
+                password,
+                imageUrl: buildBuilding.buildingSrc,
+            };
+            socketClient.emit('buildBuilding', buildingInfo);
+
             const selectedBuildingInfo = {
                 buildingSrc: 'none',
                 locationX: -1,

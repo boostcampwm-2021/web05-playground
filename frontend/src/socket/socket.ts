@@ -1,9 +1,9 @@
 /* eslint-disable import/no-mutable-exports */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import io from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
-let socketClient: any;
-const setSocket = (uri: any) => {
+let socketClient: Socket;
+const setSocket = (uri: string) => {
     socketClient = io(uri);
 };
 

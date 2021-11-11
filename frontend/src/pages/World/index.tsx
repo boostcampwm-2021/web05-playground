@@ -72,7 +72,9 @@ const World = (props: RouteComponentProps) => {
             setWorldInfo(data);
         });
 
-        return () => socketClient.disconnect();
+        return () => {
+            socketClient.disconnect();
+        };
     }, []);
 
     return (
