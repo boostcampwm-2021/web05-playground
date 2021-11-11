@@ -12,11 +12,10 @@ export const getWorldList = gql`
     }
 `;
 
-export const getBuildingList = gql`
+export const getBuildingUrl = gql`
     query Query {
-        buildingList {
-            x
-            y
+        buildingUrl {
+            id
             url
         }
     }
