@@ -16,7 +16,7 @@ const OBJECT = 1;
 let ctx: CanvasRenderingContext2D | null;
 let checkingCtx: CanvasRenderingContext2D | null;
 
-const WorldBackground = (props: IProps) => {
+const Building = (props: IProps) => {
     const { layers, buildingList } = props;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const checkingRef = useRef<HTMLCanvasElement>(null);
@@ -47,7 +47,7 @@ const WorldBackground = (props: IProps) => {
             fillBuildingPosition(building);
             drawOriginBuildings(building);
         });
-    }, []);
+    }, [buildingList]);
 
     useEffect(() => {
         window.addEventListener('mousedown', processBuild);
@@ -172,11 +172,9 @@ const WorldBackground = (props: IProps) => {
         if (!ctx) return;
 
         const buildingObject = new Image();
-        buildingObject.src = building.url;
-
+        buildingObject.src = building.imageUrl;
         buildingObject.onload = () => {
             if (!ctx) return;
-
             const buildingOutputSize = tileSize * 4;
             ctx.drawImage(
                 buildingObject,
@@ -196,7 +194,7 @@ const WorldBackground = (props: IProps) => {
     );
 };
 
-export default WorldBackground;
+export default Building;
 
 const BuildingCanvas = styled.canvas`
     position: absolute;

@@ -60,10 +60,10 @@ const WorldBackground = (props: IProps) => {
             };
         });
 
-        socketClient.emit('user', 'minjaec023@gmail.com');
-        socketClient.on('user', (data: Array<IUser>) => {
-            console.log(data);
-        });
+        // socketClient.emit('user', 'minjaec023@gmail.com');
+        // socketClient.on('user', (data: Array<IUser>) => {
+        //     console.log(data);
+        // });
     }, [socketClient]);
 
     useEffect(() => {

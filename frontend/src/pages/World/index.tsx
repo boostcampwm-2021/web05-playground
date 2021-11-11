@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { RouteComponentProps } from 'react-router';
-import { useQuery } from '@apollo/client';
 
 import currentWorldState from '../../store/currentWorldState';
 import currentModalState from '../../store/currentModalState';
 import buildBuildingState from '../../store/buildBuildingState';
-import socketClientState from '../../store/socketClientState';
 
 import WorldBackground from '../../components/WorldMap';
 import Building from '../../components/Building';
@@ -17,9 +15,8 @@ import SetBuildingModal from '../../components/SetBuildingModal';
 import worldPark from '../../map-files/world-park.json';
 import worldWinter from '../../map-files/world-winter.json';
 
-import { getBuildingList } from '../../utils/query';
-
 import { socketClient, setSocket } from '../../socket/socket';
+import { IWorldInfo } from '../../utils/model';
 
 interface customWorldInfo {
     [world: string]: typeof worldPark;
@@ -28,8 +25,22 @@ const worldsInfo: customWorldInfo = {
     world1: worldPark,
     world2: worldWinter,
 };
+
 const World = (props: RouteComponentProps) => {
-    const { loading, error, data } = useQuery(getBuildingList);
+    const [worldInfo, setWorldInfo] = useState({
+        buildings: [
+            {
+                id: 1,
+                x: 3,
+                y: 3,
+                uid: 1,
+                description: '테스트1',
+                scope: 'private',
+                password: '1234',
+                imageUrl: 'http://localhost:3000/assets/home.png',
+            },
+        ],
+    });
     const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
     const currentModal = useRecoilValue(currentModalState);
     const buildBuilding = useRecoilValue(buildBuildingState);
@@ -54,18 +65,21 @@ const World = (props: RouteComponentProps) => {
             });
             props.history.push('/selectworld');
         };
+
         setSocket(process.env.REACT_APP_BASE_SOCKET_URI!);
+        socketClient.emit('enterWorld');
+        socketClient.on('enterWorld', (data: IWorldInfo) => {
+            setWorldInfo(data);
+        });
+
         return () => socketClient.disconnect();
     }, []);
-
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error :(</p>;
 
     return (
         <>
             {/* 아래 recoil 두 가지 상태에따라 맵이 다시 그려지니까 상태관련된 것은 하위컴포넌트 or 다른 곳으로 빼자 */}
             <WorldBackground data={mapLayers} />
-            <Building layers={mapLayers} buildingList={data.buildingList} />
+            <Building layers={mapLayers} buildingList={worldInfo.buildings} />
             {currentModal !== 'none' ? <Modal /> : <></>}
             <NavigationBar />
             {buildBuilding.isLocated ? <SetBuildingModal /> : <></>}
