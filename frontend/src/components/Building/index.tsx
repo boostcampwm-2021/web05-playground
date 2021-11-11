@@ -45,7 +45,7 @@ const Building = (props: IProps) => {
         ctx = canvas.getContext('2d');
         checkingCtx = checkingCanvas.getContext('2d');
 
-        if (buildingList[0].id !== -1) {
+        if (buildingList.length !== 0 && buildingList[0].id !== -1) {
             buildingList.forEach((building) => {
                 fillBuildingPosition(building);
                 drawOriginBuildings(building);
