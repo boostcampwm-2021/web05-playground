@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { RouteComponentProps } from 'react-router';
+import { useQuery } from '@apollo/client';
 
 import currentWorldState from '../../store/currentWorldState';
 import currentModalState from '../../store/currentModalState';
 import buildBuildingState from '../../store/buildBuildingState';
+import buildingUrls from '../../store/buildingUrlState';
 
 import WorldBackground from '../../components/WorldMap';
 import Building from '../../components/Building';
@@ -17,6 +19,7 @@ import worldWinter from '../../map-files/world-winter.json';
 
 import { socketClient, setSocket } from '../../socket/socket';
 import { IWorldInfo } from '../../utils/model';
+import { getBuildingUrl } from '../../utils/query';
 
 interface customWorldInfo {
     [world: string]: typeof worldPark;
@@ -30,7 +33,7 @@ const World = (props: RouteComponentProps) => {
     const [worldInfo, setWorldInfo] = useState({
         buildings: [
             {
-                id: 1,
+                id: -1,
                 x: 3,
                 y: 3,
                 uid: 1,
@@ -42,8 +45,11 @@ const World = (props: RouteComponentProps) => {
         ],
     });
     const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
+    const [buildingUrl, setBuildingUrl] = useRecoilState(buildingUrls);
     const currentModal = useRecoilValue(currentModalState);
     const buildBuilding = useRecoilValue(buildBuildingState);
+
+    const { loading, error, data } = useQuery(getBuildingUrl);
 
     if (currentWorld.name === 'default') {
         props.history.push('/selectworld');
@@ -76,6 +82,13 @@ const World = (props: RouteComponentProps) => {
             socketClient.disconnect();
         };
     }, []);
+
+    useEffect(() => {
+        if (data) setBuildingUrl(data.buildingUrl);
+    }, [data]);
+
+    if (loading) return <p>Loading...</p>;
+    if (error) return <p>Error :(</p>;
 
     return (
         <>

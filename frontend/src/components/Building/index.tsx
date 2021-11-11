@@ -45,10 +45,12 @@ const Building = (props: IProps) => {
         ctx = canvas.getContext('2d');
         checkingCtx = checkingCanvas.getContext('2d');
 
-        buildingList.forEach((building) => {
-            fillBuildingPosition(building);
-            drawOriginBuildings(building);
-        });
+        if (buildingList[0].id !== -1) {
+            buildingList.forEach((building) => {
+                fillBuildingPosition(building);
+                drawOriginBuildings(building);
+            });
+        }
 
         if (socketClient === undefined) return;
         socketClient.on('buildBuilding', (data: IBuilding) => {
@@ -181,7 +183,6 @@ const Building = (props: IProps) => {
 
     const drawOriginBuildings = (building: IBuilding) => {
         if (!ctx) return;
-
         const buildingObject = new Image();
         buildingObject.src = building.imageUrl;
         buildingObject.onload = () => {
