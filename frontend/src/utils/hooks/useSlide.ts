@@ -10,17 +10,19 @@ export const useSlide = <T>(
     );
 
     const nextClick = () => {
-        if (index >= data.length - 1) setIndex(0);
-        else setIndex(index + 1);
-        setCurrent(data[index]);
-        setter(data[index]);
+        let nextIndex = index + 1;
+        if (nextIndex >= data.length) nextIndex = 0;
+        setIndex(nextIndex);
+        setCurrent(data[nextIndex]);
+        setter(data[nextIndex]);
     };
 
     const prevClick = () => {
-        if (index <= 0) setIndex(data.length - 1);
-        else setIndex(index - 1);
-        setCurrent(data[index]);
-        setter(data[index]);
+        let nextIndex = index - 1;
+        if (nextIndex < 0) nextIndex = data.length - 1;
+        setIndex(nextIndex);
+        setCurrent(data[nextIndex]);
+        setter(data[nextIndex]);
     };
 
     return [current, nextClick, prevClick];
