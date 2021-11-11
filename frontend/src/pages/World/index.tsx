@@ -11,6 +11,7 @@ import Modal from '../../components/Modal';
 
 import worldPark from '../../map-files/world-park.json';
 import worldWinter from '../../map-files/world-winter.json';
+import { Character } from '../../components/Character';
 
 const worldsInfo: any = {
     world1: worldPark,
@@ -43,7 +44,8 @@ const World = (props: RouteComponentProps) => {
     return (
         <>
             <WorldBackground data={mapLayers} />
-            {currentModal !== 'none' ? <Modal /> : <div>{currentModal}</div>}
+            <Character />
+            {currentModal !== 'none' ? <Modal /> : <></>}
             <NavigationBar />
         </>
     );

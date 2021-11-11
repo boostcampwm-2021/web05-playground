@@ -3,9 +3,9 @@
 /* eslint-disable import/no-absolute-path */
 /* eslint-disable no-plusplus */
 import React, { useRef, useEffect, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
-import io, { Socket } from 'socket.io-client';
-import { DefaultEventsMap } from '@socket.io/component-emitter';
+import userState from '../../store/userState';
 
 interface ILayer {
     data: number[];
@@ -19,20 +19,11 @@ interface IProps {
     data: ILayer[];
 }
 
-interface IUser {
-    id: number,
-    email: string,
-    nickname: string,
-    x: number,
-    y: number,
-    imageurl: string,
-}
-
 const WorldBackground = (props: IProps) => {
     const layers = props.data;
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    // let socketClient: Socket<DefaultEventsMap, DefaultEventsMap>;
     const [tileBackground, setTileBackground] = useState<HTMLImageElement[]>();
+    const user = useRecoilValue(userState);
     const commonWidth = layers[0].width;
     const tileSize = 32;
 
@@ -60,19 +51,6 @@ const WorldBackground = (props: IProps) => {
                 }
             };
         });
-
-        const socketClient = io(process.env.REACT_APP_BASE_SOCKET_URI!); 
-        socketClient.emit('user', ('minjaec023@gmail.com'))
-
-        
-        socketClient.on('user', (data: Array<IUser>) => {
-            console.log(data);
-        })
-
-        return () => {
-            if(socketClient !== undefined) socketClient.close();
-        }
-
     }, []);
 
     useEffect(() => {
@@ -85,9 +63,7 @@ const WorldBackground = (props: IProps) => {
 
         ctx = canvas.getContext('2d');
         drawGame();
-    }, [tileBackground]);
-    
-    
+    }, [tileBackground, user, window.innerWidth, window.innerHeight]);
 
     const drawGame = () => {
         if (!ctx || !tileBackground) return;
@@ -99,10 +75,18 @@ const WorldBackground = (props: IProps) => {
     };
 
     const drawBackground = (layer: ILayer, indexOfLayers: number) => {
+        const width = Math.floor(window.innerWidth / 2);
+        const height = Math.floor(window.innerHeight / 2);
+        const dx = width - (width % tileSize);
+        const dy = height - (height % tileSize);
+        const layerX = user.x - dx / tileSize;
+        const layerY = user.y - dy / tileSize;
+
         if (!ctx || !tileBackground) return;
-        for (let col = 0; col < layer.height; ++col) {
-            for (let row = 0; row < layer.width; ++row) {
-                let tileVal = layer.data[getIndex(row, col)];
+
+        for (let col = layerY; col < layer.height + layerY; ++col) {
+            for (let row = layerX; row < layer.width + layerX; ++row) {
+                let tileVal = layer.data[getIndex(row % layer.width, col % layer.height)];
                 if (tileVal !== 0) {
                     tileVal -= 1;
                     sourceY = Math.floor(tileVal / layer.columnCount) * spriteTileSize;
@@ -113,8 +97,8 @@ const WorldBackground = (props: IProps) => {
                         sourceY,
                         spriteTileSize,
                         spriteTileSize,
-                        row * tileSize,
-                        col * tileSize,
+                        (row - layerX) * tileSize,
+                        (col - layerY) * tileSize,
                         tileSize,
                         tileSize,
                     );
@@ -122,11 +106,15 @@ const WorldBackground = (props: IProps) => {
             }
         }
     };
+
     return <Canvas id="canvas" ref={canvasRef} />;
 };
 
 const Canvas = styled.canvas`
-    margin-left: 0px;
-    overflow: hidden;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
 `;
 export default WorldBackground;
