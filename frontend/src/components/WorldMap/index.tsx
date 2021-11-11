@@ -6,7 +6,6 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import userState from '../../store/userState';
-import { socketClient } from '../../socket/socket';
 
 interface ILayer {
     data: number[];
@@ -61,7 +60,7 @@ const WorldBackground = (props: IProps) => {
                 }
             };
         });
-    }, [socketClient]);
+    }, []);
 
     useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;

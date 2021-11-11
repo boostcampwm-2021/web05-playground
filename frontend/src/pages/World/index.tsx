@@ -83,6 +83,7 @@ const World = (props: RouteComponentProps) => {
             {/* 아래 recoil 두 가지 상태에따라 맵이 다시 그려지니까 상태관련된 것은 하위컴포넌트 or 다른 곳으로 빼자 */}
             <WorldBackground data={mapLayers} />
             <Building layers={mapLayers} buildingList={worldInfo.buildings} />
+            <Character />
             {currentModal !== 'none' ? <Modal /> : <></>}
             <NavigationBar />
             {buildBuilding.isLocated ? <SetBuildingModal /> : <></>}

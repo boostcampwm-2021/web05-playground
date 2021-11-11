@@ -6,6 +6,7 @@ import { useRecoilState } from 'recoil';
 import io, { Socket } from 'socket.io-client';
 import styled from 'styled-components';
 import userState from '../../store/userState';
+import { socketClient } from '../../socket/socket';
 
 enum Direction {
     UP,
@@ -35,13 +36,11 @@ export const Character = () => {
     const [others, setOthers] = useState<Map<number, IUser>>(new Map<number, IUser>());
     const imgSrcMap = new Map<number, HTMLImageElement>();
 
-    let socketClient: Socket<DefaultEventsMap, DefaultEventsMap>;
-
     const tileWidth = 32;
     const tileHeight = 64;
 
     useEffect(() => {
-        socketClient = io(process.env.REACT_APP_BASE_SOCKET_URI!);
+        if (socketClient === undefined) return;
         socketClient.emit('user', user.uid);
         socketClient.on('user', (data: string) => {
             setOthers(JSON.parse(data));
@@ -56,7 +55,10 @@ export const Character = () => {
             newOthers.set(data.id, moved!);
             setOthers(newOthers);
         });
-    }, []);
+        return () => {
+            socketClient.removeAllListeners();
+        };
+    }, [socketClient]);
 
     useEffect(() => {
         let frameId = 0;
