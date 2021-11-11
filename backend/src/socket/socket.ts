@@ -33,18 +33,17 @@ export default class RoomSocket {
     public connect() {
         this.io.on('connection', (socket: MySocket) => {
             console.log(`${socket.id} 연결되었습니다.`);
-            socket.on('user', (data: string) =>
-                this.addUserHandler(data, socket),
-            );
-            socket.on('move', (data: UserMove) =>
-                this.moveHandler(data, socket),
-            );
+            socket.on('user', (id: number) => this.addUserHandler(id, socket));
+            socket.on('move', (data: UserMove) => {
+                console.log(data);
+                this.moveHandler(data, socket);
+            });
             socket.on('disconnect', () => this.deleteUserHandler(socket));
         });
     }
 
-    async addUserHandler(data: string, socket: MySocket) {
-        const user = await getUserInfo(data);
+    async addUserHandler(id: number, socket: MySocket) {
+        const user = await getUserInfo(id);
         socket.uid = user.id;
         addUser(user, this.userMap);
         console.log(this.userMap);

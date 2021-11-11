@@ -16,8 +16,8 @@ export interface UserMove {
     direction: Direction;
 }
 
-export const getUserInfo = async (email: string): Promise<IUser> => {
-    const userInfo = await getUser(email);
+export const getUserInfo = async (id: number): Promise<IUser> => {
+    const userInfo = await getUser(id);
     if (userInfo.user === undefined) throw new Error(userListError);
     if (userInfo.status === STATUS_CODE.FAIL) throw new Error(userListError);
     return userInfo.user;
