@@ -1,12 +1,14 @@
+/* eslint-disable react/no-unused-prop-types */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable consistent-return */
 import { DefaultEventsMap } from '@socket.io/component-emitter';
 import React, { useRef, useEffect, useState } from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 import io, { Socket } from 'socket.io-client';
 import styled from 'styled-components';
 import userState from '../../store/userState';
-import { socketClient } from '../../socket/socket';
 
 enum Direction {
     UP,
@@ -30,11 +32,19 @@ interface IUser {
     imageUrl: string;
 }
 
-export const Character = () => {
+interface UserMap {
+    [key: string]: IUser;
+}
+
+interface imgSrc {
+    [key: string]: HTMLImageElement;
+}
+
+export const Character = ({ socketClient }: { socketClient: Socket }) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [user, setUser] = useRecoilState(userState);
-    const [others, setOthers] = useState<Map<number, IUser>>(new Map<number, IUser>());
-    const imgSrcMap = new Map<number, HTMLImageElement>();
+    const [others, setOthers] = useState<UserMap>({});
+    const imgSrcMap: imgSrc = {};
 
     const tileWidth = 32;
     const tileHeight = 64;
@@ -42,25 +52,13 @@ export const Character = () => {
     useEffect(() => {
         if (socketClient === undefined) return;
         socketClient.emit('user', user.uid);
-        socketClient.on('user', (data: string) => {
-            setOthers(JSON.parse(data));
+        socketClient.on('user', (data: UserMap) => {
+            setOthers(data);
         });
-        socketClient.on('move', (data: UserMove) => {
-            const newOthers: Map<number, IUser> = JSON.parse(JSON.stringify(others));
-            const moved = newOthers.get(data.id);
-            if (data.direction === Direction.DOWN) moved!.y += 1;
-            else if (data.direction === Direction.UP) moved!.y -= 1;
-            else if (data.direction === Direction.LEFT) moved!.x -= 1;
-            else if (data.direction === Direction.RIGHT) moved!.x += 1;
-            newOthers.set(data.id, moved!);
-            setOthers(newOthers);
-        });
-        return () => {
-            socketClient.removeAllListeners();
-        };
     }, [socketClient]);
 
     useEffect(() => {
+        if (socketClient === undefined) return;
         let frameId = 0;
         let frameNum = 0;
         const render = (ctx: CanvasRenderingContext2D, id: number) => {
@@ -77,19 +75,33 @@ export const Character = () => {
         canvas.height = window.innerHeight;
         const ctx = canvas.getContext('2d');
 
-        [...others!].forEach(([id, other]) => {
-            if (imgSrcMap.has(other.id)) return;
+        socketClient.on('move', (data: UserMove) => {
+            const newOthers: UserMap = JSON.parse(JSON.stringify(others));
+            const moved = newOthers[data.id.toString()];
+            if (data.direction === Direction.DOWN) moved!.y += 1;
+            else if (data.direction === Direction.UP) moved!.y -= 1;
+            else if (data.direction === Direction.LEFT) moved!.x -= 1;
+            else if (data.direction === Direction.RIGHT) moved!.x += 1;
+            newOthers[data.id] = moved;
+            setOthers(newOthers);
+        });
+
+        Object.keys(others).forEach((id) => {
+            if (imgSrcMap[parseInt(id, 10)] === undefined) return;
+            const other = others[parseInt(id, 10)];
             const characterImg = new Image();
             characterImg.src = other.imageUrl;
             characterImg.onload = () => {
-                imgSrcMap.set(other.id, characterImg);
+                imgSrcMap[other.id] = characterImg;
                 render(ctx!, other.id);
             };
         });
 
-        window.addEventListener('keydown', (e) => addMoveEvent(e, socketClient));
+        window.addEventListener('keydown', addMoveEvent, { once: true });
+
         return () => {
-            window.removeEventListener('keydown', (e) => addMoveEvent(e, socketClient));
+            window.removeEventListener('keydown', addMoveEvent);
+            socketClient.removeAllListeners();
         };
     }, [others, user]);
 
@@ -99,13 +111,13 @@ export const Character = () => {
         const height = Math.floor(window.innerHeight / 2);
         const dx = width - (width % tileWidth);
         const dy = height - (height % tileWidth);
-        const myCharacterSrc = imgSrcMap.get(user.uid);
+        const myCharacterSrc = imgSrcMap[user.uid.toString()];
         ctx.drawImage(myCharacterSrc!, 0, 0, tileWidth, tileHeight, dx, dy, tileWidth, tileHeight);
     };
 
     const drawOtherCharacter = (ctx: CanvasRenderingContext2D | null, id: number) => {
-        if (!ctx || others.get(id) === undefined) return;
-        const other = others.get(id);
+        if (!ctx || others[id.toString()] === undefined) return;
+        const other = others[id.toString()];
         const width = Math.floor(window.innerWidth / 2);
         const height = Math.floor(window.innerHeight / 2);
         const dx = width - (width % tileWidth);
@@ -113,7 +125,7 @@ export const Character = () => {
         const distanceX = (other!.x - user.x) * tileWidth;
         const distanceY = (other!.y - user.y) * tileWidth;
         if (Math.abs(distanceX) > dx || Math.abs(distanceY) > dy) return;
-        const otherCharacterSrc = imgSrcMap.get(other!.id);
+        const otherCharacterSrc = imgSrcMap[other.id.toString()];
         ctx.drawImage(
             otherCharacterSrc!,
             0,
@@ -127,14 +139,13 @@ export const Character = () => {
         );
     };
 
-    const addMoveEvent = (
-        event: KeyboardEvent,
-        socketClient: Socket<DefaultEventsMap, DefaultEventsMap>,
-    ) => {
+    const addMoveEvent = (event: KeyboardEvent) => {
+        if (socketClient === undefined) return;
         switch (event.key) {
             case 'ArrowLeft':
                 setUser({
                     uid: user.uid,
+                    nickname: user.nickname,
                     email: user.email,
                     x: user.x - 1,
                     y: user.y,
@@ -149,6 +160,7 @@ export const Character = () => {
             case 'ArrowRight':
                 setUser({
                     uid: user.uid,
+                    nickname: user.nickname,
                     email: user.email,
                     x: user.x + 1,
                     y: user.y,
@@ -163,6 +175,7 @@ export const Character = () => {
             case 'ArrowUp':
                 setUser({
                     uid: user.uid,
+                    nickname: user.nickname,
                     email: user.email,
                     x: user.x,
                     y: user.y - 1,
@@ -177,6 +190,7 @@ export const Character = () => {
             case 'ArrowDown':
                 setUser({
                     uid: user.uid,
+                    nickname: user.nickname,
                     email: user.email,
                     x: user.x,
                     y: user.y + 1,
@@ -199,6 +213,7 @@ export const Character = () => {
 const Canvas = styled.canvas`
     bottom: 0;
     left: 0;
+    z-index: 100;
     position: absolute;
     right: 0;
     top: 0;

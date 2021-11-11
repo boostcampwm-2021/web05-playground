@@ -42,6 +42,7 @@ export const addBuilding = async (data: IBuilding): Promise<Receiver> => {
         result.addedBuilding = data;
         return result;
     } catch (err) {
+        console.log(err);
         result.status = STATUS_CODE.FAIL;
         result.err = addBuildingError;
         return result;

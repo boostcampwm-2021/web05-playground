@@ -18,6 +18,10 @@ interface IWorldInfo {
     buildings?: IBuilding[];
 }
 
+interface UserMap {
+    [key: string]: IUser;
+}
+
 class MySocket extends Socket {
     public uid?: number;
 }
@@ -27,11 +31,12 @@ export default class RoomSocket {
     public port: number;
     public server?: http.Server;
     public io!: Server;
-    public userMap: Map<number, IUser> = new Map();
+    public userMap: UserMap;
 
     constructor(port: number) {
         this.app = express();
         this.port = port;
+        this.userMap = {};
         this.server = this.app.listen(this.port, () => {
             console.log(`Socket listening on the port ${this.port}`);
         });
@@ -47,9 +52,10 @@ export default class RoomSocket {
                 this.moveHandler(data, socket);
             });
             socket.on('enterWorld', () => this.getWorldHandler());
-            socket.on('buildBuilding', (data: IBuilding) =>
-                this.buildBuildingHandler(data),
-            );
+            socket.on('buildBuilding', (data: IBuilding) => {
+                console.log(data);
+                this.buildBuildingHandler(data);
+            });
             socket.on('disconnect', () => this.deleteUserHandler(socket));
         });
     }
@@ -59,7 +65,7 @@ export default class RoomSocket {
         socket.uid = user.id;
         addUser(user, this.userMap);
         console.log(this.userMap);
-        this.io.emit('user', JSON.stringify(Array.from(this.userMap)));
+        this.io.emit('user', this.userMap);
     }
 
     async moveHandler(data: UserMove, socket: MySocket) {

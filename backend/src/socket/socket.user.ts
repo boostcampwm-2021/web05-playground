@@ -9,6 +9,9 @@ export enum Direction {
     LEFT,
     RIGHT,
 }
+interface UserMap {
+    [key: number]: IUser;
+}
 
 export interface UserMove {
     id: number;
@@ -22,16 +25,16 @@ export const getUserInfo = async (id: number): Promise<IUser> => {
     if (userInfo.status === STATUS_CODE.FAIL) throw new Error(userListError);
     return userInfo.user;
 };
-export const addUser = (user: IUser, userMap: Map<number, IUser>): void => {
-    userMap.set(user.id, user);
+export const addUser = (user: IUser, userMap: UserMap): void => {
+    userMap[user.id] = user;
 };
 
-export const deleteUser = (uid: number, userMap: Map<number, IUser>) => {
-    userMap.delete(uid);
+export const deleteUser = (uid: number, userMap: UserMap) => {
+    delete userMap[uid];
 };
 
-export const moveUser = (data: UserMove, userMap: Map<number, IUser>) => {
-    const userInfo = userMap.get(data.id);
+export const moveUser = (data: UserMove, userMap: UserMap) => {
+    const userInfo = userMap[data.id];
     if (userInfo === undefined) throw new Error(userListError);
 
     switch (data.direction) {
