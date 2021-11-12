@@ -33,21 +33,23 @@ const Building = (props: IProps) => {
     const [buildingData, setBuildingData] = useState(new Array(commonWidth * commonHeight).fill(0));
     const user = useRecoilValue(userState);
 
+    let cnt = 0;
+
     const objectLayer = layers[OBJECT].data;
 
     let buildTargetX = -1;
     let buildTargetY = -1;
 
     useEffect(() => {
-        // console.log(socketClient);
         if (socketClient === undefined) return;
         socketClient.on('buildBuilding', (data: IBuilding) => {
             drawOriginBuildings(data);
+            drawObjCanvas();
         });
         return () => {
             socketClient.removeListener('buildBuilding');
         };
-    }, [socketClient]);
+    }, [socketClient, user]);
 
     useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;
@@ -69,18 +71,8 @@ const Building = (props: IProps) => {
                 fillBuildingPosition(building);
                 drawOriginBuildings(building);
             });
+            drawObjCanvas();
         }
-
-        /* if (socketClient === undefined) return;
-        socketClient.on('buildBuilding', (data: IBuilding) => {
-            drawOriginBuildings(data);
-        }); */
-
-        // drawObjCanvas();
-
-        /* return () => {
-            socketClient.removeListener('buildBuilding');
-        }; */
     }, [buildingList]);
 
     useEffect(() => {
@@ -94,7 +86,7 @@ const Building = (props: IProps) => {
     }, [buildBuilding]);
 
     useEffect(() => {
-        drawObjCanvas(); // 미리 건물 그린 큰 캐버스
+        drawObjCanvas();
     }, [user]);
 
     const fillBuildingPosition = (building: IBuilding) => {
@@ -237,21 +229,17 @@ const Building = (props: IProps) => {
         const cachingImage = buildingImageCache.get(building.imageUrl);
         if (cachingImage) {
             const buildingOutputSize = tileSize * 4;
-            /* ctx.drawImage(
-                cachingImage,
-                (building.x - layerX) * tileSize - buildingOutputSize / 2,
-                (building.y - layerY) * tileSize - buildingOutputSize / 2,
-                buildingOutputSize,
-                buildingOutputSize,
-            ); */
-
             objctx.drawImage(
                 cachingImage,
-                (building.x - layerX) * tileSize - buildingOutputSize / 2,
-                (building.y - layerY) * tileSize - buildingOutputSize / 2,
+                building.x * tileSize - buildingOutputSize / 2,
+                building.y * tileSize - buildingOutputSize / 2,
                 buildingOutputSize,
                 buildingOutputSize,
             );
+            cnt++;
+            if (cnt === buildingList.length) {
+                drawObjCanvas();
+            }
         } else {
             const buildingObject = new Image();
             buildingObject.src = building.imageUrl;
@@ -261,23 +249,19 @@ const Building = (props: IProps) => {
                 buildingImageCache.set(building.imageUrl, buildingObject);
                 const buildingOutputSize = tileSize * 4;
 
-                /* ctx.drawImage(
-                    buildingObject,
-                    (building.x - layerX) * tileSize - buildingOutputSize / 2,
-                    (building.y - layerY) * tileSize - buildingOutputSize / 2,
-                    buildingOutputSize,
-                    buildingOutputSize,
-                ); */
                 objctx.drawImage(
                     buildingObject,
-                    (building.x - layerX) * tileSize - buildingOutputSize / 2,
-                    (building.y - layerY) * tileSize - buildingOutputSize / 2,
+                    building.x * tileSize - buildingOutputSize / 2,
+                    building.y * tileSize - buildingOutputSize / 2,
                     buildingOutputSize,
                     buildingOutputSize,
                 );
+                cnt++;
+                if (cnt === buildingList.length) {
+                    drawObjCanvas();
+                }
             };
         }
-        drawObjCanvas();
     };
 
     const drawObjCanvas = () => {
@@ -289,7 +273,7 @@ const Building = (props: IProps) => {
         const height = Math.floor(window.innerHeight / 2);
         const dx = width - (width % tileSize);
         const dy = height - (height % tileSize);
-        // 사용자가 업데이트 되기 전 좌표를 참조하는 것 같다고 생각함 아닐수도 있고
+
         let layerX = user.x - dx / tileSize;
         let layerY = user.y - dy / tileSize;
 
@@ -323,7 +307,6 @@ const BuildingCanvas = styled.canvas`
     margin-left: 0px;
     overflow: hidden;
 `;
-
 const CheckingCanvas = styled.canvas`
     position: absolute;
     z-index: 2;
