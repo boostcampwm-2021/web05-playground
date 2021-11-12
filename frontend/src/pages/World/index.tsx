@@ -31,7 +31,7 @@ const World = (props: RouteComponentProps) => {
     const [worldInfo, setWorldInfo] = useState({
         buildings: [
             {
-                id: 1,
+                id: -1,
                 x: 3,
                 y: 3,
                 uid: 1,

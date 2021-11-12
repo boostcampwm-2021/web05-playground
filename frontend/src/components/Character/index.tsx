@@ -310,12 +310,15 @@ export const Character = ({ socketClient }: { socketClient: Socket }) => {
 
         return () => {
             window.removeEventListener('keydown', addMoveEvent);
-            socketClient.removeAllListeners();
+            socketClient.removeListener('move'); // 기존 코드는 removeAll로 되어있었음
         };
     }, [others, user]);
 
     const drawCharacters = (others: UserMap, ctx: CanvasRenderingContext2D | null) => {
         if (!ctx) return;
+
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
         const width = Math.floor(window.innerWidth / 2);
         const height = Math.floor(window.innerHeight / 2);
         const dx = width - (width % tileWidth);
@@ -458,7 +461,7 @@ export const Character = ({ socketClient }: { socketClient: Socket }) => {
 const Canvas = styled.canvas`
     bottom: 0;
     left: 0;
-    z-index: 100;
+    z-index: 2;
     position: absolute;
     right: 0;
     top: 0;

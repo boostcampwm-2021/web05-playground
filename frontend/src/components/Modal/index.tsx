@@ -22,7 +22,7 @@ export default Modal;
 
 const ModalDiv = styled.div`
     position: fixed;
-    z-index: 2;
+    z-index: 3;
 
     height: 100vh;
     width: 400px;
