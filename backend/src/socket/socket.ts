@@ -47,7 +47,7 @@ export default class RoomSocket {
         this.io.on('connection', (socket: MySocket) => {
             console.log(`${socket.id} 연결되었습니다.`);
             socket.on('user', (id: number) => this.addUserHandler(id, socket));
-            socket.on('move', (data: UserMove) => {
+            socket.on('move', (data: IUser) => {
                 console.log(data);
                 this.moveHandler(data, socket);
             });
@@ -68,7 +68,7 @@ export default class RoomSocket {
         this.io.emit('user', this.userMap);
     }
 
-    async moveHandler(data: UserMove, socket: MySocket) {
+    async moveHandler(data: IUser, socket: MySocket) {
         moveUser(data, this.userMap);
         socket.broadcast.emit('move', data);
     }

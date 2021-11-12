@@ -51,8 +51,7 @@ export const Character = () => {
         if (socketClient === undefined) return;
         socketClient.emit('user', user.id);
         socketClient.on('user', (data: UserMap) => {
-            if (user.imageUrl === 'none') setUser(data[user.id.toString()]);
-
+            setUser(data[user.id.toString()]);
             setCharacters(data);
         });
     }, [socketClient]);
@@ -72,12 +71,22 @@ export const Character = () => {
         };
         render();
 
+        if (socketClient === undefined) return;
+        socketClient.on('move', (data: IUser) => {
+            const id = data.id.toString();
+            setCharacters(() => {
+                characters[id] = data;
+                return characters;
+            });
+        });
+
         window.addEventListener('keydown', addMoveEvent);
         return () => {
             window.cancelAnimationFrame(frameId);
             window.removeEventListener('keydown', addMoveEvent);
+            socketClient.removeListener('move');
         };
-    }, [characters]);
+    }, [characters, user]);
 
     const draw = (ctx: CanvasRenderingContext2D | null) => {
         if (!ctx) return;
@@ -101,8 +110,8 @@ export const Character = () => {
                     0,
                     characterWidth,
                     characterHeight,
-                    dx,
-                    dy,
+                    user.x * characterWidth < dx ? user.x * characterWidth : dx,
+                    user.y * characterWidth < dy ? user.y * characterWidth : dy,
                     characterWidth,
                     characterHeight,
                 );
@@ -130,70 +139,35 @@ export const Character = () => {
 
     const addMoveEvent = (event: KeyboardEvent) => {
         if (socketClient === undefined) return;
+
+        const newLocation = {
+            id: user.id,
+            nickname: user.nickname,
+            email: user.email,
+            x: user.x,
+            y: user.y,
+            imageUrl: user.imageUrl,
+        };
+
         switch (event.key) {
             case 'ArrowLeft':
-                setUser({
-                    id: user.id,
-                    nickname: user.nickname,
-                    email: user.email,
-                    x: user.x - 1,
-                    y: user.y,
-                    imageUrl: user.imageUrl,
-                });
-                socketClient.emit('move', {
-                    id: user.id,
-                    email: user.email,
-                    direction: Direction.LEFT,
-                });
+                newLocation.x -= 1;
                 break;
             case 'ArrowRight':
-                setUser({
-                    id: user.id,
-                    nickname: user.nickname,
-                    email: user.email,
-                    x: user.x + 1,
-                    y: user.y,
-                    imageUrl: user.imageUrl,
-                });
-                socketClient.emit('move', {
-                    id: user.id,
-                    email: user.email,
-                    direction: Direction.RIGHT,
-                });
+                newLocation.x += 1;
                 break;
             case 'ArrowUp':
-                setUser({
-                    id: user.id,
-                    nickname: user.nickname,
-                    email: user.email,
-                    x: user.x,
-                    y: user.y - 1,
-                    imageUrl: user.imageUrl,
-                });
-                socketClient.emit('move', {
-                    id: user.id,
-                    email: user.email,
-                    direction: Direction.UP,
-                });
+                newLocation.y -= 1;
                 break;
             case 'ArrowDown':
-                setUser({
-                    id: user.id,
-                    nickname: user.nickname,
-                    email: user.email,
-                    x: user.x,
-                    y: user.y + 1,
-                    imageUrl: user.imageUrl,
-                });
-                socketClient.emit('move', {
-                    id: user.id,
-                    email: user.email,
-                    direction: Direction.DOWN,
-                });
+                newLocation.y += 1;
                 break;
             default:
                 break;
         }
+
+        setUser(newLocation);
+        socketClient.emit('move', newLocation);
     };
 
     return <Canvas width={window.innerWidth} height={window.innerHeight} ref={canvasRef} />;

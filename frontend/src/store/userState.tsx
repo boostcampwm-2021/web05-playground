@@ -6,8 +6,8 @@ const userState = atom({
         id: 1,
         nickname: 'minjae',
         email: 'minjaec023@gmail.com',
-        x: 0,
-        y: 0,
+        x: 10,
+        y: 10,
         imageUrl: '/assets/character1',
     },
 });

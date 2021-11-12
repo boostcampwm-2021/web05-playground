@@ -33,22 +33,6 @@ export const deleteUser = (uid: number, userMap: UserMap) => {
     delete userMap[uid];
 };
 
-export const moveUser = (data: UserMove, userMap: UserMap) => {
-    const userInfo = userMap[data.id];
-    if (userInfo === undefined) throw new Error(userListError);
-
-    switch (data.direction) {
-        case Direction.UP:
-            userInfo.y += 1;
-            break;
-        case Direction.DOWN:
-            userInfo.y -= 1;
-            break;
-        case Direction.LEFT:
-            userInfo.x -= 1;
-            break;
-        case Direction.RIGHT:
-            userInfo.x += 1;
-            break;
-    }
+export const moveUser = (data: IUser, userMap: UserMap) => {
+    userMap[data.id] = data;
 };
