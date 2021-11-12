@@ -9,7 +9,6 @@ import currentModalState from '../../store/currentModalState';
 
 const Modal = () => {
     const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
-
     return (
         <ModalDiv>
             <BackBtn src="/assets/nextbtn.png" onClick={() => setCurrentModal('none')} />
@@ -30,6 +29,9 @@ const ModalDiv = styled.div`
     right: 0;
     top: 0px;
     border: 3px solid black;
+
+    display: flex;
+    flex-direction: column;
 `;
 
 const BackBtn = styled.img`
