@@ -88,14 +88,27 @@ const WorldBackground = (props: IProps) => {
         const height = Math.floor(window.innerHeight / 2);
         const dx = width - (width % tileSize);
         const dy = height - (height % tileSize);
-        const layerX = user.x - dx / tileSize;
-        const layerY = user.y - dy / tileSize;
+        let layerX = user.x - dx / tileSize;
+        let layerY = user.y - dy / tileSize;
 
         if (!ctx || !tileBackground) return;
 
-        for (let col = layerY; col < layer.height + layerY; ++col) {
-            for (let row = layerX; row < layer.width + layerX; ++row) {
-                let tileVal = layer.data[getIndex(row % layer.width, col % layer.height)];
+        if (layerX < 0) layerX = 0;
+        if (layerY < 0) layerY = 0;
+        if (layerX > 70) layerX = 70;
+        if (layerY > 50) layerY = 50;
+
+        let colEnd = layer.height + layerY;
+        let rowEnd = layer.width + layerX;
+
+        if (colEnd > 50) colEnd = 50;
+        if (rowEnd > 70) rowEnd = 70;
+
+        if (layerY === colEnd && layerX === rowEnd) return;
+
+        for (let col = layerY; col < colEnd; ++col) {
+            for (let row = layerX; row < rowEnd; ++row) {
+                let tileVal = layer.data[getIndex(row, col)];
                 if (tileVal !== 0) {
                     tileVal -= 1;
                     sourceY = Math.floor(tileVal / layer.columnCount) * spriteTileSize;

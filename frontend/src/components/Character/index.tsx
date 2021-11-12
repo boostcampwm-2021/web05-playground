@@ -87,7 +87,6 @@ export const Character = ({ socketClient }: { socketClient: Socket }) => {
         });
 
         Object.keys(others).forEach((id) => {
-            if (imgSrcMap[parseInt(id, 10)] === undefined) return;
             const other = others[parseInt(id, 10)];
             const characterImg = new Image();
             characterImg.src = other.imageUrl;
@@ -97,8 +96,7 @@ export const Character = ({ socketClient }: { socketClient: Socket }) => {
             };
         });
 
-        window.addEventListener('keydown', addMoveEvent, { once: true });
-
+        window.addEventListener('keydown', addMoveEvent);
         return () => {
             window.removeEventListener('keydown', addMoveEvent);
             socketClient.removeAllListeners();
@@ -107,12 +105,25 @@ export const Character = ({ socketClient }: { socketClient: Socket }) => {
 
     const drawMyCharacter = (ctx: CanvasRenderingContext2D | null) => {
         if (!ctx) return;
+
+        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
         const width = Math.floor(window.innerWidth / 2);
         const height = Math.floor(window.innerHeight / 2);
         const dx = width - (width % tileWidth);
         const dy = height - (height % tileWidth);
         const myCharacterSrc = imgSrcMap[user.uid.toString()];
-        ctx.drawImage(myCharacterSrc!, 0, 0, tileWidth, tileHeight, dx, dy, tileWidth, tileHeight);
+        ctx.drawImage(
+            myCharacterSrc!,
+            0,
+            0,
+            tileWidth,
+            tileHeight,
+            user.x * tileWidth < dx ? user.x * tileWidth : dx,
+            user.y * tileWidth < dy ? user.y * tileWidth : dy,
+            tileWidth,
+            tileHeight,
+        );
     };
 
     const drawOtherCharacter = (ctx: CanvasRenderingContext2D | null, id: number) => {
@@ -143,64 +154,72 @@ export const Character = ({ socketClient }: { socketClient: Socket }) => {
         if (socketClient === undefined) return;
         switch (event.key) {
             case 'ArrowLeft':
-                setUser({
-                    uid: user.uid,
-                    nickname: user.nickname,
-                    email: user.email,
-                    x: user.x - 1,
-                    y: user.y,
-                    imageUrl: user.imageUrl,
-                });
-                socketClient.emit('move', {
-                    id: user.uid,
-                    email: user.email,
-                    direction: Direction.LEFT,
-                });
+                if (user.x > 0) {
+                    setUser({
+                        uid: user.uid,
+                        nickname: user.nickname,
+                        email: user.email,
+                        x: user.x - 1,
+                        y: user.y,
+                        imageUrl: user.imageUrl,
+                    });
+                    socketClient.emit('move', {
+                        id: user.uid,
+                        email: user.email,
+                        direction: Direction.LEFT,
+                    });
+                }
                 break;
             case 'ArrowRight':
-                setUser({
-                    uid: user.uid,
-                    nickname: user.nickname,
-                    email: user.email,
-                    x: user.x + 1,
-                    y: user.y,
-                    imageUrl: user.imageUrl,
-                });
-                socketClient.emit('move', {
-                    id: user.uid,
-                    email: user.email,
-                    direction: Direction.RIGHT,
-                });
+                if (user.x < 70) {
+                    setUser({
+                        uid: user.uid,
+                        nickname: user.nickname,
+                        email: user.email,
+                        x: user.x + 1,
+                        y: user.y,
+                        imageUrl: user.imageUrl,
+                    });
+                    socketClient.emit('move', {
+                        id: user.uid,
+                        email: user.email,
+                        direction: Direction.RIGHT,
+                    });
+                }
                 break;
             case 'ArrowUp':
-                setUser({
-                    uid: user.uid,
-                    nickname: user.nickname,
-                    email: user.email,
-                    x: user.x,
-                    y: user.y - 1,
-                    imageUrl: user.imageUrl,
-                });
-                socketClient.emit('move', {
-                    id: user.uid,
-                    email: user.email,
-                    direction: Direction.UP,
-                });
+                if (user.y > 0) {
+                    setUser({
+                        uid: user.uid,
+                        nickname: user.nickname,
+                        email: user.email,
+                        x: user.x,
+                        y: user.y - 1,
+                        imageUrl: user.imageUrl,
+                    });
+                    socketClient.emit('move', {
+                        id: user.uid,
+                        email: user.email,
+                        direction: Direction.UP,
+                    });
+                }
                 break;
             case 'ArrowDown':
-                setUser({
-                    uid: user.uid,
-                    nickname: user.nickname,
-                    email: user.email,
-                    x: user.x,
-                    y: user.y + 1,
-                    imageUrl: user.imageUrl,
-                });
-                socketClient.emit('move', {
-                    id: user.uid,
-                    email: user.email,
-                    direction: Direction.DOWN,
-                });
+                if (user.y < 50) {
+                    setUser({
+                        uid: user.uid,
+                        nickname: user.nickname,
+                        email: user.email,
+                        x: user.x,
+                        y: user.y + 1,
+                        imageUrl: user.imageUrl,
+                    });
+                    socketClient.emit('move', {
+                        id: user.uid,
+                        email: user.email,
+                        direction: Direction.DOWN,
+                    });
+                }
                 break;
             default:
                 break;
@@ -213,7 +232,7 @@ export const Character = ({ socketClient }: { socketClient: Socket }) => {
 const Canvas = styled.canvas`
     bottom: 0;
     left: 0;
-    z-index: 100;
+    z-index: 2;
     position: absolute;
     right: 0;
     top: 0;
