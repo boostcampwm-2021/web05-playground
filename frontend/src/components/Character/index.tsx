@@ -99,7 +99,7 @@ export const Character = ({ socketClient }: { socketClient: Socket }) => {
         window.addEventListener('keydown', addMoveEvent);
         return () => {
             window.removeEventListener('keydown', addMoveEvent);
-            socketClient.removeAllListeners();
+            socketClient.removeListener('move'); // 기존 코드는 removeAll로 되어있었음
         };
     }, [others, user]);
 
