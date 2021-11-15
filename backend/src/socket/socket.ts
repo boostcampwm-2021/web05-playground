@@ -59,6 +59,10 @@ export default class RoomSocket {
                 console.log(data);
                 this.buildBuildingHandler(data);
             });
+            socket.on('buildObject', (data: IObject) => {
+                console.log(data);
+                this.buildObjectHandler(data);
+            });
             socket.on('disconnect', () => this.deleteUserHandler(socket));
         });
     }
