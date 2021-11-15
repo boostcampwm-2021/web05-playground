@@ -1,6 +1,6 @@
-import { objectListError } from '@shared/constants';
+import { objectListError, objectUrlError } from '@shared/constants';
 import { Receiver, STATUS_CODE } from '@shared/db.receiver';
-import { pool2 } from '../connection';
+import { pool1, pool2 } from '../connection';
 
 export const getObjectList = async (): Promise<Receiver> => {
     const result: Receiver = {
@@ -33,6 +33,24 @@ export const getObjectListByBid = async (bid: number): Promise<Receiver> => {
     } catch (err) {
         result.status = STATUS_CODE.FAIL;
         result.err = objectListError;
+        return result;
+    }
+};
+
+export const getObjectUrl = async (): Promise<Receiver> => {
+    const result: Receiver = {
+        status: STATUS_CODE.SUCCESS,
+    };
+
+    try {
+        const sql = `SELECT id, url FROM object`;
+        const [urls] = await pool1.query(sql);
+
+        result.objectUrl = JSON.parse(JSON.stringify(urls));
+        return result;
+    } catch (err) {
+        result.status = STATUS_CODE.FAIL;
+        result.err = objectUrlError;
         return result;
     }
 };
