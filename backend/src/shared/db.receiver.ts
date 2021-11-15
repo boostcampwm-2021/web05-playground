@@ -14,6 +14,7 @@ export interface Receiver {
     err?: string;
     objectUrl?: Array<IUrl>;
     objectArr?: Array<IObject>;
+    addedObject?: IObject;
     buildingUrl?: Array<IUrl>;
     buildingArr?: Array<IBuilding>;
     addedBuilding?: IBuilding;
