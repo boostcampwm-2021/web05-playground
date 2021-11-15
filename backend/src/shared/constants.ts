@@ -8,3 +8,6 @@ export const buildingListError = 'Fail to get Building List';
 export const addBuildingError = 'Fail to insert Building';
 
 export const buildingUrlError = 'Fail to get Building Url List';
+
+export const characterError = 'Fail to get Charater List';
+export const setUserError = 'Fail to set User Info';

@@ -8,9 +8,24 @@ import buildingResolver from './resolver/buildingResolver';
 import queryTypeDefs from './schema/queries';
 import worldTypeDef from './schema/world';
 import buildingTypeDef from './schema/building';
+import characterTypeDef from './schema/character';
+import characterResolver from './resolver/characterResolver';
+import userResolver from './resolver/userResolver';
+import userTypeDef from './schema/user';
 
-const typeDefs = [queryTypeDefs, worldTypeDef, buildingTypeDef];
-const resolvers = [worldResolver, buildingResolver];
+const typeDefs = [
+    queryTypeDefs,
+    userTypeDef,
+    worldTypeDef,
+    buildingTypeDef,
+    characterTypeDef,
+];
+const resolvers = [
+    worldResolver,
+    buildingResolver,
+    characterResolver,
+    userResolver,
+];
 
 const schema: GraphQLSchema = makeExecutableSchema({
     typeDefs,

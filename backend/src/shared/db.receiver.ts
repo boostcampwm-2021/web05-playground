@@ -3,6 +3,7 @@ import { IObject } from 'src/database/entities/Object';
 import { IUser } from 'src/database/entities/User';
 import { IWorld } from 'src/database/entities/World';
 import { IUrl } from 'src/database/entities/Url';
+import { ICharacter } from 'src/database/entities/Character';
 
 export enum STATUS_CODE {
     SUCCESS = 1,
@@ -15,6 +16,7 @@ export interface Receiver {
     objectArr?: Array<IObject>;
     buildingUrl?: Array<IUrl>;
     buildingArr?: Array<IBuilding>;
+    characterArr?: Array<ICharacter>;
     addedBuilding?: IBuilding;
     worldArr?: Array<IWorld>;
     userArr?: Array<IUser>;
