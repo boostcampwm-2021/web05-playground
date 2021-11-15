@@ -2,6 +2,7 @@
 export const worldListError = 'Fail to get World List';
 
 export const objectListError = 'Fail to get Object List';
+export const addObjectError = 'Fail to insert Object';
 
 export const objectUrlError = 'Fail to get Object Url List';
 
