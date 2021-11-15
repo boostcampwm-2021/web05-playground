@@ -20,6 +20,7 @@ const BuildBuilding = () => {
     const selectBuilding = (e: customMouseEvent) => {
         const selectedBuildingInfo = {
             buildingSrc: e.target.src,
+            id: -1,
             locationX: -1,
             locationY: -1,
             isLocated: false,
