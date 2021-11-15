@@ -220,7 +220,6 @@ const Building = (props: IProps) => {
 
     const drawOriginBuildings = (building: IBuilding) => {
         if (!ctx) return;
-<<<<<<< HEAD
         if (!objctx) return;
 
         const width = Math.floor(window.innerWidth / 2);
@@ -237,12 +236,6 @@ const Building = (props: IProps) => {
 
         const cachingImage = buildingImageCache.get(building.imageUrl);
         if (cachingImage) {
-=======
-        const buildingObject = new Image();
-        buildingObject.src = building.imageUrl;
-        buildingObject.onload = () => {
-            if (!ctx) return;
->>>>>>> fb9b5d3e69ffb74441ba262f367b57c645b11f94
             const buildingOutputSize = tileSize * 4;
             /* ctx.drawImage(
                 cachingImage,
