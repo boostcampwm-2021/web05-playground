@@ -13,7 +13,7 @@ export const getObjectList = async (): Promise<Receiver> => {
     };
 
     try {
-        const sql = `SELECT id, bid, x, y, image_url as imageUrl, file_url as fileUrl FROM object`;
+        const sql = `SELECT id, bid, x, y, image_url as imageUrl, file_url as fileUrl FROM object WHERE bid=1`;
         const [objects] = await pool2.query(sql);
 
         result.objectArr = JSON.parse(JSON.stringify(objects));
