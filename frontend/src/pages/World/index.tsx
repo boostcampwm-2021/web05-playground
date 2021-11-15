@@ -7,6 +7,7 @@ import currentWorldState from '../../store/currentWorldState';
 import currentModalState from '../../store/currentModalState';
 import buildBuildingState from '../../store/buildBuildingState';
 import buildingUrls from '../../store/buildingUrlState';
+import objectUrls from '../../store/objectUrlState';
 
 import WorldBackground from '../../components/WorldMap';
 import Building from '../../components/Building';
@@ -20,7 +21,7 @@ import { Character } from '../../components/Character';
 
 import { socketClient, setSocket } from '../../socket/socket';
 import { IWorldInfo } from '../../utils/model';
-import { getBuildingUrl } from '../../utils/query';
+import { getBuildingUrl, getBuildingAndObjectUrls } from '../../utils/query';
 
 interface customWorldInfo {
     [world: string]: typeof worldPark;
@@ -47,10 +48,11 @@ const World = (props: RouteComponentProps) => {
     });
     const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
     const [buildingUrl, setBuildingUrl] = useRecoilState(buildingUrls);
+    const [objectUrl, setObjectUrl] = useRecoilState(objectUrls);
     const currentModal = useRecoilValue(currentModalState);
     const buildBuilding = useRecoilValue(buildBuildingState);
 
-    const { loading, error, data } = useQuery(getBuildingUrl);
+    const { loading, error, data } = useQuery(getBuildingAndObjectUrls);
 
     if (currentWorld.name === 'default') {
         props.history.push('/selectworld');
@@ -85,7 +87,10 @@ const World = (props: RouteComponentProps) => {
     }, []);
 
     useEffect(() => {
-        if (data) setBuildingUrl(data.buildingUrl);
+        if (data) {
+            setBuildingUrl(data.buildingUrl);
+            setObjectUrl(data.objectUrl);
+        }
     }, [data]);
 
     if (loading) return <p>Loading...</p>;
