@@ -20,6 +20,7 @@ const BuildObject = () => {
     const selectObject = (e: customMouseEvent) => {
         const selectedObjectInfo = {
             objectSrc: e.target.src,
+            id: -1,
             locationX: -1,
             locationY: -1,
             isLocated: false,

@@ -4,6 +4,7 @@ const buildObjectState = atom({
     key: 'buildObjectState',
     default: {
         objectSrc: 'none',
+        id: -1,
         locationX: -1,
         locationY: -1,
         isLocated: false,

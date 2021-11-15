@@ -47,6 +47,7 @@ const setBuildingModal = () => {
     const cancleBuild = () => {
         const selectedBuildingInfo = {
             buildingSrc: 'none',
+            id: -1,
             locationX: -1,
             locationY: -1,
             isLocated: false,
@@ -72,6 +73,7 @@ const setBuildingModal = () => {
 
             const selectedBuildingInfo = {
                 buildingSrc: 'none',
+                id: -1,
                 locationX: -1,
                 locationY: -1,
                 isLocated: false,
