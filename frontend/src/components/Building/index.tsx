@@ -9,8 +9,10 @@ import { socketClient } from '../../socket/socket';
 
 import userState from '../../store/userState';
 import buildBuildingState from '../../store/buildBuildingState';
+import buildObjectState from '../../store/buildObjectState';
 
-import { IBuilding, IProps } from '../../utils/model';
+import { IBuilding, IObject, IProps } from '../../utils/model';
+import currentModalState from '../../store/currentModalState';
 
 const commonWidth = 70;
 const commonHeight = 50;
@@ -26,10 +28,12 @@ objCanvas.width = commonWidth * tileSize;
 objCanvas.height = commonHeight * tileSize;
 
 const Building = (props: IProps) => {
-    const { layers, buildingList } = props;
+    const { layers, buildingList, objectList } = props;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const checkingRef = useRef<HTMLCanvasElement>(null);
     const [buildBuilding, setBuildBuilding] = useRecoilState(buildBuildingState);
+    const [buildObject, setBuildObject] = useRecoilState(buildObjectState);
+    const currentModal = useRecoilValue(currentModalState);
     const [buildingData, setBuildingData] = useState(new Array(commonWidth * commonHeight).fill(0));
     const user = useRecoilValue(userState);
 
@@ -46,8 +50,13 @@ const Building = (props: IProps) => {
             drawOriginBuildings(data);
             drawObjCanvas();
         });
+        socketClient.on('buildObject', (data: IObject) => {
+            drawOriginBuildings(data);
+            drawObjCanvas();
+        });
         return () => {
             socketClient.removeListener('buildBuilding');
+            socketClient.removeListener('buildObject');
         };
     }, [socketClient, user]);
 
@@ -73,7 +82,15 @@ const Building = (props: IProps) => {
             });
             drawObjCanvas();
         }
-    }, [buildingList]);
+
+        if (objectList.length !== 0 && objectList[0].id !== -1) {
+            objectList.forEach((object) => {
+                fillBuildingPosition(object);
+                drawOriginBuildings(object);
+            });
+            drawObjCanvas();
+        }
+    }, [buildingList, objectList]);
 
     useEffect(() => {
         window.addEventListener('mousedown', processBuild);
@@ -83,19 +100,22 @@ const Building = (props: IProps) => {
             window.removeEventListener('mousedown', processBuild);
             window.removeEventListener('mousemove', updatePosition);
         };
-    }, [buildBuilding]);
+    }, [buildBuilding, buildObject, currentModal]);
 
     useEffect(() => {
         drawObjCanvas();
     }, [user]);
 
-    const fillBuildingPosition = (building: IBuilding) => {
-        const { x, y } = building;
-        const buildingSize = 4;
-        for (let i = x; i < x + buildingSize; i++) {
-            for (let j = y; j < y + buildingSize; j++) {
+    const fillBuildingPosition = (building: IBuilding | IObject) => {
+        const { id, x, y } = building;
+        const dataSize = Object.keys(building).includes('uid') ? 4 : 2;
+
+        for (let i = x; i < x + dataSize; i++) {
+            for (let j = y; j < y + dataSize; j++) {
                 const index = getIndex(i, j);
-                buildingData[index] = 1;
+                buildingData[index] = id;
+                if (dataSize === 2) buildingData[index] *= -1;
+                else if (id === 1) buildingData[index] = 0;
             }
         }
     };
@@ -110,14 +130,25 @@ const Building = (props: IProps) => {
     };
 
     const processBuild = () => {
-        if (
-            !buildBuilding.isBuilding &&
-            buildBuilding.buildingSrc !== 'none' &&
-            !buildBuilding.isLocated
-        ) {
-            setBuildBuilding({
-                ...buildBuilding,
-                isBuilding: true,
+        const flag = currentModal === 'buildBuilding' ? 0 : 1;
+        const cur = currentModal === 'buildBuilding' ? buildBuilding : buildObject;
+        const { id, locationX, locationY, isLocated } = cur;
+        const src =
+            currentModal === 'buildBuilding' ? buildBuilding.buildingSrc : buildObject.objectSrc;
+        const isData =
+            currentModal === 'buildBuilding' ? buildBuilding.isBuilding : buildObject.isObject;
+
+        if (!isData && src !== 'none' && !isLocated) {
+            if (flag === 0) {
+                setBuildBuilding({
+                    ...buildBuilding,
+                    isBuilding: true,
+                });
+                return;
+            }
+            setBuildObject({
+                ...buildObject,
+                isObject: true,
             });
             return;
         }
@@ -139,19 +170,31 @@ const Building = (props: IProps) => {
             isPosssibleArea(buildTargetX, buildTargetY) &&
             checkingCtx !== null
         ) {
-            setBuildBuilding({
-                ...buildBuilding,
-                locationX: buildTargetX + layerX,
-                locationY: buildTargetY + layerY,
-                isLocated: true,
-                isBuilding: false,
-            });
+            if (flag === 0) {
+                setBuildBuilding({
+                    ...buildBuilding,
+                    locationX: buildTargetX + layerX,
+                    locationY: buildTargetY + layerY,
+                    isLocated: true,
+                    isBuilding: false,
+                });
+            } else {
+                setBuildObject({
+                    ...buildObject,
+                    locationX: buildTargetX + layerX,
+                    locationY: buildTargetY + layerY,
+                    isLocated: true,
+                    isObject: false,
+                });
+            }
             checkingCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
         }
     };
 
     const updatePosition = (e: MouseEvent) => {
-        if (!checkingCtx || !buildBuilding.isBuilding) return;
+        const isData =
+            currentModal === 'buildBuilding' ? buildBuilding.isBuilding : buildObject.isObject;
+        if (!checkingCtx || !isData) return;
 
         buildTargetX = Math.floor(e.pageX / tileSize);
         buildTargetY = Math.floor(e.pageY / tileSize);
@@ -165,23 +208,48 @@ const Building = (props: IProps) => {
     const drawBuildingOfMove = () => {
         if (!checkingCtx) return;
 
+        const size = currentModal === 'buildBuilding' ? 4 : 2;
+
         checkingCtx.globalAlpha = 1.0;
-        const buildingOutputSize = tileSize * 4;
-        const buildObject = new Image();
-        buildObject.src = buildBuilding.buildingSrc;
-        checkingCtx.drawImage(
-            buildObject,
-            buildTargetX * tileSize - buildingOutputSize / 2,
-            buildTargetY * tileSize - buildingOutputSize / 2,
-            buildingOutputSize,
-            buildingOutputSize,
-        );
+        const buildingOutputSize = tileSize * size;
+
+        const src =
+            currentModal === 'buildBuilding' ? buildBuilding.buildingSrc : buildObject.objectSrc;
+
+        const cachingImage = buildingImageCache.get(src);
+        if (cachingImage) {
+            if (!checkingCtx) return;
+            checkingCtx.drawImage(
+                cachingImage,
+                buildTargetX * tileSize - buildingOutputSize / 2,
+                buildTargetY * tileSize - buildingOutputSize / 2,
+                buildingOutputSize,
+                buildingOutputSize,
+            );
+        } else {
+            const buildObject = new Image();
+            buildObject.src = src;
+
+            buildObject.onload = () => {
+                if (!checkingCtx) return;
+                buildingImageCache.set(src, buildObject);
+                checkingCtx.drawImage(
+                    buildObject,
+                    buildTargetX * tileSize - buildingOutputSize / 2,
+                    buildTargetY * tileSize - buildingOutputSize / 2,
+                    buildingOutputSize,
+                    buildingOutputSize,
+                );
+            };
+        }
     };
 
     const drawPossibleBox = () => {
         if (!checkingCtx) return;
 
-        const possibleAreaOutputSize = tileSize * 5;
+        const size = currentModal === 'buildBuilding' ? 5 : 3;
+
+        const possibleAreaOutputSize = tileSize * size;
         checkingCtx.fillStyle = isPosssibleArea(buildTargetX, buildTargetY) ? '#C6FCAC' : '#F35F5F';
         checkingCtx.globalAlpha = 0.5;
         checkingCtx.fillRect(
@@ -197,10 +265,10 @@ const Building = (props: IProps) => {
     };
 
     const isPosssibleArea = (col: number, row: number) => {
-        const halfOfBuildingTileCount = 2;
+        const halfOfBuildingTileCount = currentModal === 'buildBuilding' ? 2 : 1;
         for (let i = col - halfOfBuildingTileCount; i < col + halfOfBuildingTileCount; i++) {
             for (let j = row - halfOfBuildingTileCount; j < row + halfOfBuildingTileCount; j++) {
-                const objectVal = objectLayer[getIndex(i, j)];
+                const objectVal = objectLayer[getIndex(i, j)]; // ????
                 const buildingVal = buildingData[getIndex(i, j)];
                 if (objectVal !== 0 || buildingVal !== 0) {
                     return false;
@@ -210,9 +278,11 @@ const Building = (props: IProps) => {
         return true;
     };
 
-    const drawOriginBuildings = (building: IBuilding) => {
+    const drawOriginBuildings = (building: IBuilding | IObject) => {
         if (!ctx) return;
         if (!objctx) return;
+
+        const dataSize = Object.keys(building).includes('uid') ? 4 : 2;
 
         const width = Math.floor(window.innerWidth / 2);
         const height = Math.floor(window.innerHeight / 2);
@@ -228,7 +298,7 @@ const Building = (props: IProps) => {
 
         const cachingImage = buildingImageCache.get(building.imageUrl);
         if (cachingImage) {
-            const buildingOutputSize = tileSize * 4;
+            const buildingOutputSize = tileSize * dataSize;
             objctx.drawImage(
                 cachingImage,
                 building.x * tileSize - buildingOutputSize / 2,
@@ -247,7 +317,7 @@ const Building = (props: IProps) => {
                 if (!ctx) return;
                 if (!objctx) return;
                 buildingImageCache.set(building.imageUrl, buildingObject);
-                const buildingOutputSize = tileSize * 4;
+                const buildingOutputSize = tileSize * dataSize;
 
                 objctx.drawImage(
                     buildingObject,
