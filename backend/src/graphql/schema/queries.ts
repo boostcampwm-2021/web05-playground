@@ -4,6 +4,7 @@ const queryTypeDefs = gql`
     type Query {
         worldList: [IWorld!]!
         buildingUrl: [IBuilding]!
+        objectUrl: [IObject]!
     }
 `;
 
