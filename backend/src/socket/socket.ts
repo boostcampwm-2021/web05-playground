@@ -10,12 +10,15 @@ import {
     moveUser,
 } from './socket.user';
 import { addBuildingInfo, getBuildingInfo } from './socket.building';
+import { addObjectInfo, getObjectInfo } from './socket.object';
 
 import { IUser } from '../database/entities/User';
 import { IBuilding } from 'src/database/entities/Building';
+import { IObject } from 'src/database/entities/Object';
 
 interface IWorldInfo {
     buildings?: IBuilding[];
+    objects?: IObject[];
 }
 
 interface UserMap {
@@ -76,8 +79,10 @@ export default class RoomSocket {
     async getWorldHandler() {
         const worldInfo: IWorldInfo = {};
         const buildings = await this.getBuildingHandler();
+        const objects = await this.getObjectHandler();
 
         worldInfo.buildings = buildings;
+        worldInfo.objects = objects;
         console.log(worldInfo);
         this.io.emit('enterWorld', worldInfo);
     }
@@ -92,6 +97,18 @@ export default class RoomSocket {
         const addedBuilding = await addBuildingInfo(data);
         console.log(addedBuilding);
         this.io.emit('buildBuilding', addedBuilding);
+    }
+
+    async getObjectHandler() {
+        // id 조건 넣어줘야함
+        const objects = await getObjectInfo();
+        return objects;
+    }
+
+    async buildObjectHandler(data: IObject) {
+        const addedObject = await addObjectInfo(data);
+        console.log(addedObject);
+        this.io.emit('buildObject', addedObject);
     }
 
     deleteUserHandler(socket: MySocket) {
