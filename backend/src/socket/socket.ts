@@ -2,7 +2,13 @@ import express from 'express';
 import { Server, Socket } from 'socket.io';
 import * as http from 'http';
 
-import { getUserInfo, addUser, deleteUser } from './socket.user';
+import {
+    UserMove,
+    getUserInfo,
+    addUser,
+    deleteUser,
+    moveUser,
+} from './socket.user';
 import { addBuildingInfo, getBuildingInfo } from './socket.building';
 
 import { IUser } from '../database/entities/User';
@@ -10,6 +16,10 @@ import { IBuilding } from 'src/database/entities/Building';
 
 interface IWorldInfo {
     buildings?: IBuilding[];
+}
+
+interface UserMap {
+    [key: string]: IUser;
 }
 
 class MySocket extends Socket {
@@ -21,11 +31,12 @@ export default class RoomSocket {
     public port: number;
     public server?: http.Server;
     public io!: Server;
-    public userList: Array<IUser> = [];
+    public userMap: UserMap;
 
     constructor(port: number) {
         this.app = express();
         this.port = port;
+        this.userMap = {};
         this.server = this.app.listen(this.port, () => {
             console.log(`Socket listening on the port ${this.port}`);
         });
@@ -35,23 +46,31 @@ export default class RoomSocket {
     public connect() {
         this.io.on('connection', (socket: MySocket) => {
             console.log(`${socket.id} 연결되었습니다.`);
-            socket.on('user', (data: string) =>
-                this.addUserHandler(data, socket),
-            );
+            socket.on('user', (id: number) => this.addUserHandler(id, socket));
+            socket.on('move', (data: IUser) => {
+                console.log(data);
+                this.moveHandler(data, socket);
+            });
             socket.on('enterWorld', () => this.getWorldHandler());
-            socket.on('buildBuilding', (data: IBuilding) =>
-                this.buildBuildingHandler(data),
-            );
+            socket.on('buildBuilding', (data: IBuilding) => {
+                console.log(data);
+                this.buildBuildingHandler(data);
+            });
             socket.on('disconnect', () => this.deleteUserHandler(socket));
         });
     }
 
-    async addUserHandler(data: string, socket: MySocket) {
-        const user = await getUserInfo(data);
+    async addUserHandler(id: number, socket: MySocket) {
+        const user = await getUserInfo(id);
         socket.uid = user.id;
-        addUser(user, this.userList);
-        console.log(this.userList);
-        this.io.emit('user', this.userList);
+        addUser(user, this.userMap);
+        console.log(this.userMap);
+        this.io.emit('user', this.userMap);
+    }
+
+    async moveHandler(data: IUser, socket: MySocket) {
+        moveUser(data, this.userMap);
+        socket.broadcast.emit('move', data);
     }
 
     async getWorldHandler() {
@@ -76,9 +95,9 @@ export default class RoomSocket {
     }
 
     deleteUserHandler(socket: MySocket) {
-        if (socket.uid !== undefined)
-            this.userList = deleteUser(socket.uid, this.userList);
-        console.log(this.userList);
+        if (socket.uid !== undefined) deleteUser(socket.uid, this.userMap);
+        this.io.emit('user', this.userMap);
+        console.log(this.userMap);
         console.log(`${socket.id} 끊어졌습니다.`);
     }
 }

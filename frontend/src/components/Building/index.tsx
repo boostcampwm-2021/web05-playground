@@ -2,11 +2,12 @@
 /* eslint-disable no-plusplus */
 /* eslint-disable react/destructuring-assignment */
 import React, { useRef, useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { socketClient } from '../../socket/socket';
 
+import userState from '../../store/userState';
 import buildBuildingState from '../../store/buildBuildingState';
 
 import { IBuilding, IProps } from '../../utils/model';
@@ -17,6 +18,12 @@ const tileSize = 32;
 const OBJECT = 1;
 let ctx: CanvasRenderingContext2D | null;
 let checkingCtx: CanvasRenderingContext2D | null;
+const buildingImageCache = new Map();
+
+const objCanvas = document.createElement('canvas');
+const objctx = objCanvas.getContext('2d');
+objCanvas.width = commonWidth * tileSize;
+objCanvas.height = commonHeight * tileSize;
 
 const Building = (props: IProps) => {
     const { layers, buildingList } = props;
@@ -24,11 +31,23 @@ const Building = (props: IProps) => {
     const checkingRef = useRef<HTMLCanvasElement>(null);
     const [buildBuilding, setBuildBuilding] = useRecoilState(buildBuildingState);
     const [buildingData, setBuildingData] = useState(new Array(commonWidth * commonHeight).fill(0));
+    const user = useRecoilValue(userState);
 
     const objectLayer = layers[OBJECT].data;
 
     let buildTargetX = -1;
     let buildTargetY = -1;
+
+    useEffect(() => {
+        // console.log(socketClient);
+        if (socketClient === undefined) return;
+        socketClient.on('buildBuilding', (data: IBuilding) => {
+            drawOriginBuildings(data);
+        });
+        return () => {
+            socketClient.removeListener('buildBuilding');
+        };
+    }, [socketClient]);
 
     useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;
@@ -52,14 +71,16 @@ const Building = (props: IProps) => {
             });
         }
 
-        if (socketClient === undefined) return;
+        /* if (socketClient === undefined) return;
         socketClient.on('buildBuilding', (data: IBuilding) => {
             drawOriginBuildings(data);
-        });
+        }); */
 
-        return () => {
+        // drawObjCanvas();
+
+        /* return () => {
             socketClient.removeListener('buildBuilding');
-        };
+        }; */
     }, [buildingList]);
 
     useEffect(() => {
@@ -71,6 +92,10 @@ const Building = (props: IProps) => {
             window.removeEventListener('mousemove', updatePosition);
         };
     }, [buildBuilding]);
+
+    useEffect(() => {
+        drawObjCanvas(); // 미리 건물 그린 큰 캐버스
+    }, [user]);
 
     const fillBuildingPosition = (building: IBuilding) => {
         const { x, y } = building;
@@ -105,6 +130,18 @@ const Building = (props: IProps) => {
             return;
         }
 
+        const width = Math.floor(window.innerWidth / 2);
+        const height = Math.floor(window.innerHeight / 2);
+        const dx = width - (width % tileSize);
+        const dy = height - (height % tileSize);
+        let layerX = user.x - dx / tileSize;
+        let layerY = user.y - dy / tileSize;
+
+        if (layerX < 0) layerX = 0;
+        if (layerY < 0) layerY = 0;
+        if (layerX > 70) layerX = 70;
+        if (layerY > 50) layerY = 50;
+
         if (
             isValidPosition() &&
             isPosssibleArea(buildTargetX, buildTargetY) &&
@@ -112,8 +149,8 @@ const Building = (props: IProps) => {
         ) {
             setBuildBuilding({
                 ...buildBuilding,
-                locationX: buildTargetX,
-                locationY: buildTargetY,
+                locationX: buildTargetX + layerX,
+                locationY: buildTargetY + layerY,
                 isLocated: true,
                 isBuilding: false,
             });
@@ -183,19 +220,91 @@ const Building = (props: IProps) => {
 
     const drawOriginBuildings = (building: IBuilding) => {
         if (!ctx) return;
-        const buildingObject = new Image();
-        buildingObject.src = building.imageUrl;
-        buildingObject.onload = () => {
-            if (!ctx) return;
+        if (!objctx) return;
+
+        const width = Math.floor(window.innerWidth / 2);
+        const height = Math.floor(window.innerHeight / 2);
+        const dx = width - (width % tileSize);
+        const dy = height - (height % tileSize);
+        let layerX = user.x - dx / tileSize;
+        let layerY = user.y - dy / tileSize;
+
+        if (layerX < 0) layerX = 0;
+        if (layerY < 0) layerY = 0;
+        if (layerX > 70) layerX = 70;
+        if (layerY > 50) layerY = 50;
+
+        const cachingImage = buildingImageCache.get(building.imageUrl);
+        if (cachingImage) {
             const buildingOutputSize = tileSize * 4;
-            ctx.drawImage(
-                buildingObject,
-                building.x * tileSize - buildingOutputSize / 2,
-                building.y * tileSize - buildingOutputSize / 2,
+            /* ctx.drawImage(
+                cachingImage,
+                (building.x - layerX) * tileSize - buildingOutputSize / 2,
+                (building.y - layerY) * tileSize - buildingOutputSize / 2,
+                buildingOutputSize,
+                buildingOutputSize,
+            ); */
+
+            objctx.drawImage(
+                cachingImage,
+                (building.x - layerX) * tileSize - buildingOutputSize / 2,
+                (building.y - layerY) * tileSize - buildingOutputSize / 2,
                 buildingOutputSize,
                 buildingOutputSize,
             );
-        };
+        } else {
+            const buildingObject = new Image();
+            buildingObject.src = building.imageUrl;
+            buildingObject.onload = () => {
+                if (!ctx) return;
+                if (!objctx) return;
+                buildingImageCache.set(building.imageUrl, buildingObject);
+                const buildingOutputSize = tileSize * 4;
+
+                /* ctx.drawImage(
+                    buildingObject,
+                    (building.x - layerX) * tileSize - buildingOutputSize / 2,
+                    (building.y - layerY) * tileSize - buildingOutputSize / 2,
+                    buildingOutputSize,
+                    buildingOutputSize,
+                ); */
+                objctx.drawImage(
+                    buildingObject,
+                    (building.x - layerX) * tileSize - buildingOutputSize / 2,
+                    (building.y - layerY) * tileSize - buildingOutputSize / 2,
+                    buildingOutputSize,
+                    buildingOutputSize,
+                );
+            };
+        }
+        drawObjCanvas();
+    };
+
+    const drawObjCanvas = () => {
+        if (!ctx) return;
+        if (!objctx) return;
+        ctx?.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
+        const width = Math.floor(window.innerWidth / 2);
+        const height = Math.floor(window.innerHeight / 2);
+        const dx = width - (width % tileSize);
+        const dy = height - (height % tileSize);
+        // 사용자가 업데이트 되기 전 좌표를 참조하는 것 같다고 생각함 아닐수도 있고
+        let layerX = user.x - dx / tileSize;
+        let layerY = user.y - dy / tileSize;
+
+        if (layerX < 0) layerX = 0;
+        if (layerY < 0) layerY = 0;
+        if (layerX > 70) layerX = 70;
+        if (layerY > 50) layerY = 50;
+
+        ctx.drawImage(
+            objCanvas,
+            -layerX * tileSize,
+            -layerY * tileSize,
+            commonWidth * tileSize,
+            commonHeight * tileSize,
+        );
     };
 
     return (
