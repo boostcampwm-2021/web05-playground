@@ -4,6 +4,7 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import BuildBuilding from './BuildBuilding';
+import Chat from './Chat';
 
 import currentModalState from '../../store/currentModalState';
 
@@ -14,6 +15,7 @@ const Modal = () => {
         <ModalDiv>
             <BackBtn src="/assets/nextbtn.png" onClick={() => setCurrentModal('none')} />
             <BuildBuilding active={currentModal === 'buildBuilding'} />
+            <Chat active={currentModal === 'chat'} />
         </ModalDiv>
     );
 };

@@ -22,6 +22,11 @@ interface UserMap {
     [key: string]: IUser;
 }
 
+interface Message {
+    id: string;
+    message: string;
+}
+
 class MySocket extends Socket {
     public uid?: number;
 }
@@ -55,6 +60,9 @@ export default class RoomSocket {
             socket.on('buildBuilding', (data: IBuilding) => {
                 console.log(data);
                 this.buildBuildingHandler(data);
+            });
+            socket.on('message', (data: Message) => {
+                this.messageHandler(data);
             });
             socket.on('disconnect', () => this.deleteUserHandler(socket));
         });
@@ -92,6 +100,10 @@ export default class RoomSocket {
         const addedBuilding = await addBuildingInfo(data);
         console.log(addedBuilding);
         this.io.emit('buildBuilding', addedBuilding);
+    }
+
+    async messageHandler(data: Message) {
+        this.io.emit('message', data);
     }
 
     deleteUserHandler(socket: MySocket) {
