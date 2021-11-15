@@ -6,6 +6,11 @@ export interface IWorld {
     thumbnail: string;
 }
 
+export interface ICharacter {
+    id: number;
+    imageUrl: string;
+}
+
 interface ILayer {
     data: number[];
     height: number;
