@@ -6,6 +6,7 @@ import { useQuery } from '@apollo/client';
 import currentWorldState from '../../store/currentWorldState';
 import currentModalState from '../../store/currentModalState';
 import buildBuildingState from '../../store/buildBuildingState';
+import buildObjectState from '../../store/buildObjectState';
 import buildingUrls from '../../store/buildingUrlState';
 import objectUrls from '../../store/objectUrlState';
 
@@ -14,6 +15,7 @@ import Building from '../../components/Building';
 import NavigationBar from '../../components/NavigationBar';
 import Modal from '../../components/Modal';
 import SetBuildingModal from '../../components/SetBuildingModal';
+import SetObjectModal from '../../components/SetObjectModal';
 
 import worldPark from '../../map-files/world-park.json';
 import worldWinter from '../../map-files/world-winter.json';
@@ -45,12 +47,23 @@ const World = (props: RouteComponentProps) => {
                 imageUrl: 'http://localhost:3000/assets/home.png',
             },
         ],
+        objects: [
+            {
+                id: -1,
+                bid: -1,
+                x: 3,
+                y: 3,
+                imageUrl: 'http://localhost:3000/assets/home.png',
+                fileUrl: '',
+            },
+        ],
     });
     const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
     const [buildingUrl, setBuildingUrl] = useRecoilState(buildingUrls);
     const [objectUrl, setObjectUrl] = useRecoilState(objectUrls);
     const currentModal = useRecoilValue(currentModalState);
     const buildBuilding = useRecoilValue(buildBuildingState);
+    const buildObject = useRecoilValue(buildObjectState);
 
     const { loading, error, data } = useQuery(getBuildingAndObjectUrls);
 
@@ -100,11 +113,16 @@ const World = (props: RouteComponentProps) => {
         <>
             {/* 아래 recoil 두 가지 상태에따라 맵이 다시 그려지니까 상태관련된 것은 하위컴포넌트 or 다른 곳으로 빼자 */}
             <WorldBackground data={mapLayers} />
-            <Building layers={mapLayers} buildingList={worldInfo.buildings} />
+            <Building
+                layers={mapLayers}
+                buildingList={worldInfo.buildings}
+                objectList={worldInfo.objects}
+            />
             <Character />
             {currentModal !== 'none' ? <Modal /> : <></>}
             <NavigationBar />
             {buildBuilding.isLocated ? <SetBuildingModal /> : <></>}
+            {buildObject.isLocated ? <SetObjectModal /> : <></>}
         </>
     );
 };
