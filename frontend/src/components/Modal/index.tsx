@@ -9,10 +9,11 @@ import currentModalState from '../../store/currentModalState';
 
 const Modal = () => {
     const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
+
     return (
         <ModalDiv>
             <BackBtn src="/assets/nextbtn.png" onClick={() => setCurrentModal('none')} />
-            {currentModal === 'buildBuilding' ? <BuildBuilding /> : <div>{currentModal}</div>}
+            <BuildBuilding active={currentModal === 'buildBuilding'} />
         </ModalDiv>
     );
 };
