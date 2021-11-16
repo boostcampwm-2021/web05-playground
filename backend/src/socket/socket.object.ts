@@ -1,10 +1,13 @@
-import { addObject, getObjectList } from '../database/service/object.service';
+import {
+    addObject,
+    getObjectListByBid,
+} from '../database/service/object.service';
 import { IObject } from '../database/entities/Object';
 import { STATUS_CODE } from '@shared/db.receiver';
 import { addObjectError, objectListError } from '@shared/constants';
 
-export const getObjectInfo = async (): Promise<IObject[]> => {
-    const ObjectInfo = await getObjectList();
+export const getObjectInfo = async (bid: number): Promise<IObject[]> => {
+    const ObjectInfo = await getObjectListByBid(bid);
     if (ObjectInfo.objectArr === undefined) throw new Error(objectListError);
     if (ObjectInfo.status === STATUS_CODE.FAIL)
         throw new Error(objectListError);

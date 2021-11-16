@@ -1,7 +1,6 @@
 import { STATUS_CODE } from '@shared/db.receiver';
 import { IResolvers } from 'graphql-tools';
 import {
-    getObjectList,
     getObjectListByBid,
     getObjectUrl,
 } from 'src/database/service/object.service';

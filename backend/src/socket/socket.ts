@@ -83,7 +83,7 @@ export default class RoomSocket {
     async getWorldHandler() {
         const worldInfo: IWorldInfo = {};
         const buildings = await this.getBuildingHandler();
-        const objects = await this.getObjectHandler();
+        const objects = await this.getObjectHandler(1);
 
         worldInfo.buildings = buildings;
         worldInfo.objects = objects;
@@ -103,9 +103,8 @@ export default class RoomSocket {
         this.io.emit('buildBuilding', addedBuilding);
     }
 
-    async getObjectHandler() {
-        // id 조건 넣어줘야함
-        const objects = await getObjectInfo();
+    async getObjectHandler(bid: number) {
+        const objects = await getObjectInfo(bid);
         return objects;
     }
 
