@@ -46,3 +46,7 @@ export interface MessageInfos {
 export interface ActiveModal {
     active: boolean;
 }
+
+export interface ModalToggle {
+    modalToggle: boolean;
+}
