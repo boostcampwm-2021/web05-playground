@@ -3,7 +3,6 @@ import { Server, Socket } from 'socket.io';
 import * as http from 'http';
 
 import {
-    UserMove,
     getUserInfo,
     addUser,
     deleteUser,
@@ -56,6 +55,8 @@ export default class RoomSocket {
                 console.log(data);
                 this.buildBuildingHandler(data);
             });
+            socket.on('joinRoom', (data: string) => this.joinRoomHandler(data, socket));
+            socket.on('leaveRoom', (data: string) => this.leaveRoomHandler(data, socket));
             socket.on('disconnect', () => this.deleteUserHandler(socket));
         });
     }
@@ -99,5 +100,15 @@ export default class RoomSocket {
         this.io.emit('user', this.userMap);
         console.log(this.userMap);
         console.log(`${socket.id} 끊어졌습니다.`);
+    }
+
+    async joinRoomHandler(data: string, socket: MySocket) {
+        const roomId = data;
+        socket.join(roomId);
+    }
+
+    async leaveRoomHandler(data: string, socket: MySocket) {
+        const roomId = data;
+        socket.leave(roomId);
     }
 }
