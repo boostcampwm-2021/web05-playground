@@ -263,7 +263,6 @@ const Building = (props: IProps) => {
                 }
             };
         }
-        console.log(buildingList);
     };
 
     const drawObjCanvas = () => {
