@@ -98,7 +98,9 @@ const World = (props: RouteComponentProps) => {
         };
 
         setSocket(process.env.REACT_APP_BASE_SOCKET_URI!);
-        socketClient.emit('enterWorld');
+
+        const user = 'wnsgur';
+        socketClient.emit('enterWorld', user);
         socketClient.on('enterWorld', (data: IWorldInfo) => {
             setWorldInfo(data);
         });

@@ -55,7 +55,9 @@ export default class RoomSocket {
                 console.log(data);
                 this.moveHandler(data);
             });
-            socket.on('enterWorld', () => this.getWorldHandler(socket));
+            socket.on('enterWorld', (data: string) =>
+                this.getWorldHandler(socket, data),
+            );
             socket.on('buildBuilding', (data: IBuilding) => {
                 console.log(data);
                 this.buildBuildingHandler(data);
@@ -94,7 +96,7 @@ export default class RoomSocket {
         this.io.emit('move', data);
     }
 
-    async getWorldHandler(socket: MySocket) {
+    async getWorldHandler(socket: MySocket, data: string) {
         const worldInfo: IWorldInfo = {};
         const buildings = await this.getBuildingHandler();
         const objects = await this.getObjectHandler(1);
@@ -102,7 +104,9 @@ export default class RoomSocket {
         worldInfo.buildings = buildings;
         worldInfo.objects = objects;
         console.log(worldInfo);
+
         socket.emit('enterWorld', worldInfo);
+        this.io.emit('enterNewPerson', data);
     }
 
     async getBuildingHandler() {
