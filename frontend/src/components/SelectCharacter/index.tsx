@@ -35,7 +35,7 @@ export function CharacterSelector({
                 imageUrl: current.imageUrl,
             },
         });
-        setUser({ ...user, nickname: result.data.nickname, imageUrl: result.data.imageUrl });
+        setUser({ ...user, nickname: nicknameInput.current, imageUrl: current.imageUrl });
         props.history.push('/world');
     };
 

@@ -1,38 +1,10 @@
 /* eslint-disable consistent-return */
-import { DefaultEventsMap } from '@socket.io/component-emitter';
 import React, { useRef, useEffect, useState } from 'react';
-import { RouteComponentProps } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
-import io, { Socket } from 'socket.io-client';
 import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
 import userState from '../../store/userState';
-
-enum Direction {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-}
-
-interface UserMove {
-    id: number;
-    email: string;
-    direction: Direction;
-}
-
-interface IUser {
-    id: number;
-    email: string;
-    nickname: string;
-    x: number;
-    y: number;
-    imageUrl: string;
-}
-
-interface UserMap {
-    [key: string]: IUser;
-}
+import { UserMap, IUser } from '../../utils/model';
 
 interface imgSrc {
     [key: string]: HTMLImageElement;
@@ -49,7 +21,7 @@ export const Character = () => {
 
     useEffect(() => {
         if (socketClient === undefined) return;
-        socketClient.emit('user', user.id);
+        socketClient.emit('user', user);
         socketClient.on('user', (data: UserMap) => {
             setUser(data[user.id.toString()]);
             setCharacters(data);
@@ -110,15 +82,15 @@ export const Character = () => {
                     0,
                     characterWidth,
                     characterHeight,
-                    user.x * characterWidth < dx ? user.x * characterWidth : dx,
-                    user.y * characterWidth < dy ? user.y * characterWidth : dy,
+                    user.x! * characterWidth < dx ? user.x! * characterWidth : dx,
+                    user.y! * characterWidth < dy ? user.y! * characterWidth : dy,
                     characterWidth,
                     characterHeight,
                 );
             } else {
                 // other-Char
-                const distanceX = (character.x - user.x) * characterWidth;
-                const distanceY = (character.y - user.y) * characterWidth;
+                const distanceX = (character.x! - user.x!) * characterWidth;
+                const distanceY = (character.y! - user.y!) * characterWidth;
 
                 const characterImg = new Image();
                 characterImg.src = character.imageUrl;
@@ -151,16 +123,16 @@ export const Character = () => {
 
         switch (event.key) {
             case 'ArrowLeft':
-                newLocation.x -= 1;
+                newLocation.x! -= 1;
                 break;
             case 'ArrowRight':
-                newLocation.x += 1;
+                newLocation.x! += 1;
                 break;
             case 'ArrowUp':
-                newLocation.y -= 1;
+                newLocation.y! -= 1;
                 break;
             case 'ArrowDown':
-                newLocation.y += 1;
+                newLocation.y! += 1;
                 break;
             default:
                 break;

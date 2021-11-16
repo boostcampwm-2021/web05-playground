@@ -73,7 +73,7 @@ const Building = (props: IProps) => {
             });
             drawObjCanvas();
         }
-    }, [buildingList]);
+    }, [buildingList, user, window.innerWidth, window.innerHeight]);
 
     useEffect(() => {
         window.addEventListener('mousedown', processBuild);
@@ -126,8 +126,8 @@ const Building = (props: IProps) => {
         const height = Math.floor(window.innerHeight / 2);
         const dx = width - (width % tileSize);
         const dy = height - (height % tileSize);
-        let layerX = user.x - dx / tileSize;
-        let layerY = user.y - dy / tileSize;
+        let layerX = user.x! - dx / tileSize;
+        let layerY = user.y! - dy / tileSize;
 
         if (layerX < 0) layerX = 0;
         if (layerY < 0) layerY = 0;
@@ -218,8 +218,8 @@ const Building = (props: IProps) => {
         const height = Math.floor(window.innerHeight / 2);
         const dx = width - (width % tileSize);
         const dy = height - (height % tileSize);
-        let layerX = user.x - dx / tileSize;
-        let layerY = user.y - dy / tileSize;
+        let layerX = user.x! - dx / tileSize;
+        let layerY = user.y! - dy / tileSize;
 
         if (layerX < 0) layerX = 0;
         if (layerY < 0) layerY = 0;
@@ -274,8 +274,8 @@ const Building = (props: IProps) => {
         const dx = width - (width % tileSize);
         const dy = height - (height % tileSize);
 
-        let layerX = user.x - dx / tileSize;
-        let layerY = user.y - dy / tileSize;
+        let layerX = user.x ? user.x : 0 - dx / tileSize;
+        let layerY = user.y ? user.y : 0 - dy / tileSize;
 
         if (layerX < 0) layerX = 0;
         if (layerY < 0) layerY = 0;
