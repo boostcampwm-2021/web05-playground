@@ -1,3 +1,16 @@
+export interface IUser {
+    id: number;
+    email: string;
+    nickname: string;
+    x?: number;
+    y?: number;
+    imageUrl: string;
+}
+
+export interface UserMap {
+    [key: string]: IUser;
+}
+
 export interface IWorld {
     id: number;
     uid: number;
