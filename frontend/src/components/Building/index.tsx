@@ -47,10 +47,12 @@ const Building = (props: IProps) => {
     useEffect(() => {
         if (socketClient === undefined) return;
         socketClient.on('buildBuilding', (data: IBuilding) => {
+            fillBuildingPosition(data);
             drawOriginBuildings(data);
             drawObjCanvas();
         });
         socketClient.on('buildObject', (data: IObject) => {
+            fillBuildingPosition(data);
             drawOriginBuildings(data);
             drawObjCanvas();
         });
@@ -167,7 +169,7 @@ const Building = (props: IProps) => {
 
         if (
             isValidPosition() &&
-            isPosssibleArea(buildTargetX, buildTargetY) &&
+            isPosssibleArea(buildTargetX + layerX, buildTargetY + layerY) &&
             checkingCtx !== null
         ) {
             if (flag === 0) {
@@ -249,8 +251,22 @@ const Building = (props: IProps) => {
 
         const size = currentModal === 'buildBuilding' ? 5 : 3;
 
+        const width = Math.floor(window.innerWidth / 2);
+        const height = Math.floor(window.innerHeight / 2);
+        const dx = width - (width % tileSize);
+        const dy = height - (height % tileSize);
+        let layerX = user.x - dx / tileSize;
+        let layerY = user.y - dy / tileSize;
+
+        if (layerX < 0) layerX = 0;
+        if (layerY < 0) layerY = 0;
+        if (layerX > 70) layerX = 70;
+        if (layerY > 50) layerY = 50;
+
         const possibleAreaOutputSize = tileSize * size;
-        checkingCtx.fillStyle = isPosssibleArea(buildTargetX, buildTargetY) ? '#C6FCAC' : '#F35F5F';
+        checkingCtx.fillStyle = isPosssibleArea(buildTargetX + layerX, buildTargetY + layerY)
+            ? '#C6FCAC'
+            : '#F35F5F';
         checkingCtx.globalAlpha = 0.5;
         checkingCtx.fillRect(
             buildTargetX * tileSize - possibleAreaOutputSize / 2,
@@ -268,7 +284,7 @@ const Building = (props: IProps) => {
         const halfOfBuildingTileCount = currentModal === 'buildBuilding' ? 2 : 1;
         for (let i = col - halfOfBuildingTileCount; i < col + halfOfBuildingTileCount; i++) {
             for (let j = row - halfOfBuildingTileCount; j < row + halfOfBuildingTileCount; j++) {
-                const objectVal = objectLayer[getIndex(i, j)]; // ????
+                const objectVal = objectLayer[getIndex(i, j)];
                 const buildingVal = buildingData[getIndex(i, j)];
                 if (objectVal !== 0 || buildingVal !== 0) {
                     return false;
