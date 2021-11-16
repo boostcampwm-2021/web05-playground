@@ -18,6 +18,7 @@ const BuildObject = () => {
     const objectUrl = useRecoilValue(objectUrls);
 
     const selectObject = (e: customMouseEvent) => {
+        e.stopPropagation();
         const selectedObjectInfo = {
             objectSrc: e.target.src,
             id: -1,

@@ -18,6 +18,7 @@ const BuildBuilding = () => {
     const buildingUrl = useRecoilValue(buildingUrls);
 
     const selectBuilding = (e: customMouseEvent) => {
+        e.stopPropagation();
         const selectedBuildingInfo = {
             buildingSrc: e.target.src,
             id: -1,

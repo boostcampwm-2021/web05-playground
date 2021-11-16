@@ -108,6 +108,28 @@ const Building = (props: IProps) => {
         drawObjCanvas();
     }, [user]);
 
+    useEffect(() => {
+        if (checkingCtx !== null) {
+            checkingCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            setBuildBuilding({
+                buildingSrc: 'none',
+                id: -1,
+                locationX: -1,
+                locationY: -1,
+                isLocated: false,
+                isBuilding: false,
+            });
+            setBuildObject({
+                objectSrc: 'none',
+                id: -1,
+                locationX: -1,
+                locationY: -1,
+                isLocated: false,
+                isObject: false,
+            });
+        }
+    }, [currentModal]);
+
     const fillBuildingPosition = (building: IBuilding | IObject) => {
         const { id, x, y } = building;
         const dataSize = Object.keys(building).includes('uid') ? 2 : 1;
@@ -134,7 +156,7 @@ const Building = (props: IProps) => {
     const processBuild = () => {
         const flag = currentModal === 'buildBuilding' ? 0 : 1;
         const cur = currentModal === 'buildBuilding' ? buildBuilding : buildObject;
-        const { id, locationX, locationY, isLocated } = cur;
+        const { isLocated } = cur;
         const src =
             currentModal === 'buildBuilding' ? buildBuilding.buildingSrc : buildObject.objectSrc;
         const isData =
