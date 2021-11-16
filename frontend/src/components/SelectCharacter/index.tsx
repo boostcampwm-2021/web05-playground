@@ -23,22 +23,24 @@ export function CharacterSelector({
     const [current, nextClick, prevClick] = useSlide(characterList, setCharacter);
     const [updateUser, { data, loading, error }] = useMutation(setUserInfo);
     const [user, setUser] = useRecoilState(userState);
-    const nicknameInput = useRef(user.nickname);
+    const [nickname, setNickname] = useState(user.nickname);
 
     const redirectWorld = async (event: React.MouseEvent) => {
-        if (nicknameInput.current === null) return;
         event.preventDefault();
         const result = await updateUser({
             variables: {
                 setUserInfoId: user.id,
-                nickname: nicknameInput.current,
+                nickname,
                 imageUrl: current.imageUrl,
             },
         });
-        setUser({ ...user, nickname: nicknameInput.current, imageUrl: current.imageUrl });
+        setUser({ ...user, nickname, imageUrl: current.imageUrl });
         props.history.push('/world');
     };
 
+    const onChangeNickname = (e: React.ChangeEvent) => {
+        setNickname((e.target as HTMLInputElement).value);
+    };
     return (
         <>
             <Selector>
@@ -48,7 +50,7 @@ export function CharacterSelector({
             </Selector>
             <Wrapper>
                 <Blank />
-                <Nickname type="text" value={nicknameInput.current} />
+                <Nickname type="text" onChange={onChangeNickname} value={nickname} />
                 <SelectBtn onClick={(e) => redirectWorld(e)}>선택</SelectBtn>
             </Wrapper>
         </>
