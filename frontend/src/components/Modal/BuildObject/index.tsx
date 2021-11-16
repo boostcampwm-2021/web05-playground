@@ -20,12 +20,12 @@ const BuildObject = () => {
     const selectObject = (e: customMouseEvent) => {
         e.stopPropagation();
         const selectedObjectInfo = {
-            objectSrc: e.target.src,
+            src: e.target.src,
             id: -1,
             locationX: -1,
             locationY: -1,
             isLocated: false,
-            isObject: true,
+            isData: true,
         };
         setBuildObject(selectedObjectInfo);
     };

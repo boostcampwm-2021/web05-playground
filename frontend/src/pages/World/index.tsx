@@ -23,7 +23,7 @@ import { Character } from '../../components/Character';
 
 import { socketClient, setSocket } from '../../socket/socket';
 import { IWorldInfo } from '../../utils/model';
-import { getBuildingUrl, getBuildingAndObjectUrls } from '../../utils/query';
+import { getBuildingAndObjectUrls } from '../../utils/query';
 
 interface customWorldInfo {
     [world: string]: typeof worldPark;

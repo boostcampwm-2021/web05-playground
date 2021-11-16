@@ -20,12 +20,12 @@ const BuildBuilding = () => {
     const selectBuilding = (e: customMouseEvent) => {
         e.stopPropagation();
         const selectedBuildingInfo = {
-            buildingSrc: e.target.src,
+            src: e.target.src,
             id: -1,
             locationX: -1,
             locationY: -1,
             isLocated: false,
-            isBuilding: true,
+            isData: true,
         };
         setBuildBuilding(selectedBuildingInfo);
     };

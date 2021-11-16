@@ -15,12 +15,12 @@ const setBuildingModal = () => {
 
     const cancleBuild = () => {
         const selectedObjectInfo = {
-            objectSrc: 'none',
+            src: 'none',
             id: -1,
             locationX: -1,
             locationY: -1,
             isLocated: false,
-            isObject: false,
+            isData: false,
         };
         setBuildObject(selectedObjectInfo);
     };
@@ -30,19 +30,19 @@ const setBuildingModal = () => {
             x: buildObject.locationX,
             y: buildObject.locationY,
             bid: 1, // 추후 수정 해야함
-            imageUrl: buildObject.objectSrc,
+            imageUrl: buildObject.src,
             fileUrl: '',
         };
 
         socketClient.emit('buildObject', objectInfo);
 
         const selectedObjectInfo = {
-            objectSrc: 'none',
+            src: 'none',
             id: -1,
             locationX: -1,
             locationY: -1,
             isLocated: false,
-            isObject: false,
+            isData: false,
         };
         setBuildObject(selectedObjectInfo);
         alert('추가되었습니다.');
