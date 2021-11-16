@@ -108,10 +108,10 @@ const Building = (props: IProps) => {
 
     const fillBuildingPosition = (building: IBuilding | IObject) => {
         const { id, x, y } = building;
-        const dataSize = Object.keys(building).includes('uid') ? 4 : 2;
+        const dataSize = Object.keys(building).includes('uid') ? 2 : 1;
 
-        for (let i = x; i < x + dataSize; i++) {
-            for (let j = y; j < y + dataSize; j++) {
+        for (let i = x - dataSize; i < x + dataSize; i++) {
+            for (let j = y - dataSize; j < y + dataSize; j++) {
                 const index = getIndex(i, j);
                 buildingData[index] = id;
                 if (dataSize === 2) buildingData[index] *= -1;
