@@ -44,3 +44,20 @@ export interface IProps {
     buildingList: IBuilding[];
     objectList: IObject[];
 }
+
+export interface MessageInfo {
+    id: string;
+    message: string;
+}
+
+export interface MessageInfos {
+    messageInfos: MessageInfo[];
+}
+
+export interface ActiveModal {
+    active: boolean;
+}
+
+export interface ModalToggle {
+    modalToggle: boolean;
+}

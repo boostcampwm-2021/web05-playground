@@ -315,6 +315,7 @@ const Building = (props: IProps) => {
         const dx = buildingOutputSize;
         const dy = buildingOutputSize;
 
+        // Todo - 캐싱이미지의 경우 오프스크린에 미리 그려서 캔버스에 입히는 식으로 성능 개선을 해보자
         const cachingImage = buildingImageCache.get(building.imageUrl);
         if (cachingImage) {
             drawFunction(objctx, cachingImage, sx, sy, dx, dy);
@@ -329,7 +330,7 @@ const Building = (props: IProps) => {
                 drawFunction(objctx, buildingObject, sx, sy, dx, dy);
                 buildingImageCache.set(building.imageUrl, buildingObject);
                 cnt++;
-                if (cnt === buildingList.length) {
+                if (cnt === buildingList.length - 1) {
                     drawObjCanvas();
                 }
             };
