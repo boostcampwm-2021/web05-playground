@@ -4,7 +4,6 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import BuildBuilding from './BuildBuilding';
-
 import currentModalState from '../../store/currentModalState';
 
 const Modal = () => {

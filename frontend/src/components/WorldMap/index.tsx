@@ -19,15 +19,6 @@ interface IProps {
     data: ILayer[];
 }
 
-interface IUser {
-    id: number;
-    email: string;
-    nickname: string;
-    x: number;
-    y: number;
-    imageurl: string;
-}
-
 const WorldBackground = (props: IProps) => {
     const layers = props.data;
     const canvasRef = useRef<HTMLCanvasElement>(null);
