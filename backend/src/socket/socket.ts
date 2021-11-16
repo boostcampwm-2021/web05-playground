@@ -3,16 +3,17 @@ import { Server, Socket } from 'socket.io';
 import * as http from 'http';
 
 import {
-    UserMove,
     getUserInfo,
-    addUser,
-    deleteUser,
-    moveUser,
+    addUserInfo,
+    deleteUserInfo,
+    moveUserInfo,
+    isExistUserInfo,
 } from './socket.user';
 import { addBuildingInfo, getBuildingInfo } from './socket.building';
 
 import { IUser } from '../database/entities/User';
 import { IBuilding } from 'src/database/entities/Building';
+import { getUser2, setUser2 } from 'src/database/service/user.service';
 
 interface IWorldInfo {
     buildings?: IBuilding[];
@@ -46,10 +47,12 @@ export default class RoomSocket {
     public connect() {
         this.io.on('connection', (socket: MySocket) => {
             console.log(`${socket.id} 연결되었습니다.`);
-            socket.on('user', (id: number) => this.addUserHandler(id, socket));
+            socket.on('user', (user: IUser) =>
+                this.addUserHandler(user, socket),
+            );
             socket.on('move', (data: IUser) => {
                 console.log(data);
-                this.moveHandler(data, socket);
+                this.moveHandler(data);
             });
             socket.on('enterWorld', () => this.getWorldHandler());
             socket.on('buildBuilding', (data: IBuilding) => {
@@ -60,17 +63,16 @@ export default class RoomSocket {
         });
     }
 
-    async addUserHandler(id: number, socket: MySocket) {
-        const user = await getUserInfo(id);
+    async addUserHandler(user: IUser, socket: MySocket) {
         socket.uid = user.id;
-        addUser(user, this.userMap);
+        await addUserInfo(user, this.userMap);
         console.log(this.userMap);
         this.io.emit('user', this.userMap);
     }
 
-    async moveHandler(data: IUser, socket: MySocket) {
-        moveUser(data, this.userMap);
-        socket.broadcast.emit('move', data);
+    async moveHandler(data: IUser) {
+        moveUserInfo(data, this.userMap);
+        this.io.emit('move', data);
     }
 
     async getWorldHandler() {
@@ -95,7 +97,7 @@ export default class RoomSocket {
     }
 
     deleteUserHandler(socket: MySocket) {
-        if (socket.uid !== undefined) deleteUser(socket.uid, this.userMap);
+        if (socket.uid !== undefined) deleteUserInfo(socket.uid, this.userMap);
         this.io.emit('user', this.userMap);
         console.log(this.userMap);
         console.log(`${socket.id} 끊어졌습니다.`);
