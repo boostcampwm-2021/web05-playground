@@ -91,9 +91,9 @@ const Building = (props: IProps) => {
 
     const fillBuildingPosition = (building: IBuilding) => {
         const { x, y } = building;
-        const buildingSize = 4;
-        for (let i = x; i < x + buildingSize; i++) {
-            for (let j = y; j < y + buildingSize; j++) {
+        const buildingSize = 2;
+        for (let i = x - buildingSize; i < x + buildingSize; i++) {
+            for (let j = y - buildingSize; j < y + buildingSize; j++) {
                 const index = getIndex(i, j);
                 buildingData[index] = 1;
             }

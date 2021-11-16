@@ -2,13 +2,7 @@ import express from 'express';
 import { Server, Socket } from 'socket.io';
 import * as http from 'http';
 
-import {
-    UserMove,
-    getUserInfo,
-    addUser,
-    deleteUser,
-    moveUser,
-} from './socket.user';
+import { getUserInfo, addUser, deleteUser, moveUser } from './socket.user';
 import { addBuildingInfo, getBuildingInfo } from './socket.building';
 
 import { IUser } from '../database/entities/User';
@@ -64,9 +58,12 @@ export default class RoomSocket {
             socket.on('message', (data: Message, roomName: string) => {
                 this.messageHandler(data, roomName);
             });
-            socket.on('enterRoom', (roomName: string) => {
-                this.enterRoomHandler(roomName, socket);
-            });
+            socket.on('joinRoom', (data: string) =>
+                this.joinRoomHandler(data, socket),
+            );
+            socket.on('leaveRoom', (data: string) =>
+                this.leaveRoomHandler(data, socket),
+            );
             socket.on('disconnect', () => this.deleteUserHandler(socket));
         });
     }
@@ -123,5 +120,15 @@ export default class RoomSocket {
         this.io.emit('user', this.userMap);
         console.log(this.userMap);
         console.log(`${socket.id} 끊어졌습니다.`);
+    }
+
+    async joinRoomHandler(data: string, socket: MySocket) {
+        const roomId = data;
+        socket.join(roomId);
+    }
+
+    async leaveRoomHandler(data: string, socket: MySocket) {
+        const roomId = data;
+        socket.leave(roomId);
     }
 }
