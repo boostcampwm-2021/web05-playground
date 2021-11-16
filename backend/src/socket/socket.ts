@@ -110,11 +110,6 @@ export default class RoomSocket {
         this.io.to(roomName).emit('message', data);
     }
 
-    async enterRoomHandler(data: string, socket: MySocket) {
-        socket.join(data);
-        socket.to(data).emit('enterNewPerson', data);
-    }
-
     deleteUserHandler(socket: MySocket) {
         if (socket.uid !== undefined) deleteUser(socket.uid, this.userMap);
         this.io.emit('user', this.userMap);
@@ -125,6 +120,7 @@ export default class RoomSocket {
     async joinRoomHandler(data: string, socket: MySocket) {
         const roomId = data;
         socket.join(roomId);
+        socket.to(data).emit('enterNewPerson', data);
     }
 
     async leaveRoomHandler(data: string, socket: MySocket) {

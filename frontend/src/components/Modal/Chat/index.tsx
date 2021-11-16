@@ -16,22 +16,8 @@ const Chat = ({ active }: ActiveModal) => {
         });
     }, [socketClient]);
 
-    const enterBuilding = () => {
-        const roomName = 'In Building';
-        socketClient.emit('enterRoom', roomName);
-        socketClient.on('enterNewPerson', (data: MessageInfo) => {
-            console.log(data);
-        });
-    };
-
     return (
         <Wrapper active={active}>
-            <ScopeDiv>
-                <button type="button">전체</button>
-                <button type="button" onClick={enterBuilding}>
-                    건물 내 통신
-                </button>
-            </ScopeDiv>
             <ChatList messageInfos={messageInfos} />
             <MessageInput />
         </Wrapper>
@@ -46,24 +32,4 @@ const Wrapper = styled.div<ActiveModal>`
     align-items: center;
     justify-content: space-between;
     height: 100%;
-`;
-
-const ScopeDiv = styled.div`
-    display: flex;
-    justify-content: space-evenly;
-    align-items: center;
-    width: 100%;
-
-    & > button {
-        border: none;
-        margin-right: 5px;
-        border-radius: 4px;
-
-        font-size: 25px;
-
-        &:hover {
-            cursor: pointer;
-            transform: scale(1.2);
-        }
-    }
 `;
