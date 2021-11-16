@@ -100,7 +100,7 @@ const Building = (props: IProps) => {
             window.removeEventListener('mousedown', processBuild);
             window.removeEventListener('mousemove', updatePosition);
         };
-    }, [buildBuilding, buildObject, currentModal]);
+    }, [buildBuilding, buildObject]);
 
     useEffect(() => {
         drawObjCanvas();
