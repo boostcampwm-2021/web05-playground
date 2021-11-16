@@ -61,8 +61,11 @@ export default class RoomSocket {
                 console.log(data);
                 this.buildBuildingHandler(data);
             });
-            socket.on('message', (data: Message) => {
-                this.messageHandler(data);
+            socket.on('message', (data: Message, roomName: string) => {
+                this.messageHandler(data, roomName);
+            });
+            socket.on('enterRoom', (roomName: string) => {
+                this.enterRoomHandler(roomName, socket);
             });
             socket.on('disconnect', () => this.deleteUserHandler(socket));
         });
@@ -102,8 +105,17 @@ export default class RoomSocket {
         this.io.emit('buildBuilding', addedBuilding);
     }
 
-    async messageHandler(data: Message) {
-        this.io.emit('message', data);
+    async messageHandler(data: Message, roomName: string) {
+        if (roomName === 'Everyone') {
+            this.io.emit('message', data);
+            return;
+        }
+        this.io.to(roomName).emit('message', data);
+    }
+
+    async enterRoomHandler(data: string, socket: MySocket) {
+        socket.join(data);
+        socket.to(data).emit('enterNewPerson', data);
     }
 
     deleteUserHandler(socket: MySocket) {
