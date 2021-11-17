@@ -100,19 +100,34 @@ export const addUser2 = async (user: IUser): Promise<Receiver> => {
     }
 };
 
-export const setUser2 = async (user: IUser): Promise<Receiver> => {
+export const setEnterUser2 = async (user: IUser): Promise<Receiver> => {
     const result: Receiver = {
         status: STATUS_CODE.SUCCESS,
     };
     try {
-        const sql = `UPDATE world_user SET nickname = ?, x = ?, y = ?, image_url= ? WHERE id = ?`;
-        await pool2.query(sql, [
-            user.nickname,
-            user.x,
-            user.y,
-            user.imageUrl,
-            user.id,
-        ]);
+        const sql = `UPDATE world_user SET nickname = ?, image_url= ? WHERE id = ?`;
+        console.log('setUSesr');
+        console.log(user);
+        await pool2.query(sql, [user.nickname, user.imageUrl, user.id]);
+        result.user = user;
+        return result;
+    } catch (err) {
+        console.log(err);
+        result.status = STATUS_CODE.FAIL;
+        result.err = setUserError;
+        return result;
+    }
+};
+
+export const setExitUser2 = async (user: IUser): Promise<Receiver> => {
+    const result: Receiver = {
+        status: STATUS_CODE.SUCCESS,
+    };
+    try {
+        const sql = `UPDATE world_user SET x = ?, y = ? WHERE id = ?`;
+        console.log('setUSesr');
+        console.log(user);
+        await pool2.query(sql, [user.x, user.y, user.id]);
         result.user = user;
         return result;
     } catch (err) {

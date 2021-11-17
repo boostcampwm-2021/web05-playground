@@ -1,4 +1,9 @@
-import { addUser2, getUser2, setUser2 } from '../database/service/user.service';
+import {
+    addUser2,
+    getUser2,
+    setEnterUser2,
+    setExitUser2,
+} from '../database/service/user.service';
 import { IUser } from '../database/entities/User';
 import { STATUS_CODE } from '@shared/db.receiver';
 import { userListError } from '@shared/constants';
@@ -21,7 +26,7 @@ export const getUserInfo = async (id: number): Promise<IUser> => {
 };
 export const addUserInfo = async (user: IUser, userMap: UserMap) => {
     if (!(await isExistUserInfo(user.id))) await addUser2(user);
-    else await setUser2(user);
+    else await setEnterUser2(user);
 
     const userInfo = await getUserInfo(user.id);
     userMap[user.id] = userInfo;
@@ -30,7 +35,7 @@ export const addUserInfo = async (user: IUser, userMap: UserMap) => {
 export const deleteUserInfo = async (id: number, userMap: UserMap) => {
     console.log('delete');
     console.log(userMap[id]);
-    await setUser2(userMap[id]);
+    await setExitUser2(userMap[id]);
     delete userMap[id];
 };
 

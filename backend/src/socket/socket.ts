@@ -2,19 +2,12 @@ import express from 'express';
 import { Server, Socket } from 'socket.io';
 import * as http from 'http';
 
-import {
-    getUserInfo,
-    addUserInfo,
-    deleteUserInfo,
-    moveUserInfo,
-    isExistUserInfo,
-} from './socket.user';
+import { addUserInfo, deleteUserInfo, moveUserInfo } from './socket.user';
 import { addBuildingInfo, getBuildingInfo } from './socket.building';
 import { addObjectInfo, getObjectInfo } from './socket.object';
 
 import { IUser } from '../database/entities/User';
 import { IBuilding } from 'src/database/entities/Building';
-import { getUser2, setUser2 } from 'src/database/service/user.service';
 import { IObject } from 'src/database/entities/Object';
 
 interface IWorldInfo {
