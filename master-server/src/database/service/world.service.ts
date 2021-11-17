@@ -1,6 +1,6 @@
 import { worldListError } from '@shared/constants';
 import { Receiver, STATUS_CODE } from '@shared/db.receiver';
-import { pool1 } from '../connection';
+import { pool } from '../connection';
 import { IWorld } from '../entities/World';
 
 export const getWorldList = async (): Promise<Receiver> => {
@@ -10,7 +10,7 @@ export const getWorldList = async (): Promise<Receiver> => {
 
     try {
         const sql = `SELECT * FROM world`;
-        const [worlds] = await pool1.query(sql);
+        const [worlds] = await pool.query(sql);
         const data: IWorld[] = JSON.parse(JSON.stringify(worlds));
         result.worldArr = data;
         return result;

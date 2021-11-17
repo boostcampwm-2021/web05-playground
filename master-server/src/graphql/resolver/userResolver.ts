@@ -1,6 +1,5 @@
 import { STATUS_CODE } from '@shared/db.receiver';
 import { IResolvers } from 'graphql-tools';
-import { ICharacter } from 'src/database/entities/Character';
 import { IUser } from 'src/database/entities/User';
 import { setUser } from 'src/database/service/user.service';
 
