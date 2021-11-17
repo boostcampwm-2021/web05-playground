@@ -1,8 +1,8 @@
 import { atom } from 'recoil';
 import { NONE } from '../utils/constants';
 
-const buildBuildingState = atom({
-    key: 'buildBuildingState',
+const buildObjectState = atom({
+    key: 'buildObjectState',
     default: {
         src: 'none',
         id: NONE,
@@ -13,4 +13,4 @@ const buildBuildingState = atom({
     },
 });
 
-export default buildBuildingState;
+export default buildObjectState;

@@ -9,6 +9,7 @@ import SelectWorld from './pages/SelectWorld';
 import World from './pages/World';
 
 import './reset.css';
+import Setting from './pages/Setting';
 
 const client = new ApolloClient({
     uri: process.env.REACT_APP_BASE_URI,
@@ -22,6 +23,7 @@ function App() {
                 <BrowserRouter>
                     <Route exact path="/" component={Login} />
                     <Route exact path="/login" component={Login} />
+                    <Route exact path="/setting" component={Setting} />
                     <Route exact path="/selectworld" component={SelectWorld} />
                     <Route exact path="/world" component={World} />
                 </BrowserRouter>

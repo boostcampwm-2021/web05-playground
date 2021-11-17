@@ -6,6 +6,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import userState from '../../store/userState';
+import { socketClient } from '../../socket/socket';
+import { IObject } from '../../utils/model';
 
 interface ILayer {
     data: number[];
@@ -54,6 +56,16 @@ const BuildingInside = (props: IProps) => {
     }, []);
 
     useEffect(() => {
+        socketClient.on('roomObjectList', (data: IObject[]) => {
+            console.log(data);
+        });
+
+        return () => {
+            socketClient.removeListener('roomObjectList');
+        };
+    }, [socketClient]);
+
+    useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;
         if (canvas === null) {
             return;
@@ -79,8 +91,8 @@ const BuildingInside = (props: IProps) => {
         const height = Math.floor(window.innerHeight / 2);
         const dx = width - (width % tileSize);
         const dy = height - (height % tileSize);
-        let layerX = user.x - dx / tileSize;
-        let layerY = user.y - dy / tileSize;
+        let layerX = user.x! - dx / tileSize;
+        let layerY = user.y! - dy / tileSize;
 
         if (!ctx || !tileBackground) return;
 
@@ -120,7 +132,11 @@ const BuildingInside = (props: IProps) => {
         }
     };
 
-    return <Canvas id="canvas" ref={canvasRef} />;
+    return (
+        <>
+            <Canvas id="canvas" ref={canvasRef} />
+        </>
+    );
 };
 
 export default BuildingInside;
@@ -131,4 +147,7 @@ const Canvas = styled.canvas`
     position: absolute;
     right: 0;
     top: 0;
+    z-index: 2;
 `;
+
+// z-index:2

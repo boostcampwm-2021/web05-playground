@@ -1,38 +1,15 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable consistent-return */
 import React, { useRef, useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
 import buildingInfoState from '../../store/buildingInfoState';
 import userState from '../../store/userState';
-import { IProps , IBuilding } from '../../utils/model';
+import { UserMap, IUser, IProps, IBuilding } from '../../utils/model';
 
-enum Direction {
-    UP,
-    DOWN,
-    LEFT,
-    RIGHT,
-}
-
-interface UserMove {
-    id: number;
-    email: string;
-    direction: Direction;
-}
-
-interface IUser {
-    id: number;
-    email: string;
-    nickname: string;
-    x: number;
-    y: number;
-    imageUrl: string;
-}
-
-interface UserMap {
-    [key: string]: IUser;
-}
+import isInBuildingState from '../../store/isInBuildingState';
+import { NONE } from '../../utils/constants';
 
 interface imgSrc {
     [key: string]: HTMLImageElement;
@@ -47,21 +24,22 @@ export const Character = (props: IProps) => {
     const [characters, setCharacters] = useState<UserMap>({});
     const [buildingData, setBuildingData] = useState(new Array(commonWidth * commonHeight).fill(0));
     const [buildingInfo, setBuildingInfo] = useRecoilState(buildingInfoState);
+    const isInBuilding = useRecoilValue(isInBuildingState);
     const imgSrcMap: imgSrc = {};
-    const {buildingList} = props;
+    const { buildingList } = props;
 
     const characterWidth = 32;
     const characterHeight = 64;
 
     useEffect(() => {
         if (socketClient === undefined) return;
-        socketClient.emit('user', user.id);
+        socketClient.emit('user', user);
         socketClient.on('user', (data: UserMap) => {
             setUser(data[user.id.toString()]);
             setCharacters(data);
         });
     }, [socketClient]);
-    
+
     useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;
         if (canvas === null) return;
@@ -92,10 +70,10 @@ export const Character = (props: IProps) => {
             window.removeEventListener('keydown', addMoveEvent);
             socketClient.removeListener('move');
         };
-    }, [characters, user]);
+    }, [characters, user, isInBuilding]);
 
     useEffect(() => {
-        if (buildingList.length !== 0 && buildingList[0].id !== -1) {
+        if (buildingList.length !== 0 && buildingList[0].id !== NONE) {
             buildingList.forEach((building) => {
                 fillBuildingPosition(building);
             });
@@ -105,8 +83,8 @@ export const Character = (props: IProps) => {
     const fillBuildingPosition = (building: IBuilding) => {
         const { id, x, y } = building;
         const buildingSize = 2;
-        for (let i = x - buildingSize; i < x + buildingSize; i+=1) {
-            for (let j = y - buildingSize; j < y + buildingSize; j+=1) {
+        for (let i = x - buildingSize; i < x + buildingSize; i += 1) {
+            for (let j = y - buildingSize; j < y + buildingSize; j += 1) {
                 const index = getIndex(i, j);
                 buildingData[index] = id;
             }
@@ -139,15 +117,15 @@ export const Character = (props: IProps) => {
                     0,
                     characterWidth,
                     characterHeight,
-                    user.x * characterWidth < dx ? user.x * characterWidth : dx,
-                    user.y * characterWidth < dy ? user.y * characterWidth : dy,
+                    user.x! * characterWidth < dx ? user.x! * characterWidth : dx,
+                    user.y! * characterWidth < dy ? user.y! * characterWidth : dy,
                     characterWidth,
                     characterHeight,
                 );
             } else {
                 // other-Char
-                const distanceX = (character.x - user.x) * characterWidth;
-                const distanceY = (character.y - user.y) * characterWidth;
+                const distanceX = (character.x! - user.x!) * characterWidth;
+                const distanceY = (character.y! - user.y!) * characterWidth;
 
                 const characterImg = new Image();
                 characterImg.src = character.imageUrl;
@@ -168,7 +146,7 @@ export const Character = (props: IProps) => {
 
     const addMoveEvent = (event: KeyboardEvent) => {
         if (socketClient === undefined) return;
-        
+
         const newLocation = {
             id: user.id,
             nickname: user.nickname,
@@ -180,16 +158,16 @@ export const Character = (props: IProps) => {
 
         switch (event.key) {
             case 'ArrowLeft':
-                newLocation.x -= 1;
+                newLocation.x! -= 1;
                 break;
             case 'ArrowRight':
-                newLocation.x += 1;
+                newLocation.x! += 1;
                 break;
             case 'ArrowUp':
-                newLocation.y -= 1;
+                newLocation.y! -= 1;
                 break;
             case 'ArrowDown':
-                newLocation.y += 1;
+                newLocation.y! += 1;
                 break;
             default:
                 break;
@@ -198,12 +176,14 @@ export const Character = (props: IProps) => {
         setUser(newLocation);
         socketClient.emit('move', newLocation);
         // 건물 입장 로직
-        isBuilding(newLocation.x, newLocation.y);
+        if (isInBuilding === NONE) {
+            isBuilding(newLocation.x!, newLocation.y!);
+        }
     };
-    
+
     const isBuilding = (userX: number, userY: number) => {
         const bid = buildingData[getIndex(userX, userY)];
-        if(bid > 0) {
+        if (bid > 0) {
             const building: IBuilding = findBuilding(bid);
             setBuildingInfo({
                 isBuilding: true,
@@ -213,16 +193,16 @@ export const Character = (props: IProps) => {
             setBuildingInfo({
                 isBuilding: false,
                 id: 0,
-                x: -1,
-                y: -1,
-                uid: -1,
+                x: NONE,
+                y: NONE,
+                uid: NONE,
                 description: '',
                 scope: '',
                 password: '',
                 imageUrl: '',
-            })
+            });
         }
-    }
+    };
 
     const findBuilding = (bid: number): IBuilding => {
         let building: IBuilding = {
@@ -236,14 +216,14 @@ export const Character = (props: IProps) => {
             imageUrl: '',
         };
         buildingList.forEach((b) => {
-            if(b.id === bid) {
+            if (b.id === bid) {
                 building = b;
                 return building;
             }
-        })
+        });
         return building;
-    }
- 
+    };
+
     return <Canvas width={window.innerWidth} height={window.innerHeight} ref={canvasRef} />;
 };
 

@@ -20,3 +20,36 @@ export const getBuildingUrl = gql`
         }
     }
 `;
+
+export const getCharacterList = gql`
+    query Query {
+        characterList {
+            id
+            imageUrl
+        }
+    }
+`;
+
+export const setUserInfo = gql`
+    mutation Mutation($setUserInfoId: Int, $nickname: String, $imageUrl: String) {
+        setUserInfo(id: $setUserInfoId, nickname: $nickname, imageUrl: $imageUrl) {
+            id
+            email
+            nickname
+            imageUrl
+        }
+    }
+`;
+
+export const getBuildingAndObjectUrls = gql`
+    query Query {
+        buildingUrl {
+            id
+            url
+        }
+        objectUrl {
+            id
+            url
+        }
+    }
+`;

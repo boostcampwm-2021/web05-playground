@@ -2,8 +2,8 @@ export interface IUser {
     id: number;
     email: string;
     nickname: string;
-    x: number;
-    y: number;
+    x?: number;
+    y?: number;
     imageUrl: string;
 }
 

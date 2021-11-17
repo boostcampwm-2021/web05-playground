@@ -6,7 +6,9 @@ import { useQuery } from '@apollo/client';
 import currentWorldState from '../../store/currentWorldState';
 import currentModalState from '../../store/currentModalState';
 import buildBuildingState from '../../store/buildBuildingState';
+import buildObjectState from '../../store/buildObjectState';
 import buildingUrls from '../../store/buildingUrlState';
+import objectUrls from '../../store/objectUrlState';
 
 import WorldBackground from '../../components/WorldMap';
 import BuildingInside from '../../components/BuildingInside';
@@ -14,6 +16,7 @@ import Building from '../../components/Building';
 import NavigationBar from '../../components/NavigationBar';
 import Modal from '../../components/Modal';
 import SetBuildingModal from '../../components/SetBuildingModal';
+import SetObjectModal from '../../components/SetObjectModal';
 
 import worldPark from '../../map-files/world-park.json';
 import worldWinter from '../../map-files/world-winter.json';
@@ -22,10 +25,11 @@ import { Character } from '../../components/Character';
 
 import { socketClient, setSocket } from '../../socket/socket';
 import { IWorldInfo } from '../../utils/model';
-import { getBuildingUrl } from '../../utils/query';
+import { getBuildingAndObjectUrls } from '../../utils/query';
 import BuildingInfo from '../../components/BuildingInfo';
 import buildingInfoState from '../../store/buildingInfoState';
 import isInBuildingState from '../../store/isInBuildingState';
+import { NONE } from '../../utils/constants';
 
 interface customWorldInfo {
     [world: string]: typeof worldPark;
@@ -49,15 +53,27 @@ const World = (props: RouteComponentProps) => {
                 imageUrl: 'http://localhost:3000/assets/home.png',
             },
         ],
+        objects: [
+            {
+                id: -1,
+                bid: -1,
+                x: 3,
+                y: 3,
+                imageUrl: 'http://localhost:3000/assets/home.png',
+                fileUrl: '',
+            },
+        ],
     });
     const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
     const [buildingUrl, setBuildingUrl] = useRecoilState(buildingUrls);
+    const [objectUrl, setObjectUrl] = useRecoilState(objectUrls);
     const currentModal = useRecoilValue(currentModalState);
     const buildBuilding = useRecoilValue(buildBuildingState);
+    const buildObject = useRecoilValue(buildObjectState);
     const buildingInfo = useRecoilValue(buildingInfoState);
     const isInBuilding = useRecoilValue(isInBuildingState);
 
-    const { loading, error, data } = useQuery(getBuildingUrl);
+    const { loading, error, data } = useQuery(getBuildingAndObjectUrls);
 
     if (currentWorld.name === 'default') {
         props.history.push('/selectworld');
@@ -93,7 +109,10 @@ const World = (props: RouteComponentProps) => {
     }, []);
 
     useEffect(() => {
-        if (data) setBuildingUrl(data.buildingUrl);
+        if (data) {
+            setBuildingUrl(data.buildingUrl);
+            setObjectUrl(data.objectUrl);
+        }
     }, [data]);
 
     if (loading) return <p>Loading...</p>;
@@ -102,13 +121,26 @@ const World = (props: RouteComponentProps) => {
     return (
         <>
             {/* 아래 recoil 두 가지 상태에따라 맵이 다시 그려지니까 상태관련된 것은 하위컴포넌트 or 다른 곳으로 빼자 */}
-            {isInBuilding === -1 ? <WorldBackground data={mapLayers} /> : <BuildingInside data={buildingLayer} />}
-            <Building layers={mapLayers} buildingList={worldInfo.buildings} />
+            {isInBuilding === NONE ? (
+                <WorldBackground data={mapLayers} />
+            ) : (
+                <BuildingInside data={buildingLayer} />
+            )}
+            <Building
+                layers={mapLayers}
+                buildingList={worldInfo.buildings}
+                objectList={worldInfo.objects}
+            />
             {buildingInfo.isBuilding ? <BuildingInfo /> : <></>}
-            <Character layers={mapLayers} buildingList={worldInfo.buildings} />
+            <Character
+                layers={mapLayers}
+                buildingList={isInBuilding === NONE ? worldInfo.buildings : []}
+                objectList={worldInfo.objects}
+            />
             {currentModal !== 'none' ? <Modal /> : <></>}
             <NavigationBar />
             {buildBuilding.isLocated ? <SetBuildingModal /> : <></>}
+            {buildObject.isLocated ? <SetObjectModal /> : <></>}
         </>
     );
 };

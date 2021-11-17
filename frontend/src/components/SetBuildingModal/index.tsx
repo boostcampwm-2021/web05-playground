@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
 
 import buildBuildingState from '../../store/buildBuildingState';
+import { NONE } from '../../utils/constants';
 
 interface customEventTarget extends EventTarget {
     value: string;
@@ -46,11 +47,12 @@ const setBuildingModal = () => {
 
     const cancleBuild = () => {
         const selectedBuildingInfo = {
-            buildingSrc: 'none',
-            locationX: -1,
-            locationY: -1,
+            src: 'none',
+            id: NONE,
+            locationX: NONE,
+            locationY: NONE,
             isLocated: false,
-            isBuilding: false,
+            isData: false,
         };
         setBuildBuilding(selectedBuildingInfo);
     };
@@ -66,16 +68,17 @@ const setBuildingModal = () => {
                 description,
                 scope: range,
                 password,
-                imageUrl: buildBuilding.buildingSrc,
+                imageUrl: buildBuilding.src,
             };
             socketClient.emit('buildBuilding', buildingInfo);
 
             const selectedBuildingInfo = {
-                buildingSrc: 'none',
+                src: 'none',
+                id: -1,
                 locationX: -1,
                 locationY: -1,
                 isLocated: false,
-                isBuilding: false,
+                isData: false,
             };
             setBuildBuilding(selectedBuildingInfo);
             alert('추가되었습니다.');

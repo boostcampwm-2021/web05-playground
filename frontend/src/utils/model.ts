@@ -1,9 +1,27 @@
+export interface IUser {
+    id: number;
+    email: string;
+    nickname: string;
+    x?: number;
+    y?: number;
+    imageUrl: string;
+}
+
+export interface UserMap {
+    [key: string]: IUser;
+}
+
 export interface IWorld {
     id: number;
     uid: number;
     name: string;
     port: number;
     thumbnail: string;
+}
+
+export interface ICharacter {
+    id: number;
+    imageUrl: string;
 }
 
 interface ILayer {
@@ -25,13 +43,24 @@ export interface IBuilding {
     imageUrl: string;
 }
 
+export interface IObject {
+    id: number;
+    bid: number;
+    x: number;
+    y: number;
+    imageUrl: string;
+    fileUrl: string;
+}
+
 export interface IWorldInfo {
     buildings: IBuilding[];
+    objects: IObject[];
 }
 
 export interface IProps {
     layers: ILayer[];
     buildingList: IBuilding[];
+    objectList: IObject[];
 }
 
 export interface MessageInfo {
