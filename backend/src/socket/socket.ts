@@ -80,6 +80,19 @@ export default class RoomSocket {
                 this.leaveRoomHandler(data, socket);
             });
 
+            socket.on('join_room', () => {
+                socket.broadcast.emit('welcome');
+            });
+            socket.on('offer', (offer: any) => {
+                socket.broadcast.emit('offer', offer);
+            });
+            socket.on('answer', (answer: any) => {
+                socket.broadcast.emit('answer', answer);
+            });
+            socket.on('ice', (ice: any) => {
+                socket.broadcast.emit('ice', ice);
+            });
+
             socket.on('disconnect', () => this.deleteUserHandler(socket));
         });
     }

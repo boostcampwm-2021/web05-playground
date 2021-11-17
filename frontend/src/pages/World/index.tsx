@@ -17,6 +17,7 @@ import NavigationBar from '../../components/NavigationBar';
 import Modal from '../../components/Modal';
 import SetBuildingModal from '../../components/SetBuildingModal';
 import SetObjectModal from '../../components/SetObjectModal';
+import Voice from '../../components/Voice';
 
 import worldPark from '../../map-files/world-park.json';
 import worldWinter from '../../map-files/world-winter.json';
@@ -124,7 +125,10 @@ const World = (props: RouteComponentProps) => {
         <>
             {/* 아래 recoil 두 가지 상태에따라 맵이 다시 그려지니까 상태관련된 것은 하위컴포넌트 or 다른 곳으로 빼자 */}
             {isInBuilding === NONE ? (
-                <WorldBackground data={mapLayers} />
+                <>
+                    <WorldBackground data={mapLayers} />
+                    <Voice />
+                </>
             ) : (
                 <BuildingInside data={buildingLayer} />
             )}
