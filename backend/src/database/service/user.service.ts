@@ -105,10 +105,17 @@ export const setEnterUser2 = async (user: IUser): Promise<Receiver> => {
         status: STATUS_CODE.SUCCESS,
     };
     try {
-        const sql = `UPDATE world_user SET nickname = ?, image_url= ? WHERE id = ?`;
-        console.log('setUSesr');
-        console.log(user);
-        await pool2.query(sql, [user.nickname, user.imageUrl, user.id]);
+        const sql = `INSERT INTO world_user VALUES(?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE nickname = ?, image_url= ?`;
+        await pool2.query(sql, [
+            user.id,
+            user.email,
+            user.nickname,
+            0,
+            0,
+            user.imageUrl,
+            user.nickname,
+            user.imageUrl,
+        ]);
         result.user = user;
         return result;
     } catch (err) {

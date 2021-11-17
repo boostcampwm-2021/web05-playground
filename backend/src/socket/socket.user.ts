@@ -1,5 +1,4 @@
 import {
-    addUser2,
     getUser2,
     setEnterUser2,
     setExitUser2,
@@ -12,22 +11,23 @@ interface UserMap {
     [key: number]: IUser;
 }
 
-export const isExistUserInfo = async (id: number): Promise<boolean> => {
-    const userInfo = await getUser2(id);
-    if (userInfo.status === STATUS_CODE.FAIL) return false;
-    return true;
-};
-
 export const getUserInfo = async (id: number): Promise<IUser> => {
     const userInfo = await getUser2(id);
     if (userInfo.user === undefined) throw new Error(userListError);
     if (userInfo.status === STATUS_CODE.FAIL) throw new Error(userListError);
     return userInfo.user;
 };
-export const addUserInfo = async (user: IUser, userMap: UserMap) => {
-    if (!(await isExistUserInfo(user.id))) await addUser2(user);
-    else await setEnterUser2(user);
 
+export const isExistUserInfo = async (
+    id: number,
+): Promise<IUser | undefined> => {
+    const userInfo = await getUser2(id);
+    if (userInfo.status === STATUS_CODE.FAIL) return undefined;
+    return userInfo.user;
+};
+
+export const addUserInfo = async (user: IUser, userMap: UserMap) => {
+    await setEnterUser2(user);
     const userInfo = await getUserInfo(user.id);
     userMap[user.id] = userInfo;
 };
