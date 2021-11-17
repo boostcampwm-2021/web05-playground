@@ -4,6 +4,7 @@ import { useSetRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import buildObjectState from '../../../store/buildObjectState';
 import objectUrls from '../../../store/objectUrlState';
+import { ActiveModal } from '../../../utils/model';
 
 interface customEventTarget extends EventTarget {
     src: string;
@@ -13,7 +14,7 @@ interface customMouseEvent extends React.MouseEvent<HTMLButtonElement, MouseEven
     target: customEventTarget;
 }
 
-const BuildObject = () => {
+const BuildObject = ({ active }: ActiveModal) => {
     const setBuildObject = useSetRecoilState(buildObjectState);
     const objectUrl = useRecoilValue(objectUrls);
 
@@ -31,7 +32,7 @@ const BuildObject = () => {
     };
 
     return (
-        <ImgContainer>
+        <ImgContainer active={active}>
             {objectUrl.map((url) => {
                 return (
                     <ImgBtn key={url.url} type="button" onMouseDown={selectObject}>
@@ -45,8 +46,8 @@ const BuildObject = () => {
 
 export default BuildObject;
 
-const ImgContainer = styled.div`
-    display: flex;
+const ImgContainer = styled.div<ActiveModal>`
+    display: ${(props) => (props.active ? 'flex' : 'none')};
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-around;

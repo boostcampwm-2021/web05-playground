@@ -16,6 +16,7 @@ const Modal = () => {
         <ModalDiv>
             <BackBtn src="/assets/nextbtn.png" onClick={() => setCurrentModal('none')} />
             <BuildBuilding active={currentModal === 'buildBuilding'} />
+            <BuildObject active={currentModal === 'buildObject'} />
             <Chat active={currentModal === 'chat'} />
         </ModalDiv>
     );

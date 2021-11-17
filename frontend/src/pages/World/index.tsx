@@ -131,7 +131,11 @@ const World = (props: RouteComponentProps) => {
                 objectList={worldInfo.objects}
             />
             {buildingInfo.isBuilding ? <BuildingInfo /> : <></>}
-            <Character layers={mapLayers} buildingList={worldInfo.buildings} />
+            <Character
+                layers={mapLayers}
+                buildingList={isInBuilding === -1 ? worldInfo.buildings : []}
+                objectList={worldInfo.objects}
+            />
             {currentModal !== 'none' ? <Modal /> : <></>}
             <NavigationBar />
             {buildBuilding.isLocated ? <SetBuildingModal /> : <></>}
