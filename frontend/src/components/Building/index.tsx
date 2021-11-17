@@ -91,9 +91,9 @@ const Building = (props: IProps) => {
 
     const fillBuildingPosition = (building: IBuilding) => {
         const { x, y } = building;
-        const buildingSize = 4;
-        for (let i = x; i < x + buildingSize; i++) {
-            for (let j = y; j < y + buildingSize; j++) {
+        const buildingSize = 2;
+        for (let i = x - buildingSize; i < x + buildingSize; i++) {
+            for (let j = y - buildingSize; j < y + buildingSize; j++) {
                 const index = getIndex(i, j);
                 buildingData[index] = 1;
             }
@@ -226,6 +226,7 @@ const Building = (props: IProps) => {
         if (layerX > 70) layerX = 70;
         if (layerY > 50) layerY = 50;
 
+        // Todo - 캐싱이미지의 경우 오프스크린에 미리 그려서 캔버스에 입히는 식으로 성능 개선을 해보자
         const cachingImage = buildingImageCache.get(building.imageUrl);
         if (cachingImage) {
             const buildingOutputSize = tileSize * 4;
@@ -257,7 +258,7 @@ const Building = (props: IProps) => {
                     buildingOutputSize,
                 );
                 cnt++;
-                if (cnt === buildingList.length) {
+                if (cnt === buildingList.length - 1) {
                     drawObjCanvas();
                 }
             };

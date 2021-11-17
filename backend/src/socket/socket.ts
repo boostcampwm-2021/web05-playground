@@ -2,13 +2,7 @@ import express from 'express';
 import { Server, Socket } from 'socket.io';
 import * as http from 'http';
 
-import {
-    UserMove,
-    getUserInfo,
-    addUser,
-    deleteUser,
-    moveUser,
-} from './socket.user';
+import { getUserInfo, addUser, deleteUser, moveUser } from './socket.user';
 import { addBuildingInfo, getBuildingInfo } from './socket.building';
 
 import { IUser } from '../database/entities/User';
@@ -20,6 +14,11 @@ interface IWorldInfo {
 
 interface UserMap {
     [key: string]: IUser;
+}
+
+interface Message {
+    id: string;
+    message: string;
 }
 
 class MySocket extends Socket {
@@ -56,6 +55,15 @@ export default class RoomSocket {
                 console.log(data);
                 this.buildBuildingHandler(data);
             });
+            socket.on('message', (data: Message, roomName: string) => {
+                this.messageHandler(data, roomName);
+            });
+            socket.on('joinRoom', (data: string) =>
+                this.joinRoomHandler(data, socket),
+            );
+            socket.on('leaveRoom', (data: string) =>
+                this.leaveRoomHandler(data, socket),
+            );
             socket.on('disconnect', () => this.deleteUserHandler(socket));
         });
     }
@@ -94,10 +102,29 @@ export default class RoomSocket {
         this.io.emit('buildBuilding', addedBuilding);
     }
 
+    async messageHandler(data: Message, roomName: string) {
+        if (roomName === 'Everyone') {
+            this.io.emit('message', data);
+            return;
+        }
+        this.io.to(roomName).emit('message', data);
+    }
+
     deleteUserHandler(socket: MySocket) {
         if (socket.uid !== undefined) deleteUser(socket.uid, this.userMap);
         this.io.emit('user', this.userMap);
         console.log(this.userMap);
         console.log(`${socket.id} 끊어졌습니다.`);
+    }
+
+    async joinRoomHandler(data: string, socket: MySocket) {
+        const roomId = data;
+        socket.join(roomId);
+        socket.to(data).emit('enterNewPerson', data);
+    }
+
+    async leaveRoomHandler(data: string, socket: MySocket) {
+        const roomId = data;
+        socket.leave(roomId);
     }
 }

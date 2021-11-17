@@ -19,7 +19,7 @@ interface IProps {
     data: ILayer[];
 }
 
-const WorldBackground = (props: IProps) => {
+const BuildingInside = (props: IProps) => {
     const layers = props.data;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [tileBackground, setTileBackground] = useState<HTMLImageElement[]>();
@@ -38,16 +38,16 @@ const WorldBackground = (props: IProps) => {
     };
 
     useEffect(() => {
-        const backgroundImageList: HTMLImageElement[] = [];
+        const buildingImageList: HTMLImageElement[] = [];
         let cnt = 0;
         layers.forEach((layer) => {
-            const backgroundImg = new Image();
-            backgroundImg.src = layer.imgSrc;
-            backgroundImg.onload = () => {
+            const buildingImg = new Image();
+            buildingImg.src = layer.imgSrc;
+            buildingImg.onload = () => {
                 cnt++;
-                backgroundImageList.push(backgroundImg);
+                buildingImageList.push(buildingImg);
                 if (cnt === layers.length) {
-                    setTileBackground([...backgroundImageList]);
+                    setTileBackground([...buildingImageList]);
                 }
             };
         });
@@ -123,7 +123,7 @@ const WorldBackground = (props: IProps) => {
     return <Canvas id="canvas" ref={canvasRef} />;
 };
 
-export default WorldBackground;
+export default BuildingInside;
 
 const Canvas = styled.canvas`
     bottom: 0;

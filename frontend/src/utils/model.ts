@@ -33,3 +33,20 @@ export interface IProps {
     layers: ILayer[];
     buildingList: IBuilding[];
 }
+
+export interface MessageInfo {
+    id: string;
+    message: string;
+}
+
+export interface MessageInfos {
+    messageInfos: MessageInfo[];
+}
+
+export interface ActiveModal {
+    active: boolean;
+}
+
+export interface ModalToggle {
+    modalToggle: boolean;
+}
