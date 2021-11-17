@@ -4,6 +4,7 @@ import { useSetRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import buildBuildingState from '../../../store/buildBuildingState';
 import buildingUrls from '../../../store/buildingUrlState';
+import { NONE } from '../../../utils/constants';
 import { ActiveModal } from '../../../utils/model';
 
 interface customEventTarget extends EventTarget {
@@ -22,9 +23,9 @@ const BuildBuilding = ({ active }: ActiveModal) => {
         e.stopPropagation();
         const selectedBuildingInfo = {
             src: e.target.src,
-            id: -1,
-            locationX: -1,
-            locationY: -1,
+            id: NONE,
+            locationX: NONE,
+            locationY: NONE,
             isLocated: false,
             isData: true,
         };

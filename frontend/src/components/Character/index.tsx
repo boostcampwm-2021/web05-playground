@@ -9,6 +9,7 @@ import userState from '../../store/userState';
 import { UserMap, IUser, IProps, IBuilding } from '../../utils/model';
 
 import isInBuildingState from '../../store/isInBuildingState';
+import { NONE } from '../../utils/constants';
 
 interface imgSrc {
     [key: string]: HTMLImageElement;
@@ -72,7 +73,7 @@ export const Character = (props: IProps) => {
     }, [characters, user, isInBuilding]);
 
     useEffect(() => {
-        if (buildingList.length !== 0 && buildingList[0].id !== -1) {
+        if (buildingList.length !== 0 && buildingList[0].id !== NONE) {
             buildingList.forEach((building) => {
                 fillBuildingPosition(building);
             });
@@ -175,7 +176,7 @@ export const Character = (props: IProps) => {
         setUser(newLocation);
         socketClient.emit('move', newLocation);
         // 건물 입장 로직
-        if (isInBuilding === -1) {
+        if (isInBuilding === NONE) {
             isBuilding(newLocation.x!, newLocation.y!);
         }
     };
@@ -192,9 +193,9 @@ export const Character = (props: IProps) => {
             setBuildingInfo({
                 isBuilding: false,
                 id: 0,
-                x: -1,
-                y: -1,
-                uid: -1,
+                x: NONE,
+                y: NONE,
+                uid: NONE,
                 description: '',
                 scope: '',
                 password: '',

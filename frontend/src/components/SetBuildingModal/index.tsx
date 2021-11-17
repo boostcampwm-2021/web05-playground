@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
 
 import buildBuildingState from '../../store/buildBuildingState';
+import { NONE } from '../../utils/constants';
 
 interface customEventTarget extends EventTarget {
     value: string;
@@ -47,9 +48,9 @@ const setBuildingModal = () => {
     const cancleBuild = () => {
         const selectedBuildingInfo = {
             src: 'none',
-            id: -1,
-            locationX: -1,
-            locationY: -1,
+            id: NONE,
+            locationX: NONE,
+            locationY: NONE,
             isLocated: false,
             isData: false,
         };

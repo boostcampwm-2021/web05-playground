@@ -13,6 +13,7 @@ import buildObjectState from '../../store/buildObjectState';
 
 import { IBuilding, IObject, IProps } from '../../utils/model';
 import currentModalState from '../../store/currentModalState';
+import { NONE } from '../../utils/constants';
 
 const commonWidth = 70;
 const commonHeight = 50;
@@ -41,8 +42,8 @@ const Building = (props: IProps) => {
 
     const objectLayer = layers[OBJECT].data;
 
-    let buildTargetX = -1;
-    let buildTargetY = -1;
+    let buildTargetX = NONE;
+    let buildTargetY = NONE;
 
     useEffect(() => {
         if (socketClient === undefined) return;
@@ -113,9 +114,9 @@ const Building = (props: IProps) => {
             checkingCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
             const DefaultVal = {
                 src: 'none',
-                id: -1,
-                locationX: -1,
-                locationY: -1,
+                id: NONE,
+                locationX: NONE,
+                locationY: NONE,
                 isLocated: false,
                 isData: false,
             };

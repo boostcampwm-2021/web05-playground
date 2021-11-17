@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
 
 import buildObjectState from '../../store/buildObjectState';
+import { NONE } from '../../utils/constants';
 
 const setBuildingModal = () => {
     const [buildObject, setBuildObject] = useRecoilState(buildObjectState);
@@ -16,9 +17,9 @@ const setBuildingModal = () => {
     const cancleBuild = () => {
         const selectedObjectInfo = {
             src: 'none',
-            id: -1,
-            locationX: -1,
-            locationY: -1,
+            id: NONE,
+            locationX: NONE,
+            locationY: NONE,
             isLocated: false,
             isData: false,
         };
@@ -38,9 +39,9 @@ const setBuildingModal = () => {
 
         const selectedObjectInfo = {
             src: 'none',
-            id: -1,
-            locationX: -1,
-            locationY: -1,
+            id: NONE,
+            locationX: NONE,
+            locationY: NONE,
             isLocated: false,
             isData: false,
         };

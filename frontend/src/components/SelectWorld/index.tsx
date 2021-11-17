@@ -6,6 +6,7 @@ import { useRecoilState } from 'recoil';
 
 import styled from 'styled-components';
 import currentWorldState from '../../store/currentWorldState';
+import { DEFAULT_INDEX } from '../../utils/constants';
 import { useSlide } from '../../utils/hooks/useSlide';
 import { IWorld } from '../../utils/model';
 
@@ -14,7 +15,7 @@ export function WorldSelector({ props, data }: { props: RouteComponentProps; dat
     const [current, nextClick, prevClick] = useSlide(data, setCurrentWorld);
 
     useEffect(() => {
-        setCurrentWorld(data[0]);
+        setCurrentWorld(data[DEFAULT_INDEX]);
     }, []);
     const redirectWorld = (event: React.MouseEvent) => {
         event.preventDefault();

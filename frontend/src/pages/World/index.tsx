@@ -29,6 +29,7 @@ import { getBuildingAndObjectUrls } from '../../utils/query';
 import BuildingInfo from '../../components/BuildingInfo';
 import buildingInfoState from '../../store/buildingInfoState';
 import isInBuildingState from '../../store/isInBuildingState';
+import { NONE } from '../../utils/constants';
 
 interface customWorldInfo {
     [world: string]: typeof worldPark;
@@ -120,7 +121,7 @@ const World = (props: RouteComponentProps) => {
     return (
         <>
             {/* 아래 recoil 두 가지 상태에따라 맵이 다시 그려지니까 상태관련된 것은 하위컴포넌트 or 다른 곳으로 빼자 */}
-            {isInBuilding === -1 ? (
+            {isInBuilding === NONE ? (
                 <WorldBackground data={mapLayers} />
             ) : (
                 <BuildingInside data={buildingLayer} />
@@ -133,7 +134,7 @@ const World = (props: RouteComponentProps) => {
             {buildingInfo.isBuilding ? <BuildingInfo /> : <></>}
             <Character
                 layers={mapLayers}
-                buildingList={isInBuilding === -1 ? worldInfo.buildings : []}
+                buildingList={isInBuilding === NONE ? worldInfo.buildings : []}
                 objectList={worldInfo.objects}
             />
             {currentModal !== 'none' ? <Modal /> : <></>}

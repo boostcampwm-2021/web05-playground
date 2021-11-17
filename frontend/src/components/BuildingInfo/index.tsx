@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import buildingInfoState from '../../store/buildingInfoState';
 import isInBuildingState from '../../store/isInBuildingState';
 import { socketClient } from '../../socket/socket';
+import { NONE } from '../../utils/constants';
 
 const BuildingInfo = () => {
     const [buildingInfo, setBuildingInfo] = useRecoilState(buildingInfoState);
@@ -16,9 +17,9 @@ const BuildingInfo = () => {
         setBuildingInfo({
             isBuilding: false,
             id: 0,
-            x: -1,
-            y: -1,
-            uid: -1,
+            x: NONE,
+            y: NONE,
+            uid: NONE,
             description: '',
             scope: '',
             password: '',

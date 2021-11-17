@@ -8,6 +8,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import currentWorldState from '../../store/currentWorldState';
 import userState from '../../store/userState';
+import { DEFAULT_INDEX } from '../../utils/constants';
 import { useSlide } from '../../utils/hooks/useSlide';
 import { ICharacter, IWorld } from '../../utils/model';
 import { setUserInfo } from '../../utils/query';
@@ -19,7 +20,7 @@ export function CharacterSelector({
     props: RouteComponentProps;
     characterList: ICharacter[];
 }) {
-    const [character, setCharacter] = useState<ICharacter>(characterList[0]);
+    const [character, setCharacter] = useState<ICharacter>(characterList[DEFAULT_INDEX]);
     const [current, nextClick, prevClick] = useSlide(characterList, setCharacter);
     const [updateUser, { data, loading, error }] = useMutation(setUserInfo);
     const [user, setUser] = useRecoilState(userState);

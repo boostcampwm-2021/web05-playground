@@ -1,12 +1,13 @@
 import { atom } from 'recoil';
+import { NONE } from '../utils/constants';
 
 const buildObjectState = atom({
     key: 'buildObjectState',
     default: {
         src: 'none',
-        id: -1,
-        locationX: -1,
-        locationY: -1,
+        id: NONE,
+        locationX: NONE,
+        locationY: NONE,
         isLocated: false,
         isData: false,
     },
