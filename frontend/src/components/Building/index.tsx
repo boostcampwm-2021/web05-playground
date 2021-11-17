@@ -13,7 +13,7 @@ import buildObjectState from '../../store/buildObjectState';
 
 import { IBuilding, IObject, IProps } from '../../utils/model';
 import currentModalState from '../../store/currentModalState';
-import { NONE } from '../../utils/constants';
+import { DEFAULT_INDEX, NONE } from '../../utils/constants';
 
 const commonWidth = 70;
 const commonHeight = 50;
@@ -78,7 +78,7 @@ const Building = (props: IProps) => {
         ctx = canvas.getContext('2d');
         checkingCtx = checkingCanvas.getContext('2d');
 
-        if (buildingList.length !== 0 && buildingList[0].id !== -1) {
+        if (buildingList.length !== 0 && buildingList[DEFAULT_INDEX].id !== -1) {
             buildingList.forEach((building) => {
                 fillBuildingPosition(building);
                 drawOriginBuildings(building);
