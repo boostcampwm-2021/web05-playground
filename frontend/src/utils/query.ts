@@ -40,3 +40,16 @@ export const setUserInfo = gql`
         }
     }
 `;
+
+export const getBuildingAndObjectUrls = gql`
+    query Query {
+        buildingUrl {
+            id
+            url
+        }
+        objectUrl {
+            id
+            url
+        }
+    }
+`;

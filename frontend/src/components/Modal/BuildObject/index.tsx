@@ -2,8 +2,8 @@ import React from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 
 import styled from 'styled-components';
-import buildBuildingState from '../../../store/buildBuildingState';
-import buildingUrls from '../../../store/buildingUrlState';
+import buildObjectState from '../../../store/buildObjectState';
+import objectUrls from '../../../store/objectUrlState';
 import { ActiveModal } from '../../../utils/model';
 
 interface customEventTarget extends EventTarget {
@@ -14,13 +14,13 @@ interface customMouseEvent extends React.MouseEvent<HTMLButtonElement, MouseEven
     target: customEventTarget;
 }
 
-const BuildBuilding = ({ active }: ActiveModal) => {
-    const setBuildBuilding = useSetRecoilState(buildBuildingState);
-    const buildingUrl = useRecoilValue(buildingUrls);
+const BuildObject = ({ active }: ActiveModal) => {
+    const setBuildObject = useSetRecoilState(buildObjectState);
+    const objectUrl = useRecoilValue(objectUrls);
 
-    const selectBuilding = (e: customMouseEvent) => {
+    const selectObject = (e: customMouseEvent) => {
         e.stopPropagation();
-        const selectedBuildingInfo = {
+        const selectedObjectInfo = {
             src: e.target.src,
             id: -1,
             locationX: -1,
@@ -28,15 +28,15 @@ const BuildBuilding = ({ active }: ActiveModal) => {
             isLocated: false,
             isData: true,
         };
-        setBuildBuilding(selectedBuildingInfo);
+        setBuildObject(selectedObjectInfo);
     };
 
     return (
         <ImgContainer active={active}>
-            {buildingUrl.map((url) => {
+            {objectUrl.map((url) => {
                 return (
-                    <ImgBtn key={url.url} type="button" onMouseDown={selectBuilding}>
-                        <InnerImg src={url.url} alt="빌드 가능한 빌딩 이미지" />
+                    <ImgBtn key={url.url} type="button" onMouseDown={selectObject}>
+                        <InnerImg src={url.url} alt="빌드 가능한 오브젝트 이미지" />
                     </ImgBtn>
                 );
             })}
@@ -44,7 +44,7 @@ const BuildBuilding = ({ active }: ActiveModal) => {
     );
 };
 
-export default BuildBuilding;
+export default BuildObject;
 
 const ImgContainer = styled.div<ActiveModal>`
     display: ${(props) => (props.active ? 'flex' : 'none')};

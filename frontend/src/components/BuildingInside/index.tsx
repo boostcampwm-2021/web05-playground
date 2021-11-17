@@ -6,6 +6,8 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import userState from '../../store/userState';
+import { socketClient } from '../../socket/socket';
+import { IObject } from '../../utils/model';
 
 interface ILayer {
     data: number[];
@@ -19,7 +21,7 @@ interface IProps {
     data: ILayer[];
 }
 
-const WorldBackground = (props: IProps) => {
+const BuildingInside = (props: IProps) => {
     const layers = props.data;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [tileBackground, setTileBackground] = useState<HTMLImageElement[]>();
@@ -38,20 +40,30 @@ const WorldBackground = (props: IProps) => {
     };
 
     useEffect(() => {
-        const backgroundImageList: HTMLImageElement[] = [];
+        const buildingImageList: HTMLImageElement[] = [];
         let cnt = 0;
         layers.forEach((layer) => {
-            const backgroundImg = new Image();
-            backgroundImg.src = layer.imgSrc;
-            backgroundImg.onload = () => {
+            const buildingImg = new Image();
+            buildingImg.src = layer.imgSrc;
+            buildingImg.onload = () => {
                 cnt++;
-                backgroundImageList.push(backgroundImg);
+                buildingImageList.push(buildingImg);
                 if (cnt === layers.length) {
-                    setTileBackground([...backgroundImageList]);
+                    setTileBackground([...buildingImageList]);
                 }
             };
         });
     }, []);
+
+    useEffect(() => {
+        socketClient.on('roomObjectList', (data: IObject[]) => {
+            console.log(data);
+        });
+
+        return () => {
+            socketClient.removeListener('roomObjectList');
+        };
+    }, [socketClient]);
 
     useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;
@@ -79,8 +91,8 @@ const WorldBackground = (props: IProps) => {
         const height = Math.floor(window.innerHeight / 2);
         const dx = width - (width % tileSize);
         const dy = height - (height % tileSize);
-        let layerX = user.x ? user.x : 0 - dx / tileSize;
-        let layerY = user.y ? user.y : 0 - dy / tileSize;
+        let layerX = user.x! - dx / tileSize;
+        let layerY = user.y! - dy / tileSize;
 
         if (!ctx || !tileBackground) return;
 
@@ -120,10 +132,14 @@ const WorldBackground = (props: IProps) => {
         }
     };
 
-    return <Canvas id="canvas" ref={canvasRef} />;
+    return (
+        <>
+            <Canvas id="canvas" ref={canvasRef} />
+        </>
+    );
 };
 
-export default WorldBackground;
+export default BuildingInside;
 
 const Canvas = styled.canvas`
     bottom: 0;
@@ -131,4 +147,7 @@ const Canvas = styled.canvas`
     position: absolute;
     right: 0;
     top: 0;
+    z-index: 2;
 `;
+
+// z-index:2

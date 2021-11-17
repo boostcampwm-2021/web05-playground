@@ -5,6 +5,7 @@ const queryTypeDefs = gql`
         worldList: [IWorld!]!
         characterList: [ICharacter]!
         buildingUrl: [IBuilding]!
+        objectUrl: [IObject]!
     }
     type Mutation {
         setUserInfo(id: Int, nickname: String, imageUrl: String): IUser!

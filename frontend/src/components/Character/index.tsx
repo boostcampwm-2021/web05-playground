@@ -1,20 +1,31 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable consistent-return */
 import React, { useRef, useEffect, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
+import buildingInfoState from '../../store/buildingInfoState';
 import userState from '../../store/userState';
-import { UserMap, IUser } from '../../utils/model';
+import { UserMap, IUser, IProps, IBuilding } from '../../utils/model';
+
+import isInBuildingState from '../../store/isInBuildingState';
 
 interface imgSrc {
     [key: string]: HTMLImageElement;
 }
 
-export const Character = () => {
+const commonWidth = 70;
+const commonHeight = 50;
+
+export const Character = (props: IProps) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [user, setUser] = useRecoilState(userState);
     const [characters, setCharacters] = useState<UserMap>({});
+    const [buildingData, setBuildingData] = useState(new Array(commonWidth * commonHeight).fill(0));
+    const [buildingInfo, setBuildingInfo] = useRecoilState(buildingInfoState);
+    const isInBuilding = useRecoilValue(isInBuildingState);
     const imgSrcMap: imgSrc = {};
+    const { buildingList } = props;
 
     const characterWidth = 32;
     const characterHeight = 64;
@@ -58,7 +69,30 @@ export const Character = () => {
             window.removeEventListener('keydown', addMoveEvent);
             socketClient.removeListener('move');
         };
-    }, [characters, user]);
+    }, [characters, user, isInBuilding]);
+
+    useEffect(() => {
+        if (buildingList.length !== 0 && buildingList[0].id !== -1) {
+            buildingList.forEach((building) => {
+                fillBuildingPosition(building);
+            });
+        }
+    }, [buildingList]);
+
+    const fillBuildingPosition = (building: IBuilding) => {
+        const { id, x, y } = building;
+        const buildingSize = 2;
+        for (let i = x - buildingSize; i < x + buildingSize; i += 1) {
+            for (let j = y - buildingSize; j < y + buildingSize; j += 1) {
+                const index = getIndex(i, j);
+                buildingData[index] = id;
+            }
+        }
+    };
+
+    const getIndex = (x: number, y: number) => {
+        return y * commonWidth + x;
+    };
 
     const draw = (ctx: CanvasRenderingContext2D | null) => {
         if (!ctx) return;
@@ -140,6 +174,53 @@ export const Character = () => {
 
         setUser(newLocation);
         socketClient.emit('move', newLocation);
+        // 건물 입장 로직
+        if (isInBuilding === -1) {
+            isBuilding(newLocation.x!, newLocation.y!);
+        }
+    };
+
+    const isBuilding = (userX: number, userY: number) => {
+        const bid = buildingData[getIndex(userX, userY)];
+        if (bid > 0) {
+            const building: IBuilding = findBuilding(bid);
+            setBuildingInfo({
+                isBuilding: true,
+                ...building,
+            });
+        } else {
+            setBuildingInfo({
+                isBuilding: false,
+                id: 0,
+                x: -1,
+                y: -1,
+                uid: -1,
+                description: '',
+                scope: '',
+                password: '',
+                imageUrl: '',
+            });
+        }
+    };
+
+    const findBuilding = (bid: number): IBuilding => {
+        let building: IBuilding = {
+            id: 0,
+            x: -1,
+            y: -1,
+            uid: -1,
+            description: '',
+            scope: '',
+            password: '',
+            imageUrl: '',
+        };
+        buildingList.forEach((b) => {
+            if (b.id === bid) {
+                building = b;
+                return building;
+            }
+        });
+        return building;
     };
 
     return <Canvas width={window.innerWidth} height={window.innerHeight} ref={canvasRef} />;

@@ -13,7 +13,9 @@ export enum STATUS_CODE {
 export interface Receiver {
     status: STATUS_CODE;
     err?: string;
+    objectUrl?: Array<IUrl>;
     objectArr?: Array<IObject>;
+    addedObject?: IObject;
     buildingUrl?: Array<IUrl>;
     buildingArr?: Array<IBuilding>;
     characterArr?: Array<ICharacter>;

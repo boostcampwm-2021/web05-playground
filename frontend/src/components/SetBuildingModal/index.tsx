@@ -46,11 +46,12 @@ const setBuildingModal = () => {
 
     const cancleBuild = () => {
         const selectedBuildingInfo = {
-            buildingSrc: 'none',
+            src: 'none',
+            id: -1,
             locationX: -1,
             locationY: -1,
             isLocated: false,
-            isBuilding: false,
+            isData: false,
         };
         setBuildBuilding(selectedBuildingInfo);
     };
@@ -66,16 +67,17 @@ const setBuildingModal = () => {
                 description,
                 scope: range,
                 password,
-                imageUrl: buildBuilding.buildingSrc,
+                imageUrl: buildBuilding.src,
             };
             socketClient.emit('buildBuilding', buildingInfo);
 
             const selectedBuildingInfo = {
-                buildingSrc: 'none',
+                src: 'none',
+                id: -1,
                 locationX: -1,
                 locationY: -1,
                 isLocated: false,
-                isBuilding: false,
+                isData: false,
             };
             setBuildBuilding(selectedBuildingInfo);
             alert('추가되었습니다.');
