@@ -53,7 +53,7 @@ export default class RoomSocket {
                 console.log(data);
                 this.moveHandler(data, socket);
             });
-            socket.on('enterWorld', () => this.getWorldHandler());
+            socket.on('enterWorld', () => this.getWorldHandler(socket));
             socket.on('buildBuilding', (data: IBuilding) => {
                 console.log(data);
                 this.buildBuildingHandler(data);
@@ -67,12 +67,15 @@ export default class RoomSocket {
             socket.on('message', (data: Message, roomName: string) => {
                 this.messageHandler(data, roomName);
             });
-            socket.on('joinRoom', (data: string) =>
-                this.joinRoomHandler(data, socket),
-            );
-            socket.on('leaveRoom', (data: string) =>
-                this.leaveRoomHandler(data, socket),
-            );
+
+            socket.on('joinRoom', (data: string) => {
+                this.joinRoomHandler(data, socket);
+            });
+
+            socket.on('leaveRoom', (data: string) => {
+                this.leaveRoomHandler(data, socket);
+            });
+
             socket.on('disconnect', () => this.deleteUserHandler(socket));
         });
     }
@@ -90,7 +93,7 @@ export default class RoomSocket {
         socket.broadcast.emit('move', data);
     }
 
-    async getWorldHandler() {
+    async getWorldHandler(socket: MySocket) {
         const worldInfo: IWorldInfo = {};
         const buildings = await this.getBuildingHandler();
         const objects = await this.getObjectHandler(1);
@@ -98,7 +101,7 @@ export default class RoomSocket {
         worldInfo.buildings = buildings;
         worldInfo.objects = objects;
         console.log(worldInfo);
-        this.io.emit('enterWorld', worldInfo);
+        socket.emit('enterWorld', worldInfo);
     }
 
     async getBuildingHandler() {
@@ -142,7 +145,10 @@ export default class RoomSocket {
     async joinRoomHandler(data: string, socket: MySocket) {
         const roomId = data;
         socket.join(roomId);
-        socket.to(data).emit('enterNewPerson', data);
+        const objects = await this.getObjectHandler(parseInt(data));
+        //this.io.to(data).emit('roomObjectList', objects);
+        socket.emit('roomObjectList', objects);
+        //socket.to(data).emit('enterNewPerson', data);
     }
 
     async leaveRoomHandler(data: string, socket: MySocket) {
