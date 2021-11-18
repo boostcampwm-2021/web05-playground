@@ -8,6 +8,7 @@ import BuildObject from './BuildObject';
 import Chat from './Chat';
 
 import currentModalState from '../../store/currentModalState';
+import { Clickable } from '../../utils/css';
 
 const Modal = () => {
     const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
@@ -43,4 +44,6 @@ const BackBtn = styled.img`
     padding: 10px;
     width: 30px;
     height: 30px;
+
+    ${Clickable}
 `;

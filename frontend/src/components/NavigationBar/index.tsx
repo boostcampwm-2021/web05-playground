@@ -1,11 +1,13 @@
 /* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable no-template-curly-in-string */
 import React from 'react';
+import { RouteComponentProps } from 'react-router-dom';
 import { useRecoilState } from 'recoil';
 
 import styled from 'styled-components';
 
 import currentModalState from '../../store/currentModalState';
+import { Clickable } from '../../utils/css';
 
 const icons = [
     'voiceChat',
@@ -17,8 +19,14 @@ const icons = [
     'setting',
 ];
 
-const NavigationBar = () => {
+const NavigationBar = ({ props }: { props: RouteComponentProps }) => {
     const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
+
+    const redirectSetting = (event: React.MouseEvent) => {
+        event.preventDefault();
+        props.history.push('/setting');
+    };
+
     return (
         <FixedDiv>
             <SideDiv>
@@ -37,8 +45,9 @@ const NavigationBar = () => {
                         <Icons
                             key={icon}
                             src={`/assets/${icon}.png`}
-                            onClick={() => {
-                                if (currentModal === icon) setCurrentModal('none');
+                            onClick={(e) => {
+                                if (icon === 'setting') redirectSetting(e);
+                                else if (currentModal === icon) setCurrentModal('none');
                                 else setCurrentModal(icon);
                             }}
                         />
@@ -70,6 +79,7 @@ const FixedDiv = styled.div`
 const Icons = styled.img`
     width: 40px;
     height: 40px;
+    ${Clickable}
 `;
 
 const SideDiv = styled.div`

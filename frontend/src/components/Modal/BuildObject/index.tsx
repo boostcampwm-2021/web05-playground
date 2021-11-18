@@ -4,6 +4,7 @@ import { useSetRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import buildObjectState from '../../../store/buildObjectState';
 import objectUrls from '../../../store/objectUrlState';
+import { Clickable } from '../../../utils/css';
 import { ActiveModal } from '../../../utils/model';
 
 interface customEventTarget extends EventTarget {
@@ -62,4 +63,5 @@ const ImgBtn = styled.button`
 const InnerImg = styled.img`
     width: 150px;
     height: 150px;
+    ${Clickable}
 `;
