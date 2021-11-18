@@ -140,7 +140,7 @@ const World = (props: RouteComponentProps) => {
                 objectList={worldInfo.objects}
             />
             {currentModal !== 'none' ? <Modal /> : <></>}
-            <NavigationBar />
+            <NavigationBar props={props} />
             {buildBuilding.isLocated ? <SetBuildingModal /> : <></>}
             {buildObject.isLocated ? <SetObjectModal /> : <></>}
         </>
