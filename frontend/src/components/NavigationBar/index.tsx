@@ -2,12 +2,13 @@
 /* eslint-disable no-template-curly-in-string */
 import React from 'react';
 import styled from 'styled-components';
+import { RouteComponentProps } from 'react-router-dom';
 
 import Exit from './Exit';
 import UserLog from './UserLog';
 import Menu from './Menu';
 
-const NavigationBar = () => {
+const NavigationBar = ({ props }: { props: RouteComponentProps }) => {
     return (
         <FixedDiv>
             <SideDiv>
@@ -16,7 +17,7 @@ const NavigationBar = () => {
             </SideDiv>
             <img src="/assets/navLogo.png" width="90px" height="80px" />
             <SideDiv>
-                <Menu />
+                <Menu props={props} />
             </SideDiv>
         </FixedDiv>
     );

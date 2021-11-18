@@ -5,6 +5,7 @@ import styled from 'styled-components';
 import buildBuildingState from '../../../store/buildBuildingState';
 import buildingUrls from '../../../store/buildingUrlState';
 import { NONE } from '../../../utils/constants';
+import { Clickable } from '../../../utils/css';
 import { ActiveModal } from '../../../utils/model';
 
 interface customEventTarget extends EventTarget {
@@ -63,4 +64,5 @@ const ImgBtn = styled.button`
 const InnerImg = styled.img`
     width: 150px;
     height: 150px;
+    ${Clickable}
 `;

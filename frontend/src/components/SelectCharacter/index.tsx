@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import currentWorldState from '../../store/currentWorldState';
 import userState from '../../store/userState';
 import { DEFAULT_INDEX } from '../../utils/constants';
+import { Clickable } from '../../utils/css';
 import { useSlide } from '../../utils/hooks/useSlide';
 import { ICharacter, IWorld } from '../../utils/model';
 import { setUserInfo } from '../../utils/query';
@@ -28,15 +29,8 @@ export function CharacterSelector({
 
     const redirectWorld = async (event: React.MouseEvent) => {
         event.preventDefault();
-        const result = await updateUser({
-            variables: {
-                setUserInfoId: user.id,
-                nickname,
-                imageUrl: current.imageUrl,
-            },
-        });
         setUser({ ...user, nickname, imageUrl: current.imageUrl });
-        props.history.push('/world');
+        props.history.push('/selectworld');
     };
 
     const onChangeNickname = (e: React.ChangeEvent) => {
@@ -123,4 +117,6 @@ const SelectBtn = styled.div`
     font-weight: 150;
     font-size: 40px;
     font-weight: 500;
+
+    ${Clickable}
 `;

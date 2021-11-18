@@ -7,6 +7,7 @@ import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 import currentWorldState from '../../store/currentWorldState';
 import { DEFAULT_INDEX } from '../../utils/constants';
+import { Clickable } from '../../utils/css';
 import { useSlide } from '../../utils/hooks/useSlide';
 import { IWorld } from '../../utils/model';
 
@@ -25,9 +26,9 @@ export function WorldSelector({ props, data }: { props: RouteComponentProps; dat
     return (
         <>
             <Selector>
-                <img src="/assets/prevbtn.png" onClick={prevClick} height="50px" />
+                <ArrowButton src="/assets/prevbtn.png" onClick={prevClick} />
                 <World thumbnail={current.thumbnail}>{current.name}</World>
-                <img src="/assets/nextbtn.png" onClick={nextClick} height="50px" />
+                <ArrowButton src="/assets/nextbtn.png" onClick={nextClick} />
             </Selector>
             <SelectBtn onClick={(e) => redirectWorld(e)}>선택</SelectBtn>
         </>
@@ -48,6 +49,11 @@ const World = styled.div<{ thumbnail: string }>`
     font-style: normal;
     font-weight: bold;
     font-size: 80px;
+`;
+
+const ArrowButton = styled.img`
+    height: 50px;
+    ${Clickable}
 `;
 
 const Selector = styled.div`
@@ -72,4 +78,6 @@ const SelectBtn = styled.div`
     font-weight: 150;
     font-size: 40px;
     font-weight: 500;
+
+    ${Clickable}
 `;
