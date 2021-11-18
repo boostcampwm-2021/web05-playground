@@ -57,7 +57,7 @@ const BuildingInside = (props: IProps) => {
 
     useEffect(() => {
         socketClient.on('roomObjectList', (data: IObject[]) => {
-            console.log(data);
+            console.log('objectList', data);
         });
 
         return () => {
