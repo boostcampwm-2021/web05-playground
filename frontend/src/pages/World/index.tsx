@@ -17,7 +17,7 @@ import NavigationBar from '../../components/NavigationBar';
 import Modal from '../../components/Modal';
 import SetBuildingModal from '../../components/SetBuildingModal';
 import SetObjectModal from '../../components/SetObjectModal';
-import Voice from '../../components/Voice';
+import Video from '../../components/Video';
 
 import worldPark from '../../map-files/world-park.json';
 import worldWinter from '../../map-files/world-winter.json';
@@ -127,10 +127,12 @@ const World = (props: RouteComponentProps) => {
             {isInBuilding === NONE ? (
                 <>
                     <WorldBackground data={mapLayers} />
-                    <Voice />
                 </>
             ) : (
-                <BuildingInside data={buildingLayer} />
+                <>
+                    <BuildingInside data={buildingLayer} />
+                    <Video />
+                </>
             )}
             <Building
                 layers={mapLayers}

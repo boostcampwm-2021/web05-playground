@@ -28,6 +28,8 @@ class MySocket extends Socket {
     public uid?: number;
 }
 
+const rooms = new Map();
+
 export default class RoomSocket {
     public app: express.Application;
     public port: number;
@@ -80,20 +82,30 @@ export default class RoomSocket {
                 this.leaveRoomHandler(data, socket);
             });
 
-            socket.on('join_room', () => {
-                socket.broadcast.emit('welcome');
-            });
-            socket.on('offer', (offer: any) => {
-                socket.broadcast.emit('offer', offer);
-            });
-            socket.on('answer', (answer: any) => {
-                socket.broadcast.emit('answer', answer);
-            });
-            socket.on('ice', (ice: any) => {
-                socket.broadcast.emit('ice', ice);
+            socket.on('offer', (data) => {
+                this.io.to(data.offerReceiveID).emit('offer', {
+                    sdp: data.sdp,
+                    offerSendID: data.offerSendID,
+                });
             });
 
-            socket.on('disconnect', () => this.deleteUserHandler(socket));
+            socket.on('answer', (data) => {
+                this.io.to(data.answerReceiveID).emit('answer', {
+                    sdp: data.sdp,
+                    answerSendID: data.answerSendID,
+                });
+            });
+
+            socket.on('candidate', (data) => {
+                socket.to(data.candidateReceiveID).emit('ice', {
+                    candidate: data.candidate,
+                    candidateSendID: data.candidateSendID,
+                });
+            });
+
+            socket.on('disconnect', () => {
+                this.deleteUserHandler(socket);
+            });
         });
     }
 
@@ -164,9 +176,22 @@ export default class RoomSocket {
         const roomId = data;
         socket.join(roomId);
         const objects = await this.getObjectHandler(parseInt(data));
-        //this.io.to(data).emit('roomObjectList', objects);
         socket.emit('roomObjectList', objects);
-        //socket.to(data).emit('enterNewPerson', data);
+
+        const usersInRoom = rooms.get(roomId);
+        if (usersInRoom === undefined) {
+            rooms.set(roomId, [socket.id]);
+        } else {
+            usersInRoom.push(socket.id);
+        }
+
+        const others = rooms
+            .get(roomId)
+            .filter((user: string) => user !== socket.id);
+
+        this.io.sockets
+            .to(socket.id)
+            .emit('others', others === undefined ? [] : others);
     }
 
     async leaveRoomHandler(data: string, socket: MySocket) {
