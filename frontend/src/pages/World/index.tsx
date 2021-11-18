@@ -97,7 +97,9 @@ const World = (props: RouteComponentProps) => {
             props.history.push('/selectworld');
         };
 
-        setSocket(process.env.REACT_APP_BASE_SOCKET_URI!);
+        setSocket(
+            process.env.REACT_APP_BASE_SOCKET_URI!.concat(`:${currentWorld.port.toString()}`),
+        );
         socketClient.emit('enterWorld');
         socketClient.on('enterWorld', (data: IWorldInfo) => {
             setWorldInfo(data);
