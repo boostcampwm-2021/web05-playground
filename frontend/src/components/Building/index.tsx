@@ -15,6 +15,12 @@ import { IBuilding, IObject, IProps } from '../../utils/model';
 import currentModalState from '../../store/currentModalState';
 import { DEFAULT_INDEX, NONE } from '../../utils/constants';
 
+import {
+    buildingData,
+    objectData,
+    buildingListForCharacter,
+} from '../../utils/variables/buildingData';
+
 const commonWidth = 70;
 const commonHeight = 50;
 const tileSize = 32;
@@ -35,12 +41,11 @@ const Building = (props: IProps) => {
     const [buildBuilding, setBuildBuilding] = useRecoilState(buildBuildingState);
     const [buildObject, setBuildObject] = useRecoilState(buildObjectState);
     const currentModal = useRecoilValue(currentModalState);
-    const [buildingData, setBuildingData] = useState(new Array(commonWidth * commonHeight).fill(0));
     const user = useRecoilValue(userState);
 
     let cnt = 0;
 
-    const objectLayer = layers[OBJECT].data;
+    const obstacleLayer = layers[OBJECT].data;
 
     let buildTargetX = NONE;
     let buildTargetY = NONE;
@@ -132,9 +137,12 @@ const Building = (props: IProps) => {
         for (let i = x - dataSize; i < x + dataSize; i++) {
             for (let j = y - dataSize; j < y + dataSize; j++) {
                 const index = getIndex(i, j);
-                buildingData[index] = id;
-                if (dataSize === 2) buildingData[index] *= -1;
+                if (dataSize === 1) objectData[index] = id;
                 else if (id === 1) buildingData[index] = 0;
+                else {
+                    buildingData[index] = id;
+                    buildingListForCharacter.set(id, building);
+                }
             }
         }
     };
@@ -294,9 +302,11 @@ const Building = (props: IProps) => {
         const halfOfBuildingTileCount = currentModal === 'buildBuilding' ? 2 : 1;
         for (let i = col - halfOfBuildingTileCount; i < col + halfOfBuildingTileCount; i++) {
             for (let j = row - halfOfBuildingTileCount; j < row + halfOfBuildingTileCount; j++) {
-                const objectVal = objectLayer[getIndex(i, j)];
-                const buildingVal = buildingData[getIndex(i, j)];
-                if (objectVal !== 0 || buildingVal !== 0) {
+                const idx = getIndex(i, j);
+                const obstacle = obstacleLayer[idx];
+                const objectVal = objectData[idx];
+                const buildingVal = buildingData[idx];
+                if (obstacle !== 0 || objectVal !== 0 || buildingVal !== 0) {
                     return false;
                 }
             }
