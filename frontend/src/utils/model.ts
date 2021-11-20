@@ -52,7 +52,7 @@ export interface IObject {
     fileUrl: string;
 }
 
-export interface IWorldInfo {
+export interface IBuildingInfo {
     buildings: IBuilding[];
     objects: IObject[];
 }
