@@ -10,14 +10,14 @@ import buildObjectState from '../../store/buildObjectState';
 import buildingUrls from '../../store/buildingUrlState';
 import objectUrls from '../../store/objectUrlState';
 
-import WorldBackground from '../../components/WorldMap';
-import BuildingInside from '../../components/BuildingInside';
 import Building from '../../components/Building';
 import NavigationBar from '../../components/NavigationBar';
 import Modal from '../../components/Modal';
 import SetBuildingModal from '../../components/SetBuildingModal';
 import SetObjectModal from '../../components/SetObjectModal';
 import Video from '../../components/Video';
+
+import Background from '../../components/Background';
 
 import worldPark from '../../map-files/world-park.json';
 import worldWinter from '../../map-files/world-winter.json';
@@ -126,16 +126,10 @@ const World = (props: RouteComponentProps) => {
     return (
         <>
             {/* 아래 recoil 두 가지 상태에따라 맵이 다시 그려지니까 상태관련된 것은 하위컴포넌트 or 다른 곳으로 빼자 */}
-            {isInBuilding === NONE ? (
-                <>
-                    <WorldBackground data={mapLayers} />
-                </>
-            ) : (
-                <>
-                    <BuildingInside data={buildingLayer} />
-                    <Video />
-                </>
-            )}
+            <>
+                <Background data={isInBuilding === NONE ? mapLayers : buildingLayer} />
+            </>
+            {/* 빌딩이면 비디오 컴포넌트 추가 해야함 */}
             <Building
                 layers={mapLayers}
                 buildingList={worldInfo.buildings}

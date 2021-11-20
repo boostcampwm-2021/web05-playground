@@ -6,8 +6,6 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import userState from '../../store/userState';
-import { socketClient } from '../../socket/socket';
-import { IObject } from '../../utils/model';
 
 interface ILayer {
     data: number[];
@@ -21,7 +19,7 @@ interface IProps {
     data: ILayer[];
 }
 
-const BuildingInside = (props: IProps) => {
+const WorldBackground = (props: IProps) => {
     const layers = props.data;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [tileBackground, setTileBackground] = useState<HTMLImageElement[]>();
@@ -40,31 +38,20 @@ const BuildingInside = (props: IProps) => {
     };
 
     useEffect(() => {
-        const buildingImageList: HTMLImageElement[] = [];
+        const backgroundImageList: HTMLImageElement[] = [];
         let cnt = 0;
         layers.forEach((layer) => {
-            const buildingImg = new Image();
-            buildingImg.src = layer.imgSrc;
-            buildingImg.onload = () => {
+            const backgroundImg = new Image();
+            backgroundImg.src = layer.imgSrc;
+            backgroundImg.onload = () => {
                 cnt++;
-                buildingImageList.push(buildingImg);
+                backgroundImageList.push(backgroundImg);
                 if (cnt === layers.length) {
-                    setTileBackground([...buildingImageList]);
+                    setTileBackground([...backgroundImageList]);
                 }
             };
         });
-    }, []);
-
-    // 빌딩 진입 후 오브젝트 리스트 받아오는 부분
-    useEffect(() => {
-        socketClient.on('roomObjectList', (data: IObject[]) => {
-            console.log('objectList', data);
-        });
-
-        return () => {
-            socketClient.removeListener('roomObjectList');
-        };
-    }, [socketClient]);
+    }, [layers]);
 
     useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;
@@ -133,14 +120,10 @@ const BuildingInside = (props: IProps) => {
         }
     };
 
-    return (
-        <>
-            <Canvas id="canvas" ref={canvasRef} />
-        </>
-    );
+    return <Canvas id="bgCanvas" ref={canvasRef} />;
 };
 
-export default BuildingInside;
+export default WorldBackground;
 
 const Canvas = styled.canvas`
     bottom: 0;
@@ -148,7 +131,4 @@ const Canvas = styled.canvas`
     position: absolute;
     right: 0;
     top: 0;
-    z-index: 2;
 `;
-
-// z-index:2
