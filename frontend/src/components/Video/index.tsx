@@ -202,7 +202,7 @@ const Video = () => {
 
     return (
         <Wrapper>
-            <MyVideo ref={videoRef} autoPlay />
+            <MyVideo ref={videoRef} muted autoPlay />
             {users.map((user) => {
                 return <OtherVideo key={user.id} stream={user.stream} />;
             })}
