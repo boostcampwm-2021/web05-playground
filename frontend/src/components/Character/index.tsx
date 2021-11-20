@@ -224,7 +224,14 @@ export const Character = (props: IProps) => {
         return building;
     };
 
-    return <Canvas width={window.innerWidth} height={window.innerHeight} ref={canvasRef} />;
+    return (
+        <Canvas
+            id="characterCanvas"
+            width={window.innerWidth}
+            height={window.innerHeight}
+            ref={canvasRef}
+        />
+    );
 };
 
 const Canvas = styled.canvas`
