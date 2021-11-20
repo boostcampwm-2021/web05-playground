@@ -35,7 +35,6 @@ const BuildingInfo = () => {
 
     const joinRoom = () => {
         setIsInBuilding(buildingInfo.id);
-        socketClient.emit('joinRoom', buildingInfo.id.toString(10));
         cancle();
     };
 

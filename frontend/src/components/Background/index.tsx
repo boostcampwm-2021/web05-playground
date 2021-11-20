@@ -7,6 +7,11 @@ import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import userState from '../../store/userState';
 
+import Building from '../../components/Building';
+import { socketClient } from '../../socket/socket';
+import { IBuildingInfo } from '../../utils/model';
+import { Character } from '../Character';
+
 interface ILayer {
     data: number[];
     height: number;
@@ -17,15 +22,47 @@ interface ILayer {
 
 interface IProps {
     data: ILayer[];
+    current: number;
+}
+
+interface IEnter {
+    user: string;
+    roomId: number;
 }
 
 const WorldBackground = (props: IProps) => {
     const layers = props.data;
+    const InBuilding = props.current;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [tileBackground, setTileBackground] = useState<HTMLImageElement[]>();
     const user = useRecoilValue(userState);
     const commonWidth = layers[0].width;
     const tileSize = 32;
+
+    const [buildingInfo, setBuildingInfo] = useState({
+        buildings: [
+            {
+                id: -1,
+                x: 3,
+                y: 3,
+                uid: 1,
+                description: '테스트1',
+                scope: 'private',
+                password: '1234',
+                imageUrl: 'http://localhost:3000/assets/home.png',
+            },
+        ],
+        objects: [
+            {
+                id: -1,
+                bid: -1,
+                x: 3,
+                y: 3,
+                imageUrl: 'http://localhost:3000/assets/home.png',
+                fileUrl: '',
+            },
+        ],
+    });
 
     let ctx: CanvasRenderingContext2D | null;
     let sourceX = 0;
@@ -36,6 +73,23 @@ const WorldBackground = (props: IProps) => {
     const getIndex = (x: number, y: number) => {
         return y * commonWidth + x;
     };
+
+    useEffect(() => {
+        const enterInfo = {
+            user: 'wnsgur',
+            roomId: InBuilding,
+        };
+        socketClient.emit('enter', enterInfo);
+
+        socketClient.on('enter', (data: IBuildingInfo) => {
+            console.log(data);
+            setBuildingInfo(data);
+        });
+
+        return () => {
+            socketClient.removeListener('enter');
+        };
+    }, [socketClient, InBuilding]);
 
     useEffect(() => {
         const backgroundImageList: HTMLImageElement[] = [];
@@ -120,7 +174,17 @@ const WorldBackground = (props: IProps) => {
         }
     };
 
-    return <Canvas id="bgCanvas" ref={canvasRef} />;
+    return (
+        <>
+            <Canvas id="bgCanvas" ref={canvasRef} />
+            <Building
+                layers={layers}
+                buildingList={buildingInfo.buildings}
+                objectList={buildingInfo.objects}
+            />
+            <Character />
+        </>
+    );
 };
 
 export default WorldBackground;
