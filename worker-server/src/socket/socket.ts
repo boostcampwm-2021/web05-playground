@@ -28,6 +28,11 @@ class MySocket extends Socket {
     public uid?: number;
 }
 
+interface IEnter {
+    user: string;
+    roomId: number;
+}
+
 const rooms = new Map();
 
 export default class RoomSocket {
@@ -57,7 +62,7 @@ export default class RoomSocket {
                 console.log(data);
                 this.moveHandler(data);
             });
-            socket.on('enterWorld', (data: string) =>
+            socket.on('enter', (data: IEnter) =>
                 this.getWorldHandler(socket, data),
             );
             socket.on('buildBuilding', (data: IBuilding) => {
@@ -72,10 +77,6 @@ export default class RoomSocket {
 
             socket.on('message', (data: Message, roomName: string) => {
                 this.messageHandler(data, roomName);
-            });
-
-            socket.on('joinRoom', (data: string) => {
-                this.joinRoomHandler(data, socket);
             });
 
             socket.on('leaveRoom', (data: string) => {
@@ -121,17 +122,23 @@ export default class RoomSocket {
         this.io.emit('move', data);
     }
 
-    async getWorldHandler(socket: MySocket, data: string) {
+    async getWorldHandler(socket: MySocket, data: IEnter) {
         const worldInfo: IWorldInfo = {};
-        const buildings = await this.getBuildingHandler();
-        const objects = await this.getObjectHandler(1);
+        const buildings =
+            data.roomId === -1 ? await this.getBuildingHandler() : [];
+        const objects = await this.getObjectHandler(
+            data.roomId === -1 ? 1 : data.roomId,
+        );
+        if (data.roomId !== -1) {
+            this.joinRoomHandler(data.roomId, socket);
+        }
 
         worldInfo.buildings = buildings;
         worldInfo.objects = objects;
         console.log(worldInfo);
 
-        socket.emit('enterWorld', worldInfo);
-        this.io.emit('enterNewPerson', data);
+        socket.emit('enter', worldInfo);
+        this.io.emit('enterNewPerson', data.user);
     }
 
     async getBuildingHandler() {
@@ -172,26 +179,24 @@ export default class RoomSocket {
         console.log(`${socket.id} 끊어졌습니다.`);
     }
 
-    async joinRoomHandler(data: string, socket: MySocket) {
-        const roomId = data;
+    async joinRoomHandler(data: number, socket: MySocket) {
+        const roomId = data.toString();
         socket.join(roomId);
-        const objects = await this.getObjectHandler(parseInt(data));
-        socket.emit('roomObjectList', objects);
 
-        const usersInRoom = rooms.get(roomId);
-        if (usersInRoom === undefined) {
-            rooms.set(roomId, [socket.id]);
-        } else {
-            usersInRoom.push(socket.id);
-        }
+        // const usersInRoom = rooms.get(roomId);
+        // if (usersInRoom === undefined) {
+        //     rooms.set(roomId, [socket.id]);
+        // } else {
+        //     usersInRoom.push(socket.id);
+        // }
 
-        const others = rooms
-            .get(roomId)
-            .filter((user: string) => user !== socket.id);
+        // const others = rooms
+        //     .get(roomId)
+        //     .filter((user: string) => user !== socket.id);
 
-        this.io.sockets
-            .to(socket.id)
-            .emit('others', others === undefined ? [] : others);
+        // this.io.sockets
+        //     .to(socket.id)
+        //     .emit('others', others === undefined ? [] : others);
     }
 
     async leaveRoomHandler(data: string, socket: MySocket) {
