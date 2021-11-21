@@ -25,6 +25,7 @@ const BuildBuilding = ({ active }: ActiveModal) => {
         const selectedBuildingInfo = {
             src: e.target.src,
             id: NONE,
+            roomId: NONE,
             locationX: NONE,
             locationY: NONE,
             isLocated: false,

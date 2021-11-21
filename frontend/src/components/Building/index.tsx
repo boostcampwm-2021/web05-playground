@@ -35,7 +35,7 @@ objCanvas.width = commonWidth * tileSize;
 objCanvas.height = commonHeight * tileSize;
 
 const Building = (props: IProps) => {
-    const { layers, buildingList, objectList } = props;
+    const { layers, buildingList, objectList, current: InBuilding } = props;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const checkingRef = useRef<HTMLCanvasElement>(null);
     const [buildBuilding, setBuildBuilding] = useRecoilState(buildBuildingState);
@@ -74,6 +74,10 @@ const Building = (props: IProps) => {
         if (canvas === null || checkingCanvas === null) {
             return;
         }
+
+        objctx?.clearRect(0, 0, objCanvas.width, objCanvas.height);
+        buildingData.fill(0);
+        objectData.fill(0);
 
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -120,6 +124,7 @@ const Building = (props: IProps) => {
             const DefaultVal = {
                 src: 'none',
                 id: NONE,
+                roomId: NONE,
                 locationX: NONE,
                 locationY: NONE,
                 isLocated: false,
@@ -202,6 +207,7 @@ const Building = (props: IProps) => {
             isPosssibleArea(buildTargetX + layerX, buildTargetY + layerY) &&
             checkingCtx !== null
         ) {
+            const roomId = InBuilding === -1 ? 1 : InBuilding;
             const locationX = buildTargetX + layerX;
             const locationY = buildTargetY + layerY;
             const isLocated = true;
@@ -209,6 +215,7 @@ const Building = (props: IProps) => {
             if (flag === 0) {
                 setBuildBuilding({
                     ...buildBuilding,
+                    roomId,
                     locationX,
                     locationY,
                     isLocated,
@@ -217,6 +224,7 @@ const Building = (props: IProps) => {
             } else {
                 setBuildObject({
                     ...buildObject,
+                    roomId,
                     locationX,
                     locationY,
                     isLocated,

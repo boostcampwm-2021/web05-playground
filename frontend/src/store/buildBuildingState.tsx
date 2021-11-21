@@ -6,6 +6,7 @@ const buildBuildingState = atom({
     default: {
         src: 'none',
         id: NONE,
+        roomId: NONE,
         locationX: NONE,
         locationY: NONE,
         isLocated: false,

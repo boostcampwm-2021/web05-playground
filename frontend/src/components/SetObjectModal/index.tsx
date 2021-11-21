@@ -18,6 +18,7 @@ const setBuildingModal = () => {
         const selectedObjectInfo = {
             src: 'none',
             id: NONE,
+            roomId: NONE,
             locationX: NONE,
             locationY: NONE,
             isLocated: false,
@@ -30,7 +31,7 @@ const setBuildingModal = () => {
         const objectInfo = {
             x: buildObject.locationX,
             y: buildObject.locationY,
-            bid: 1, // 추후 수정 해야함
+            bid: buildObject.roomId,
             imageUrl: buildObject.src,
             fileUrl: '',
         };
@@ -40,6 +41,7 @@ const setBuildingModal = () => {
         const selectedObjectInfo = {
             src: 'none',
             id: NONE,
+            roomId: NONE,
             locationX: NONE,
             locationY: NONE,
             isLocated: false,
