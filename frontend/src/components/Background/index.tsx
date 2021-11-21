@@ -11,6 +11,7 @@ import Building from '../../components/Building';
 import { socketClient } from '../../socket/socket';
 import { IBuildingInfo } from '../../utils/model';
 import { Character } from '../Character';
+import Video from '../Video';
 
 interface ILayer {
     data: number[];
@@ -177,6 +178,7 @@ const WorldBackground = (props: IProps) => {
     return (
         <>
             <Canvas id="bgCanvas" ref={canvasRef} />
+            {InBuilding === -1 ? null : <Video />}
             <Building
                 layers={layers}
                 buildingList={buildingInfo.buildings}

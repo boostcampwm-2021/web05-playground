@@ -184,20 +184,20 @@ export default class RoomSocket {
         const roomId = data.toString();
         socket.join(roomId);
 
-        // const usersInRoom = rooms.get(roomId);
-        // if (usersInRoom === undefined) {
-        //     rooms.set(roomId, [socket.id]);
-        // } else {
-        //     usersInRoom.push(socket.id);
-        // }
+        const usersInRoom = rooms.get(roomId);
+        if (usersInRoom === undefined) {
+            rooms.set(roomId, [socket.id]);
+        } else {
+            usersInRoom.push(socket.id);
+        }
 
-        // const others = rooms
-        //     .get(roomId)
-        //     .filter((user: string) => user !== socket.id);
+        const others = rooms
+            .get(roomId)
+            .filter((user: string) => user !== socket.id);
 
-        // this.io.sockets
-        //     .to(socket.id)
-        //     .emit('others', others === undefined ? [] : others);
+        this.io.sockets
+            .to(socket.id)
+            .emit('others', others === undefined ? [] : others);
     }
 
     async leaveRoomHandler(data: string, socket: MySocket) {
