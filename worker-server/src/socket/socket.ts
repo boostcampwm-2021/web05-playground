@@ -161,7 +161,8 @@ export default class RoomSocket {
     async buildObjectHandler(data: IObject) {
         const addedObject = await addObjectInfo(data);
         console.log(addedObject);
-        this.io.emit('buildObject', addedObject);
+        if (data.bid === 1) this.io.emit('buildObject', addedObject);
+        else this.io.to(data.bid.toString()).emit('buildObject', addedObject);
     }
 
     async messageHandler(data: Message, roomName: string) {
