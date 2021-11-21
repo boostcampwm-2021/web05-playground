@@ -61,6 +61,7 @@ export interface IProps {
     layers: ILayer[];
     buildingList: IBuilding[];
     objectList: IObject[];
+    current: number;
 }
 
 export interface MessageInfo {

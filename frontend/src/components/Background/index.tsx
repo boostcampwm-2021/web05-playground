@@ -181,6 +181,7 @@ const WorldBackground = (props: IProps) => {
                 layers={layers}
                 buildingList={buildingInfo.buildings}
                 objectList={buildingInfo.objects}
+                current={InBuilding}
             />
             <Character />
         </>
