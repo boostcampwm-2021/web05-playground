@@ -14,7 +14,6 @@ import NavigationBar from '../../components/NavigationBar';
 import Modal from '../../components/Modal';
 import SetBuildingModal from '../../components/SetBuildingModal';
 import SetObjectModal from '../../components/SetObjectModal';
-import Video from '../../components/Video';
 
 import Background from '../../components/Background';
 

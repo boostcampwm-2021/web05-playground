@@ -381,12 +381,20 @@ export default Building;
 const BuildingCanvas = styled.canvas`
     position: absolute;
     z-index: 1;
-    margin-left: 0px;
     overflow: hidden;
+    display: flex;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
 `;
 const CheckingCanvas = styled.canvas`
     position: absolute;
     z-index: 2;
-    margin-left: 0px;
     overflow: hidden;
+    display: flex;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
 `;

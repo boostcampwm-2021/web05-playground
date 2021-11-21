@@ -18,7 +18,6 @@ const OtherVideo = ({ stream }: Props) => {
 export default OtherVideo;
 
 const VideoContainer = styled.video`
-    position: relative;
     z-index: 101;
     width: 140px;
     height: 100px;

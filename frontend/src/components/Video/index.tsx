@@ -222,8 +222,8 @@ const MyVideo = styled.video`
 `;
 
 const Wrapper = styled.div`
+    position: float;
     z-index: 101;
     display: flex;
-    width: 100vw;
     justify-content: center;
 `;
