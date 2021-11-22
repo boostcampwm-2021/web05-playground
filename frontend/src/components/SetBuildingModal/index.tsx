@@ -3,12 +3,13 @@
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { socketClient } from '../../socket/socket';
 
 import buildBuildingState from '../../store/buildBuildingState';
+import userState from '../../store/userState';
 import { NONE } from '../../utils/constants';
 
 interface customEventTarget extends EventTarget {
@@ -29,6 +30,7 @@ const setBuildingModal = () => {
     const [range, setRange] = useState('private');
     const [password, setPassword] = useState('');
     const [buildBuilding, setBuildBuilding] = useRecoilState(buildBuildingState);
+    const user = useRecoilValue(userState);
 
     const setFunctions: customSetFunctions = {
         title: setTitle,
@@ -64,7 +66,7 @@ const setBuildingModal = () => {
             const buildingInfo = {
                 x: buildBuilding.locationX,
                 y: buildBuilding.locationY,
-                uid: 1,
+                uid: user.id,
                 description,
                 scope: range,
                 password,

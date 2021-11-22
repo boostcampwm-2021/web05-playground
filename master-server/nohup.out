@@ -1,0 +1,588 @@
+yarn run v1.22.17
+warning package.json: No license field
+$ nodemon
+/bin/sh: 1: nodemon: not found
+error Command failed with exit code 127.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+yarn run v1.22.17
+warning package.json: No license field
+$ nodemon
+[33m[nodemon] 2.0.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): src/**/*[39m
+[33m[nodemon] watching extensions: ts,html[39m
+[32m[nodemon] starting `./node_modules/.bin/ts-node -r tsconfig-paths/register ./src`[39m
+events.js:377
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: EBADF: bad file descriptor, read
+Emitted 'error' event on ReadStream instance at:
+    at internal/fs/streams.js:173:14
+    at FSReqCallback.wrapper [as oncomplete] (fs.js:562:5) {
+  errno: -9,
+  code: 'EBADF',
+  syscall: 'read'
+}
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+Error: ENOENT: no such file or directory, open '/root/web05-playground/master-server/src/pre-start/env/development.env'
+    at Object.openSync (fs.js:497:3)
+    at Object.readFileSync (fs.js:393:35)
+    at Object.config (/root/web05-playground/master-server/node_modules/dotenv/lib/main.js:101:29)
+    at /root/web05-playground/master-server/src/pre-start/index.ts:23:28
+    at Object.<anonymous> (/root/web05-playground/master-server/src/pre-start/index.ts:29:3)
+    at Module._compile (internal/modules/cjs/loader.js:1085:14)
+    at Module.m._compile (/root/web05-playground/master-server/node_modules/ts-node/src/index.ts:1371:23)
+    at Module._extensions..js (internal/modules/cjs/loader.js:1114:10)
+    at Object.require.extensions.<computed> [as .ts] (/root/web05-playground/master-server/node_modules/ts-node/src/index.ts:1374:12)
+    at Module.load (internal/modules/cjs/loader.js:950:32) {
+  errno: -2,
+  syscall: 'open',
+  code: 'ENOENT',
+  path: '/root/web05-playground/master-server/src/pre-start/env/development.env'
+}
+yarn run v1.22.17
+warning package.json: No license field
+$ nodemon
+[33m[nodemon] 2.0.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): src/**/*[39m
+[33m[nodemon] watching extensions: ts,html[39m
+[32m[nodemon] starting `./node_modules/.bin/ts-node -r tsconfig-paths/register ./src`[39m
+events.js:377
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: EBADF: bad file descriptor, read
+Emitted 'error' event on ReadStream instance at:
+    at internal/fs/streams.js:173:14
+    at FSReqCallback.wrapper [as oncomplete] (fs.js:562:5) {
+  errno: -9,
+  code: 'EBADF',
+  syscall: 'read'
+}
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+Error: ENOENT: no such file or directory, open '/root/web05-playground/master-server/src/pre-start/env/development.env'
+    at Object.openSync (fs.js:497:3)
+    at Object.readFileSync (fs.js:393:35)
+    at Object.config (/root/web05-playground/master-server/node_modules/dotenv/lib/main.js:101:29)
+    at /root/web05-playground/master-server/src/pre-start/index.ts:23:28
+    at Object.<anonymous> (/root/web05-playground/master-server/src/pre-start/index.ts:29:3)
+    at Module._compile (internal/modules/cjs/loader.js:1085:14)
+    at Module.m._compile (/root/web05-playground/master-server/node_modules/ts-node/src/index.ts:1371:23)
+    at Module._extensions..js (internal/modules/cjs/loader.js:1114:10)
+    at Object.require.extensions.<computed> [as .ts] (/root/web05-playground/master-server/node_modules/ts-node/src/index.ts:1374:12)
+    at Module.load (internal/modules/cjs/loader.js:950:32) {
+  errno: -2,
+  syscall: 'open',
+  code: 'ENOENT',
+  path: '/root/web05-playground/master-server/src/pre-start/env/development.env'
+}
+yarn run v1.22.17
+warning package.json: No license field
+$ nodemon
+[33m[nodemon] 2.0.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): src/**/*[39m
+[33m[nodemon] watching extensions: ts,html[39m
+[32m[nodemon] starting `./node_modules/.bin/ts-node -r tsconfig-paths/register ./src`[39m
+events.js:377
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: EBADF: bad file descriptor, read
+Emitted 'error' event on ReadStream instance at:
+    at internal/fs/streams.js:173:14
+    at FSReqCallback.wrapper [as oncomplete] (fs.js:562:5) {
+  errno: -9,
+  code: 'EBADF',
+  syscall: 'read'
+}
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+Error: ENOENT: no such file or directory, open '/root/web05-playground/master-server/src/pre-start/env/development.env'
+    at Object.openSync (fs.js:497:3)
+    at Object.readFileSync (fs.js:393:35)
+    at Object.config (/root/web05-playground/master-server/node_modules/dotenv/lib/main.js:101:29)
+    at /root/web05-playground/master-server/src/pre-start/index.ts:23:28
+    at Object.<anonymous> (/root/web05-playground/master-server/src/pre-start/index.ts:29:3)
+    at Module._compile (internal/modules/cjs/loader.js:1085:14)
+    at Module.m._compile (/root/web05-playground/master-server/node_modules/ts-node/src/index.ts:1371:23)
+    at Module._extensions..js (internal/modules/cjs/loader.js:1114:10)
+    at Object.require.extensions.<computed> [as .ts] (/root/web05-playground/master-server/node_modules/ts-node/src/index.ts:1374:12)
+    at Module.load (internal/modules/cjs/loader.js:950:32) {
+  errno: -2,
+  syscall: 'open',
+  code: 'ENOENT',
+  path: '/root/web05-playground/master-server/src/pre-start/env/development.env'
+}
+yarn run v1.22.17
+warning package.json: No license field
+$ nodemon
+[33m[nodemon] 2.0.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): src/**/*[39m
+[33m[nodemon] watching extensions: ts,html[39m
+[32m[nodemon] starting `./node_modules/.bin/ts-node -r tsconfig-paths/register ./src`[39m
+events.js:377
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: EBADF: bad file descriptor, read
+Emitted 'error' event on ReadStream instance at:
+    at internal/fs/streams.js:173:14
+    at FSReqCallback.wrapper [as oncomplete] (fs.js:562:5) {
+  errno: -9,
+  code: 'EBADF',
+  syscall: 'read'
+}
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (net.js:1331:16)
+    at listenInCluster (net.js:1379:12)
+    at Server.listen (net.js:1465:7)
+    at Function.listen (/root/web05-playground/master-server/node_modules/express/lib/application.js:618:24)
+    at Object.<anonymous> (/root/web05-playground/master-server/src/index.ts:6:5)
+    at Module._compile (internal/modules/cjs/loader.js:1085:14)
+    at Module.m._compile (/root/web05-playground/master-server/node_modules/ts-node/src/index.ts:1371:23)
+    at Module._extensions..js (internal/modules/cjs/loader.js:1114:10)
+    at Object.require.extensions.<computed> [as .ts] (/root/web05-playground/master-server/node_modules/ts-node/src/index.ts:1374:12)
+    at Module.load (internal/modules/cjs/loader.js:950:32) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 5000
+}
+yarn run v1.22.17
+warning package.json: No license field
+$ nodemon
+[33m[nodemon] 2.0.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): src/**/*[39m
+[33m[nodemon] watching extensions: ts,html[39m
+[32m[nodemon] starting `./node_modules/.bin/ts-node -r tsconfig-paths/register ./src`[39m
+events.js:377
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: EBADF: bad file descriptor, read
+Emitted 'error' event on ReadStream instance at:
+    at internal/fs/streams.js:173:14
+    at FSReqCallback.wrapper [as oncomplete] (fs.js:562:5) {
+  errno: -9,
+  code: 'EBADF',
+  syscall: 'read'
+}
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (net.js:1331:16)
+    at listenInCluster (net.js:1379:12)
+    at Server.listen (net.js:1465:7)
+    at Function.listen (/root/web05-playground/master-server/node_modules/express/lib/application.js:618:24)
+    at Object.<anonymous> (/root/web05-playground/master-server/src/index.ts:6:5)
+    at Module._compile (internal/modules/cjs/loader.js:1085:14)
+    at Module.m._compile (/root/web05-playground/master-server/node_modules/ts-node/src/index.ts:1371:23)
+    at Module._extensions..js (internal/modules/cjs/loader.js:1114:10)
+    at Object.require.extensions.<computed> [as .ts] (/root/web05-playground/master-server/node_modules/ts-node/src/index.ts:1374:12)
+    at Module.load (internal/modules/cjs/loader.js:950:32) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '0.0.0.0',
+  port: 5000
+}
+yarn run v1.22.17
+warning package.json: No license field
+$ nodemon
+[33m[nodemon] 2.0.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): src/**/*[39m
+[33m[nodemon] watching extensions: ts,html[39m
+[32m[nodemon] starting `./node_modules/.bin/ts-node -r tsconfig-paths/register ./src`[39m
+events.js:377
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: EBADF: bad file descriptor, read
+Emitted 'error' event on ReadStream instance at:
+    at internal/fs/streams.js:173:14
+    at FSReqCallback.wrapper [as oncomplete] (fs.js:562:5) {
+  errno: -9,
+  code: 'EBADF',
+  syscall: 'read'
+}
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+Express server started on port: 5000
+yarn run v1.22.17
+warning package.json: No license field
+$ nodemon
+[33m[nodemon] 2.0.14[39m
+[33m[nodemon] to restart at any time, enter `rs`[39m
+[33m[nodemon] watching path(s): src/**/*[39m
+[33m[nodemon] watching extensions: ts,html[39m
+[32m[nodemon] starting `./node_modules/.bin/ts-node -r tsconfig-paths/register ./src`[39m
+events.js:377
+      throw er; // Unhandled 'error' event
+      ^
+
+Error: EBADF: bad file descriptor, read
+Emitted 'error' event on ReadStream instance at:
+    at internal/fs/streams.js:173:14
+    at FSReqCallback.wrapper [as oncomplete] (fs.js:562:5) {
+  errno: -9,
+  code: 'EBADF',
+  syscall: 'read'
+}
+error Command failed with exit code 1.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
+Express server started on port: 5000
+[0mPOST /graphql [32m200[0m 41.012 ms - 227[0m
+[0mPOST /graphql [32m200[0m 9.273 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.817 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.398 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.503 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.783 ms - 922[0m
+[0mPOST /graphql [32m200[0m 3.020 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.282 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.301 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.993 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.435 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.858 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.149 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.720 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.387 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.763 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.337 ms - 227[0m
+[0mPOST /graphql [32m200[0m 6.154 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.275 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.644 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.355 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.973 ms - 922[0m
+[0mPOST /graphql [32m200[0m 4.367 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.689 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.478 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.451 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.599 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.482 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.738 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.277 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.255 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.324 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.730 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.444 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.788 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.431 ms - 227[0m
+[0mPOST /graphql [32m200[0m 6.831 ms - 239[0m
+[0mPOST /graphql [32m200[0m 2.583 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.797 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.839 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.763 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.437 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.885 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.380 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.705 ms - 922[0m
+[0mPOST /graphql [32m200[0m 3.309 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.625 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.720 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.152 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.674 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.360 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.637 ms - 922[0m
+[0mGET / [33m404[0m 2.048 ms - 139[0m
+[0mGET / [33m404[0m 0.568 ms - 139[0m
+[0mPOST /graphql [32m200[0m 2.354 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.905 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.364 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.745 ms - 922[0m
+[0mPOST /graphql [32m200[0m 4.401 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.558 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.882 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.750 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.138 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.746 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.072 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.570 ms - 922[0m
+[0mPOST /graphql [32m200[0m 3.587 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.216 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.696 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.675 ms - 922[0m
+[0mPOST /graphql [32m200[0m 4.621 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.470 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.022 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.674 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.029 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.724 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.507 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.692 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.673 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.534 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.645 ms - 922[0m
+[0mPOST /graphql [32m200[0m 3.427 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.660 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.213 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.643 ms - 922[0m
+[0mPOST /graphql [32m200[0m 3.952 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.221 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.472 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.480 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.260 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.679 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.234 ms - 239[0m
+[0mPOST /graphql [32m200[0m 3.780 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.637 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.756 ms - 239[0m
+[0mPOST /graphql [32m200[0m 2.571 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.180 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.631 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.255 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.711 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.214 ms - 227[0m
+[0mPOST /graphql [32m200[0m 4.666 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.998 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.785 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.291 ms - 227[0m
+[0mPOST /graphql [32m200[0m 1.978 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.456 ms - 922[0m
+[0mPOST /graphql [32m200[0m 3.616 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.541 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.456 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.471 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.897 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.428 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.639 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.879 ms - 227[0m
+[0mPOST /graphql [32m200[0m 4.843 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.620 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.515 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.604 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.429 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.544 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.514 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.260 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.478 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.158 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.440 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.046 ms - 239[0m
+[0mPOST /graphql [32m200[0m 2.209 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.157 ms - 239[0m
+[0mPOST /graphql [32m200[0m 2.444 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.060 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.132 ms - 239[0m
+[0mPOST /graphql [32m200[0m 2.551 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.508 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.583 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.437 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.335 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.106 ms - 239[0m
+[0mPOST /graphql [32m200[0m 2.585 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.391 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.967 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.698 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.512 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.642 ms - 922[0m
+[0mGET / [33m404[0m 0.411 ms - 139[0m
+[0mPOST /graphql [32m200[0m 2.330 ms - 227[0m
+[0mPOST /graphql [32m200[0m 8.988 ms - 227[0m
+[0mPOST /graphql [32m200[0m 11.418 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.240 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.824 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.424 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.738 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.360 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.093 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.411 ms - 922[0m
+[0mPOST /graphql [32m200[0m 3.521 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.274 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.235 ms - 227[0m
+[0mPOST /graphql [32m200[0m 5.526 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.240 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.596 ms - 922[0m
+[0mPOST /graphql [32m200[0m 10.629 ms - 227[0m
+[0mPOST /graphql [32m200[0m 1.963 ms - 239[0m
+[0mPOST /graphql [32m200[0m 2.430 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.179 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.322 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.175 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.411 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.149 ms - 227[0m
+[0mPOST /graphql [32m200[0m 8.984 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.887 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.531 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.222 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.398 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.175 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.314 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.487 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.303 ms - 227[0m
+[0mPOST /graphql [32m200[0m 1.894 ms - 227[0m
+[0mPOST /graphql [32m200[0m 1.930 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.911 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.309 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.855 ms - 227[0m
+[0mPOST /graphql [32m200[0m 4.160 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.858 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.490 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.868 ms - 227[0m
+[0mPOST /graphql [32m200[0m 1.991 ms - 239[0m
+[0mPOST /graphql [32m200[0m 2.225 ms - 922[0m
+[0mPOST /graphql [32m200[0m 3.199 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.176 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.328 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.326 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.746 ms - 239[0m
+[0mPOST /graphql [32m200[0m 1.874 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.103 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.175 ms - 922[0m
+[0mPOST /graphql [32m200[0m 3.054 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.357 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.106 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.099 ms - 239[0m
+[0mPOST /graphql [32m200[0m 4.305 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.475 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.347 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.291 ms - 922[0m
+[0mPOST /graphql [32m200[0m 6.052 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.168 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.310 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.338 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.237 ms - 239[0m
+[0mPOST /graphql [32m200[0m 2.099 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.273 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.359 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.105 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.394 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.295 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.240 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.049 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.678 ms - 922[0m
+[0mGET / [33m404[0m 0.395 ms - 139[0m
+[0mPOST /graphql [32m200[0m 4.348 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.899 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.064 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.279 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.011 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.265 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.999 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.387 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.052 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.269 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.979 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.194 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.088 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.627 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.082 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.695 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.447 ms - 922[0m
+[0mPOST /graphql [32m200[0m 3.032 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.361 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.528 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.350 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.666 ms - 922[0m
+[0mPOST /graphql [32m200[0m 4.688 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.866 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.263 ms - 922[0m
+[0mPOST /graphql [32m200[0m 3.711 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.383 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.283 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.926 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.381 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.340 ms - 922[0m
+[0mPOST /graphql [0m-[0m - ms - -[0m
+[0mPOST /graphql [32m200[0m 1.498 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.300 ms - 922[0m
+[0mPOST /graphql [32m200[0m 3.838 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.487 ms - 227[0m
+[0mPOST /graphql [32m200[0m 8.830 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.973 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.742 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.275 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.287 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.101 ms - 922[0m
+[0mPOST /graphql [32m200[0m 3.417 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.299 ms - 922[0m
+[0mPOST /graphql [0m-[0m - ms - -[0m
+[0mPOST /graphql [32m200[0m 1.305 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.204 ms - 922[0m
+[0mPOST /graphql [0m-[0m - ms - -[0m
+[0mPOST /graphql [32m200[0m 1.328 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.088 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.313 ms - 227[0m
+[0mPOST /graphql [32m200[0m 36.780 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.354 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.347 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.158 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.551 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.345 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.608 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.018 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.456 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.687 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.502 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.031 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.681 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.844 ms - 227[0m
+[0mPOST /graphql [32m200[0m 4.167 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.807 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.924 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.202 ms - 227[0m
+[0mPOST /graphql [32m200[0m 7.343 ms - 922[0m
+[0mPOST /graphql [32m200[0m 4.072 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.421 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.261 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.739 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.080 ms - 922[0m
+[0mPOST /graphql [0m-[0m - ms - -[0m
+[0mPOST /graphql [32m200[0m 1.337 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.103 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.749 ms - 227[0m
+[0mPOST /graphql [32m200[0m 1.947 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.101 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.359 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.788 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.999 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.224 ms - 922[0m
+[0mGET / [33m404[0m 0.443 ms - 139[0m
+[0mGET / [33m404[0m 0.318 ms - 139[0m
+[0mPOST /graphql [32m200[0m 1.891 ms - 227[0m
+[0mGET / [33m404[0m 0.397 ms - 139[0m
+[0mGET / [33m404[0m 0.368 ms - 139[0m
+[0mGET / [33m404[0m 0.397 ms - 139[0m
+[0mGET / [33m404[0m 0.432 ms - 139[0m
+[0mGET / [33m404[0m 0.380 ms - 139[0m
+[0mPOST /graphql [32m200[0m 3.958 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.006 ms - 227[0m
+[0mGET / [33m404[0m 0.420 ms - 139[0m
+[0mGET / [33m404[0m 0.397 ms - 139[0m
+[0mPOST /graphql [32m200[0m 4.347 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.530 ms - 922[0m
+[0mPOST /graphql [32m200[0m 3.391 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.157 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.986 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.192 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.958 ms - 227[0m
+[0mPOST /graphql [32m200[0m 3.058 ms - 922[0m
+[0mGET / [33m404[0m 0.372 ms - 139[0m
+[0mGET / [33m404[0m 0.514 ms - 139[0m
+[0mGET / [33m404[0m 0.388 ms - 139[0m
+[0mGET /favicon.ico [33m404[0m 0.366 ms - 150[0m
+[0mGET / [33m404[0m 0.360 ms - 139[0m
+[0mGET /favicon.ico [33m404[0m 0.360 ms - 150[0m
+[0mGET / [33m404[0m 0.349 ms - 139[0m
+[0mGET /favicon.ico [33m404[0m 0.364 ms - 150[0m
+[0mGET / [33m404[0m 0.382 ms - 139[0m
+[0mPOST /graphql [32m200[0m 3.932 ms - 227[0m
+[0mPOST /graphql [32m200[0m 4.016 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.805 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.181 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.263 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.321 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.043 ms - 922[0m
+[0mPOST /graphql [32m200[0m 2.316 ms - 922[0m
+[0mPOST /graphql [32m200[0m 1.357 ms - 227[0m
+[0mPOST /graphql [32m200[0m 2.105 ms - 922[0m
