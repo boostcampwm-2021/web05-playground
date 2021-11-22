@@ -52,7 +52,7 @@ export interface IObject {
     fileUrl: string;
 }
 
-export interface IWorldInfo {
+export interface IBuildingInfo {
     buildings: IBuilding[];
     objects: IObject[];
 }
@@ -61,6 +61,7 @@ export interface IProps {
     layers: ILayer[];
     buildingList: IBuilding[];
     objectList: IObject[];
+    current: number;
 }
 
 export interface MessageInfo {

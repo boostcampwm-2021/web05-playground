@@ -4,6 +4,7 @@ import { useSetRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import buildObjectState from '../../../store/buildObjectState';
 import objectUrls from '../../../store/objectUrlState';
+import { NONE } from '../../../utils/constants';
 import { Clickable } from '../../../utils/css';
 import { ActiveModal } from '../../../utils/model';
 
@@ -23,7 +24,8 @@ const BuildObject = ({ active }: ActiveModal) => {
         e.stopPropagation();
         const selectedObjectInfo = {
             src: e.target.src,
-            id: -1,
+            id: NONE,
+            roomId: NONE,
             locationX: -1,
             locationY: -1,
             isLocated: false,

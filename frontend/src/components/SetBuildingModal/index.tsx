@@ -49,6 +49,7 @@ const setBuildingModal = () => {
         const selectedBuildingInfo = {
             src: 'none',
             id: NONE,
+            roomId: NONE,
             locationX: NONE,
             locationY: NONE,
             isLocated: false,
@@ -74,7 +75,8 @@ const setBuildingModal = () => {
 
             const selectedBuildingInfo = {
                 src: 'none',
-                id: -1,
+                id: NONE,
+                roomId: NONE,
                 locationX: -1,
                 locationY: -1,
                 isLocated: false,

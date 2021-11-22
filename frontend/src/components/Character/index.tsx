@@ -6,27 +6,22 @@ import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
 import buildingInfoState from '../../store/buildingInfoState';
 import userState from '../../store/userState';
-import { UserMap, IUser, IProps, IBuilding } from '../../utils/model';
+import { UserMap, IUser, IBuilding } from '../../utils/model';
 
 import isInBuildingState from '../../store/isInBuildingState';
 import { NONE } from '../../utils/constants';
 
-interface imgSrc {
-    [key: string]: HTMLImageElement;
-}
+import { buildingData, buildingListForCharacter } from '../../utils/variables/buildingData';
 
 const commonWidth = 70;
 const commonHeight = 50;
 
-export const Character = (props: IProps) => {
+export const Character = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [user, setUser] = useRecoilState(userState);
     const [characters, setCharacters] = useState<UserMap>({});
-    const [buildingData, setBuildingData] = useState(new Array(commonWidth * commonHeight).fill(0));
     const [buildingInfo, setBuildingInfo] = useRecoilState(buildingInfoState);
     const isInBuilding = useRecoilValue(isInBuildingState);
-    const imgSrcMap: imgSrc = {};
-    const { buildingList } = props;
 
     const characterWidth = 32;
     const characterHeight = 64;
@@ -71,25 +66,6 @@ export const Character = (props: IProps) => {
             socketClient.removeListener('move');
         };
     }, [characters, user, isInBuilding]);
-
-    useEffect(() => {
-        if (buildingList.length !== 0 && buildingList[0].id !== NONE) {
-            buildingList.forEach((building) => {
-                fillBuildingPosition(building);
-            });
-        }
-    }, [buildingList]);
-
-    const fillBuildingPosition = (building: IBuilding) => {
-        const { id, x, y } = building;
-        const buildingSize = 2;
-        for (let i = x - buildingSize; i < x + buildingSize; i += 1) {
-            for (let j = y - buildingSize; j < y + buildingSize; j += 1) {
-                const index = getIndex(i, j);
-                buildingData[index] = id;
-            }
-        }
-    };
 
     const getIndex = (x: number, y: number) => {
         return y * commonWidth + x;
@@ -205,26 +181,30 @@ export const Character = (props: IProps) => {
     };
 
     const findBuilding = (bid: number): IBuilding => {
-        let building: IBuilding = {
-            id: 0,
-            x: -1,
-            y: -1,
-            uid: -1,
-            description: '',
-            scope: '',
-            password: '',
-            imageUrl: '',
-        };
-        buildingList.forEach((b) => {
-            if (b.id === bid) {
-                building = b;
-                return building;
-            }
-        });
+        const building = buildingListForCharacter.get(bid);
+        if (building === undefined) {
+            return {
+                id: 0,
+                x: -1,
+                y: -1,
+                uid: -1,
+                description: '',
+                scope: '',
+                password: '',
+                imageUrl: '',
+            };
+        }
         return building;
     };
 
-    return <Canvas width={window.innerWidth} height={window.innerHeight} ref={canvasRef} />;
+    return (
+        <Canvas
+            id="characterCanvas"
+            width={window.innerWidth}
+            height={window.innerHeight}
+            ref={canvasRef}
+        />
+    );
 };
 
 const Canvas = styled.canvas`

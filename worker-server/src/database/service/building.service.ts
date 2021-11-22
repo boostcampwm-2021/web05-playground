@@ -41,9 +41,9 @@ export const addBuilding = async (data: IBuilding): Promise<Receiver> => {
             data.password,
             data.imageUrl,
         ];
-        await pool2.query(sql, values);
-
-        result.addedBuilding = data;
+        const [ret] = await pool2.query(sql, values);
+        const buildingId = JSON.parse(JSON.stringify(ret)).insertId;
+        result.addedBuilding = { ...data, id: buildingId };
         return result;
     } catch (err) {
         console.log(err);

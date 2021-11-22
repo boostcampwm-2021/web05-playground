@@ -15,6 +15,12 @@ import { IBuilding, IObject, IProps } from '../../utils/model';
 import currentModalState from '../../store/currentModalState';
 import { DEFAULT_INDEX, NONE } from '../../utils/constants';
 
+import {
+    buildingData,
+    objectData,
+    buildingListForCharacter,
+} from '../../utils/variables/buildingData';
+
 const commonWidth = 70;
 const commonHeight = 50;
 const tileSize = 32;
@@ -29,18 +35,17 @@ objCanvas.width = commonWidth * tileSize;
 objCanvas.height = commonHeight * tileSize;
 
 const Building = (props: IProps) => {
-    const { layers, buildingList, objectList } = props;
+    const { layers, buildingList, objectList, current: InBuilding } = props;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const checkingRef = useRef<HTMLCanvasElement>(null);
     const [buildBuilding, setBuildBuilding] = useRecoilState(buildBuildingState);
     const [buildObject, setBuildObject] = useRecoilState(buildObjectState);
     const currentModal = useRecoilValue(currentModalState);
-    const [buildingData, setBuildingData] = useState(new Array(commonWidth * commonHeight).fill(0));
     const user = useRecoilValue(userState);
 
     let cnt = 0;
 
-    const objectLayer = layers[OBJECT].data;
+    const obstacleLayer = layers[OBJECT].data;
 
     let buildTargetX = NONE;
     let buildTargetY = NONE;
@@ -69,6 +74,10 @@ const Building = (props: IProps) => {
         if (canvas === null || checkingCanvas === null) {
             return;
         }
+
+        objctx?.clearRect(0, 0, objCanvas.width, objCanvas.height);
+        buildingData.fill(0);
+        objectData.fill(0);
 
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
@@ -115,6 +124,7 @@ const Building = (props: IProps) => {
             const DefaultVal = {
                 src: 'none',
                 id: NONE,
+                roomId: NONE,
                 locationX: NONE,
                 locationY: NONE,
                 isLocated: false,
@@ -132,9 +142,12 @@ const Building = (props: IProps) => {
         for (let i = x - dataSize; i < x + dataSize; i++) {
             for (let j = y - dataSize; j < y + dataSize; j++) {
                 const index = getIndex(i, j);
-                buildingData[index] = id;
-                if (dataSize === 2) buildingData[index] *= -1;
+                if (dataSize === 1) objectData[index] = id;
                 else if (id === 1) buildingData[index] = 0;
+                else {
+                    buildingData[index] = id;
+                    buildingListForCharacter.set(id, building);
+                }
             }
         }
     };
@@ -194,6 +207,7 @@ const Building = (props: IProps) => {
             isPosssibleArea(buildTargetX + layerX, buildTargetY + layerY) &&
             checkingCtx !== null
         ) {
+            const roomId = InBuilding === -1 ? 1 : InBuilding;
             const locationX = buildTargetX + layerX;
             const locationY = buildTargetY + layerY;
             const isLocated = true;
@@ -201,6 +215,7 @@ const Building = (props: IProps) => {
             if (flag === 0) {
                 setBuildBuilding({
                     ...buildBuilding,
+                    roomId,
                     locationX,
                     locationY,
                     isLocated,
@@ -209,6 +224,7 @@ const Building = (props: IProps) => {
             } else {
                 setBuildObject({
                     ...buildObject,
+                    roomId,
                     locationX,
                     locationY,
                     isLocated,
@@ -294,9 +310,11 @@ const Building = (props: IProps) => {
         const halfOfBuildingTileCount = currentModal === 'buildBuilding' ? 2 : 1;
         for (let i = col - halfOfBuildingTileCount; i < col + halfOfBuildingTileCount; i++) {
             for (let j = row - halfOfBuildingTileCount; j < row + halfOfBuildingTileCount; j++) {
-                const objectVal = objectLayer[getIndex(i, j)];
-                const buildingVal = buildingData[getIndex(i, j)];
-                if (objectVal !== 0 || buildingVal !== 0) {
+                const idx = getIndex(i, j);
+                const obstacle = obstacleLayer[idx];
+                const objectVal = objectData[idx];
+                const buildingVal = buildingData[idx];
+                if (obstacle !== 0 || objectVal !== 0 || buildingVal !== 0) {
                     return false;
                 }
             }
@@ -363,12 +381,20 @@ export default Building;
 const BuildingCanvas = styled.canvas`
     position: absolute;
     z-index: 1;
-    margin-left: 0px;
     overflow: hidden;
+    display: flex;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
 `;
 const CheckingCanvas = styled.canvas`
     position: absolute;
     z-index: 2;
-    margin-left: 0px;
     overflow: hidden;
+    display: flex;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
 `;

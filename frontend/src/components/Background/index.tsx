@@ -6,8 +6,12 @@ import React, { useRef, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import userState from '../../store/userState';
+
+import Building from '../../components/Building';
 import { socketClient } from '../../socket/socket';
-import { IObject } from '../../utils/model';
+import { IBuildingInfo } from '../../utils/model';
+import { Character } from '../Character';
+import Video from '../Video';
 
 interface ILayer {
     data: number[];
@@ -19,15 +23,47 @@ interface ILayer {
 
 interface IProps {
     data: ILayer[];
+    current: number;
 }
 
-const BuildingInside = (props: IProps) => {
+interface IEnter {
+    user: string;
+    roomId: number;
+}
+
+const WorldBackground = (props: IProps) => {
     const layers = props.data;
+    const InBuilding = props.current;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [tileBackground, setTileBackground] = useState<HTMLImageElement[]>();
     const user = useRecoilValue(userState);
     const commonWidth = layers[0].width;
     const tileSize = 32;
+
+    const [buildingInfo, setBuildingInfo] = useState({
+        buildings: [
+            {
+                id: -1,
+                x: 3,
+                y: 3,
+                uid: 1,
+                description: '테스트1',
+                scope: 'private',
+                password: '1234',
+                imageUrl: 'http://localhost:3000/assets/home.png',
+            },
+        ],
+        objects: [
+            {
+                id: -1,
+                bid: -1,
+                x: 3,
+                y: 3,
+                imageUrl: 'http://localhost:3000/assets/home.png',
+                fileUrl: '',
+            },
+        ],
+    });
 
     let ctx: CanvasRenderingContext2D | null;
     let sourceX = 0;
@@ -40,30 +76,37 @@ const BuildingInside = (props: IProps) => {
     };
 
     useEffect(() => {
-        const buildingImageList: HTMLImageElement[] = [];
-        let cnt = 0;
-        layers.forEach((layer) => {
-            const buildingImg = new Image();
-            buildingImg.src = layer.imgSrc;
-            buildingImg.onload = () => {
-                cnt++;
-                buildingImageList.push(buildingImg);
-                if (cnt === layers.length) {
-                    setTileBackground([...buildingImageList]);
-                }
-            };
-        });
-    }, []);
+        const enterInfo = {
+            user: 'wnsgur',
+            roomId: InBuilding,
+        };
+        socketClient.emit('enter', enterInfo);
 
-    useEffect(() => {
-        socketClient.on('roomObjectList', (data: IObject[]) => {
-            console.log('objectList', data);
+        socketClient.on('enter', (data: IBuildingInfo) => {
+            console.log(data);
+            setBuildingInfo(data);
         });
 
         return () => {
-            socketClient.removeListener('roomObjectList');
+            socketClient.removeListener('enter');
         };
-    }, [socketClient]);
+    }, [socketClient, InBuilding]);
+
+    useEffect(() => {
+        const backgroundImageList: HTMLImageElement[] = [];
+        let cnt = 0;
+        layers.forEach((layer) => {
+            const backgroundImg = new Image();
+            backgroundImg.src = layer.imgSrc;
+            backgroundImg.onload = () => {
+                cnt++;
+                backgroundImageList.push(backgroundImg);
+                if (cnt === layers.length) {
+                    setTileBackground([...backgroundImageList]);
+                }
+            };
+        });
+    }, [layers]);
 
     useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;
@@ -134,12 +177,20 @@ const BuildingInside = (props: IProps) => {
 
     return (
         <>
-            <Canvas id="canvas" ref={canvasRef} />
+            <Canvas id="bgCanvas" ref={canvasRef} />
+            {InBuilding === -1 ? null : <Video />}
+            <Building
+                layers={layers}
+                buildingList={buildingInfo.buildings}
+                objectList={buildingInfo.objects}
+                current={InBuilding}
+            />
+            <Character />
         </>
     );
 };
 
-export default BuildingInside;
+export default WorldBackground;
 
 const Canvas = styled.canvas`
     bottom: 0;
@@ -147,7 +198,4 @@ const Canvas = styled.canvas`
     position: absolute;
     right: 0;
     top: 0;
-    z-index: 2;
 `;
-
-// z-index:2

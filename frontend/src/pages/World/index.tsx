@@ -10,22 +10,18 @@ import buildObjectState from '../../store/buildObjectState';
 import buildingUrls from '../../store/buildingUrlState';
 import objectUrls from '../../store/objectUrlState';
 
-import WorldBackground from '../../components/WorldMap';
-import BuildingInside from '../../components/BuildingInside';
-import Building from '../../components/Building';
 import NavigationBar from '../../components/NavigationBar';
 import Modal from '../../components/Modal';
 import SetBuildingModal from '../../components/SetBuildingModal';
 import SetObjectModal from '../../components/SetObjectModal';
-import Video from '../../components/Video';
+
+import Background from '../../components/Background';
 
 import worldPark from '../../map-files/world-park.json';
 import worldWinter from '../../map-files/world-winter.json';
 import buildingInside from '../../map-files/building-inside.json';
-import { Character } from '../../components/Character';
 
 import { socketClient, setSocket } from '../../socket/socket';
-import { IWorldInfo } from '../../utils/model';
 import { getBuildingAndObjectUrls } from '../../utils/query';
 import BuildingInfo from '../../components/BuildingInfo';
 import buildingInfoState from '../../store/buildingInfoState';
@@ -41,30 +37,6 @@ const worldsInfo: customWorldInfo = {
 };
 
 const World = (props: RouteComponentProps) => {
-    const [worldInfo, setWorldInfo] = useState({
-        buildings: [
-            {
-                id: -1,
-                x: 3,
-                y: 3,
-                uid: 1,
-                description: '테스트1',
-                scope: 'private',
-                password: '1234',
-                imageUrl: 'http://localhost:3000/assets/home.png',
-            },
-        ],
-        objects: [
-            {
-                id: -1,
-                bid: -1,
-                x: 3,
-                y: 3,
-                imageUrl: 'http://localhost:3000/assets/home.png',
-                fileUrl: '',
-            },
-        ],
-    });
     const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
     const [buildingUrl, setBuildingUrl] = useRecoilState(buildingUrls);
     const [objectUrl, setObjectUrl] = useRecoilState(objectUrls);
@@ -99,14 +71,9 @@ const World = (props: RouteComponentProps) => {
         };
 
         setSocket(
-            process.env.REACT_APP_BASE_SOCKET_URI!.concat(`:${currentWorld.port.toString()}`),
+            // process.env.REACT_APP_BASE_SOCKET_URI!.concat(`:${currentWorld.port.toString()}`),
+            process.env.REACT_APP_BASE_SOCKET_URI!,
         );
-        const user = 'wnsgur';
-        socketClient.emit('enterWorld', user);
-
-        socketClient.on('enterWorld', (data: IWorldInfo) => {
-            setWorldInfo(data);
-        });
 
         return () => {
             socketClient.disconnect();
@@ -126,27 +93,14 @@ const World = (props: RouteComponentProps) => {
     return (
         <>
             {/* 아래 recoil 두 가지 상태에따라 맵이 다시 그려지니까 상태관련된 것은 하위컴포넌트 or 다른 곳으로 빼자 */}
-            {isInBuilding === NONE ? (
-                <>
-                    <WorldBackground data={mapLayers} />
-                </>
-            ) : (
-                <>
-                    <BuildingInside data={buildingLayer} />
-                    <Video />
-                </>
-            )}
-            <Building
-                layers={mapLayers}
-                buildingList={worldInfo.buildings}
-                objectList={worldInfo.objects}
-            />
+            <>
+                <Background
+                    data={isInBuilding === NONE ? mapLayers : buildingLayer}
+                    current={isInBuilding}
+                />
+            </>
+            {/* 빌딩이면 비디오 컴포넌트 추가 해야함 */}
             {buildingInfo.isBuilding ? <BuildingInfo /> : <></>}
-            <Character
-                layers={mapLayers}
-                buildingList={isInBuilding === NONE ? worldInfo.buildings : []}
-                objectList={worldInfo.objects}
-            />
             {currentModal !== 'none' ? <Modal /> : <></>}
             <NavigationBar props={props} />
             {buildBuilding.isLocated ? <SetBuildingModal /> : <></>}
