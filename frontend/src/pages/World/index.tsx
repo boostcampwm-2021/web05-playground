@@ -71,8 +71,7 @@ const World = (props: RouteComponentProps) => {
         };
 
         setSocket(
-            // process.env.REACT_APP_BASE_SOCKET_URI!.concat(`:${currentWorld.port.toString()}`),
-            process.env.REACT_APP_BASE_SOCKET_URI!,
+            process.env.REACT_APP_BASE_SOCKET_URI!.concat(`:${currentWorld.port.toString()}`),
         );
 
         return () => {

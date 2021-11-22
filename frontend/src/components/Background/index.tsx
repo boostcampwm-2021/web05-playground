@@ -77,7 +77,7 @@ const WorldBackground = (props: IProps) => {
 
     useEffect(() => {
         const enterInfo = {
-            user: 'wnsgur',
+            user: user.nickname,
             roomId: InBuilding,
         };
         socketClient.emit('enter', enterInfo);
