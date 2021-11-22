@@ -22,7 +22,7 @@ yarn --cwd ./frontend/ build
 
 # 노드 서버 이미지 빌드
 echo "image build"
-docker build ./worker-server --tag kimsungho97/worker-server
+docker build ./worker-server --tag kimsungho97/playground-worker
 
 # db 서버 이미지 빌드
 echo "db build"
