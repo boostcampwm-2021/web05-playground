@@ -1,0 +1,22 @@
+services:
+  worker:
+    image: kimsungho97/playground-worker:1.0.1
+    restart: always
+    ports:
+      - ${PORT}:8000
+    depends_on:
+      - db
+    networks:
+      - db-net
+
+  db:
+    image: kimsungho97/mysql:5.7
+    command: mysqld --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    networks:
+      - db-net
+
+networks:
+  db-net:
