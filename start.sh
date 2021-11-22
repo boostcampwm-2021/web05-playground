@@ -9,13 +9,13 @@ echo "delete container"
 docker rm $(docker ps -a -q)
 
 #env파일 추가
-mkdir ~/web05-playground/worker-server/src/pre-start/env
-cp /root/env/worker-server/* ~/web05-playground/worker-server/src/pre-start/env
+mkdir ./web05-playground/worker-server/src/pre-start/env
+cp /root/env/worker-server/* ./web05-playground/worker-server/src/pre-start/env
 
-mkdir ~/web05-playground/master-server/src/pre-start/env
-cp /root/env/master-server/* ~/web05-playground/master-server/src/pre-start/env
+mkdir ./web05-playground/master-server/src/pre-start/env
+cp /root/env/master-server/* ./web05-playground/master-server/src/pre-start/env
 
-cp /root/env/frontend/.env ~/web05-playground/frontend
+cp /root/env/frontend/.env ./web05-playground/frontend
 
 #frontend 빌드
 yarn --cwd ./frontend/ build
