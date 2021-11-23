@@ -4,30 +4,26 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useMutation } from '@apollo/client';
 import React, { useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { socketClient } from '../../socket/socket';
 
 import buildObjectState from '../../store/buildObjectState';
+import currentWorldState from '../../store/currentWorldState';
+import userState from '../../store/userState';
+
 import { DEFAULT_INDEX, NONE } from '../../utils/constants';
 
-import { uploadFiles } from '../../utils/query';
+import { IUser, IWorld } from '../../utils/model';
+import { getUploadUrl } from '../../utils/query';
 
 const setBuildingModal = () => {
+    const worldInfo = useRecoilValue<IWorld>(currentWorldState);
+    const userInfo = useRecoilValue<IUser>(userState);
     const [buildObject, setBuildObject] = useRecoilState(buildObjectState);
     const [file, setFile] = useState<File>();
-    const [uploadFile] = useMutation(uploadFiles, {
-        onCompleted: (data) => {
-            socketClient.emit('buildObject', {
-                x: buildObject.locationX,
-                y: buildObject.locationY,
-                bid: buildObject.roomId,
-                imageUrl: buildObject.src,
-                fileUrl: data.url,
-            });
-        },
-    });
+    const [getSignedUrl] = useMutation(getUploadUrl);
 
     const cancleBuild = () => {
         const selectedObjectInfo = {
@@ -42,7 +38,7 @@ const setBuildingModal = () => {
         setBuildObject(selectedObjectInfo);
     };
 
-    const completeBuild = () => {
+    const completeBuild = async () => {
         const objectInfo = {
             x: buildObject.locationX,
             y: buildObject.locationY,
@@ -53,10 +49,17 @@ const setBuildingModal = () => {
 
         if (file === undefined) socketClient.emit('buildObject', objectInfo);
         else {
-            console.log({ file, name: file.name, mimeType: file.type, bid: buildObject.roomId });
-            // uploadFile({
-            //     variables: { file, name: file.name, mimeType: file.type, bid: buildObject.roomId },
-            // });
+            // console.log({ file, name: file.name, mimeType: file.type, bid: buildObject.roomId });
+            const url = `${worldInfo.id}/${buildObject.roomId}/${userInfo.id}/${Date.now()}/${
+                file.name
+            }`;
+
+            const preSignedUrl = JSON.stringify(await getSignedUrl({ variables: { url } }));
+            await fetch(preSignedUrl, {
+                method: 'PUT',
+                body: file,
+            });
+            socketClient.emit('buildObject', { ...objectInfo, fileUrl: url });
         }
 
         const selectedObjectInfo = {

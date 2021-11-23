@@ -29,7 +29,7 @@ export const Character = () => {
     const [characters, setCharacters] = useState<UserMap>({});
     const setBuildingInfo = useSetRecoilState(buildingInfoState);
     const setObjectInfo = useSetRecoilState(objectInfoState);
-    const isInBuilding = useRecoilValue(isInBuildingState);
+    const [isInBuilding, setIsInBuilding] = useRecoilState(isInBuildingState);
 
     const characterWidth = 32;
     const characterHeight = 64;
@@ -162,6 +162,9 @@ export const Character = () => {
         // 건물 입장 로직
         if (isInBuilding === NONE) {
             isBuilding(newLocation.x!, newLocation.y!);
+        } else if ((user.x! === 2 || user.x! === 3) && user.y! <= 0) {
+            socketClient.emit('leaveRoom', isInBuilding);
+            setIsInBuilding(NONE);
         }
         isObject(newLocation.x!, newLocation.y!);
     };
