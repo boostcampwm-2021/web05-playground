@@ -59,19 +59,19 @@ export default class RoomSocket {
                 this.addUserHandler(user, socket),
             );
             socket.on('move', (data: IUser) => {
-                console.log(data);
+                //console.log(data);
                 this.moveHandler(data);
             });
             socket.on('enter', (data: IEnter) =>
                 this.getWorldHandler(socket, data),
             );
             socket.on('buildBuilding', (data: IBuilding) => {
-                console.log(data);
+                //console.log(data);
                 this.buildBuildingHandler(data);
             });
 
             socket.on('buildObject', (data: IObject) => {
-                console.log(data);
+                //console.log(data);
                 this.buildObjectHandler(data);
             });
 
@@ -79,7 +79,8 @@ export default class RoomSocket {
                 this.messageHandler(data, roomName);
             });
 
-            socket.on('leaveRoom', (data: string) => {
+            socket.on('leaveRoom', (data: number) => {
+                //console.log(data);
                 this.leaveRoomHandler(data, socket);
             });
 
@@ -113,7 +114,7 @@ export default class RoomSocket {
     async addUserHandler(user: IUser, socket: MySocket) {
         socket.uid = user.id;
         await addUserInfo(user, this.userMap);
-        console.log(this.userMap);
+        //console.log(this.userMap);
         this.io.emit('user', this.userMap);
     }
 
@@ -135,7 +136,7 @@ export default class RoomSocket {
 
         worldInfo.buildings = buildings;
         worldInfo.objects = objects;
-        console.log(worldInfo);
+        //console.log(worldInfo);
 
         socket.emit('enter', worldInfo);
         this.io.emit('enterNewPerson', data.user);
@@ -149,7 +150,7 @@ export default class RoomSocket {
 
     async buildBuildingHandler(data: IBuilding) {
         const addedBuilding = await addBuildingInfo(data);
-        console.log(addedBuilding);
+        //console.log(addedBuilding);
         this.io.emit('buildBuilding', addedBuilding);
     }
 
@@ -160,7 +161,7 @@ export default class RoomSocket {
 
     async buildObjectHandler(data: IObject) {
         const addedObject = await addObjectInfo(data);
-        console.log(addedObject);
+        //console.log(addedObject);
         if (data.bid === 1) this.io.emit('buildObject', addedObject);
         else this.io.to(data.bid.toString()).emit('buildObject', addedObject);
     }
@@ -176,12 +177,12 @@ export default class RoomSocket {
     deleteUserHandler(socket: MySocket) {
         if (socket.uid !== undefined) deleteUserInfo(socket.uid, this.userMap);
         this.io.emit('user', this.userMap);
-        console.log(this.userMap);
+        //console.log(this.userMap);
         console.log(`${socket.id} 끊어졌습니다.`);
     }
 
     async joinRoomHandler(data: number, socket: MySocket) {
-        const roomId = data.toString();
+        const roomId = data.toString(10);
         socket.join(roomId);
 
         const usersInRoom = rooms.get(roomId);
@@ -200,8 +201,13 @@ export default class RoomSocket {
             .emit('others', others === undefined ? [] : others);
     }
 
-    async leaveRoomHandler(data: string, socket: MySocket) {
-        const roomId = data;
+    async leaveRoomHandler(data: number, socket: MySocket) {
+        const roomId = data.toString(10);
         socket.leave(roomId);
+        const users = rooms
+            .get(roomId)
+            .filter((user: string) => socket.id !== user);
+        rooms.set(roomId, users);
+        this.io.sockets.to(roomId).emit('user_exit', socket.id);
     }
 }
