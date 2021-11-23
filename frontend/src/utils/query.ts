@@ -53,3 +53,11 @@ export const getBuildingAndObjectUrls = gql`
         }
     }
 `;
+
+export const uploadFiles = gql`
+    mutation upload($file: Upload!) {
+        upload(file: $file) {
+            filename
+        }
+    }
+`;
