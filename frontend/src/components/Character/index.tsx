@@ -1,17 +1,24 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable consistent-return */
 import React, { useRef, useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
 import buildingInfoState from '../../store/buildingInfoState';
 import userState from '../../store/userState';
-import { UserMap, IUser, IBuilding } from '../../utils/model';
+import { UserMap, IUser, IBuilding, IObject } from '../../utils/model';
 
 import isInBuildingState from '../../store/isInBuildingState';
+import objectInfoState from '../../store/objectInfoState';
+
 import { NONE } from '../../utils/constants';
 
-import { buildingData, buildingListForCharacter } from '../../utils/variables/buildingData';
+import {
+    buildingData,
+    buildingListForCharacter,
+    objectData,
+    objectListForCharacter,
+} from '../../utils/variables/buildingData';
 
 const commonWidth = 70;
 const commonHeight = 50;
@@ -20,7 +27,8 @@ export const Character = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [user, setUser] = useRecoilState(userState);
     const [characters, setCharacters] = useState<UserMap>({});
-    const [buildingInfo, setBuildingInfo] = useRecoilState(buildingInfoState);
+    const setBuildingInfo = useSetRecoilState(buildingInfoState);
+    const setObjectInfo = useSetRecoilState(objectInfoState);
     const isInBuilding = useRecoilValue(isInBuildingState);
 
     const characterWidth = 32;
@@ -155,6 +163,7 @@ export const Character = () => {
         if (isInBuilding === NONE) {
             isBuilding(newLocation.x!, newLocation.y!);
         }
+        isObject(newLocation.x!, newLocation.y!);
     };
 
     const isBuilding = (userX: number, userY: number) => {
@@ -195,6 +204,42 @@ export const Character = () => {
             };
         }
         return building;
+    };
+
+    const isObject = (userX: number, userY: number) => {
+        const oid = objectData[getIndex(userX, userY)];
+        if (oid > 0) {
+            const object: IObject = findObject(oid);
+            setObjectInfo({
+                isObject: true,
+                ...object,
+            });
+        } else {
+            setObjectInfo({
+                isObject: false,
+                id: 0,
+                bid: NONE,
+                x: NONE,
+                y: NONE,
+                imageUrl: '',
+                fileUrl: '',
+            });
+        }
+    };
+
+    const findObject = (oid: number): IObject => {
+        const object = objectListForCharacter.get(oid);
+        if (object === undefined) {
+            return {
+                id: 0,
+                bid: NONE,
+                x: NONE,
+                y: NONE,
+                imageUrl: '',
+                fileUrl: '',
+            };
+        }
+        return object;
     };
 
     return (

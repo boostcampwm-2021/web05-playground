@@ -19,6 +19,7 @@ import {
     buildingData,
     objectData,
     buildingListForCharacter,
+    objectListForCharacter,
 } from '../../utils/variables/buildingData';
 
 const commonWidth = 70;
@@ -135,6 +136,7 @@ const Building = (props: IProps) => {
         }
     }, [currentModal]);
 
+    // 빌딩 오브젝트 둘 중 하나 처리하는 함수인데 이름은 그냥 빌딩으로 해놨음
     const fillBuildingPosition = (building: IBuilding | IObject) => {
         const { id, x, y } = building;
         const dataSize = Object.keys(building).includes('uid') ? 2 : 1;
@@ -142,8 +144,10 @@ const Building = (props: IProps) => {
         for (let i = x - dataSize; i < x + dataSize; i++) {
             for (let j = y - dataSize; j < y + dataSize; j++) {
                 const index = getIndex(i, j);
-                if (dataSize === 1) objectData[index] = id;
-                else if (id === 1) buildingData[index] = 0;
+                if (dataSize === 1) {
+                    objectData[index] = id;
+                    objectListForCharacter.set(id, building);
+                } else if (id === 1) buildingData[index] = 0;
                 else {
                     buildingData[index] = id;
                     buildingListForCharacter.set(id, building);
