@@ -9,7 +9,7 @@ const queryTypeDefs = gql`
     }
     type Mutation {
         setUserInfo(id: Int, nickname: String, imageUrl: String): IUser!
-        uploadFile(fileInfo: IFile): String!
+        getUploadUrl(fileUrl: String): String!
     }
 `;
 

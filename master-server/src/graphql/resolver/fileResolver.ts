@@ -1,30 +1,19 @@
-import { FileUpload, GraphQLUpload } from 'graphql-upload';
-import { createWriteStream } from 'fs';
-
-import { finished } from 'stream/promises';
-import { IResolvers } from '@graphql-tools/utils';
-interface IFile {
-    file: FileUpload;
-    wid: number;
-    bid: number;
-    oid: number;
-}
+import { IResolvers } from 'graphql-tools';
+import { bucketName, S3 } from 'src/objectStorage/s3';
 
 export const fileResolver: IResolvers = {
-    Upload: GraphQLUpload,
     Mutation: {
-        async uploadFile(_: void, fileInfo: IFile): Promise<string> {
-            const { file, wid, bid, oid } = fileInfo;
-            const { createReadStream, filename, mimetype, encoding } = file;
-            console.log(fileInfo);
-            console.log(file, wid, bid, oid);
-            const stream = createReadStream();
-            const out = createWriteStream('local-file-output.txt');
-            stream.pipe(out);
-            await finished(out);
+        async getUploadUrl(
+            _: void,
+            args: { fileUrl: string },
+        ): Promise<string> {
+            const signedUrl = S3.getSignedUrl('putObject', {
+                Bucket: bucketName,
+                Key: args.fileUrl,
+                Expires: 300,
+            });
 
-            const url = '';
-            return url;
+            return signedUrl;
         },
     },
 };

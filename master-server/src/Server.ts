@@ -15,7 +15,7 @@ import compression from 'compression';
 import schema from './graphql/schema';
 
 import BaseRouter from './routes';
-import { graphqlUploadExpress } from 'graphql-upload';
+import { GraphQLUpload, graphqlUploadExpress } from 'graphql-upload';
 
 const app = express();
 
@@ -35,13 +35,13 @@ const corsOption: cors.CorsOptions = {
 
 app.use(compression());
 
-app.use(graphqlUploadExpress({ maxFileSize: 10000000, maxFiles: 10 }));
 server.start().then(() => {
     server.applyMiddleware({
         app,
         path: '/graphql',
     });
 });
+
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
