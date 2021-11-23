@@ -15,6 +15,7 @@ import compression from 'compression';
 import schema from './graphql/schema';
 
 import BaseRouter from './routes';
+import { GraphQLUpload, graphqlUploadExpress } from 'graphql-upload';
 
 const app = express();
 
