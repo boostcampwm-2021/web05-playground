@@ -1,13 +1,32 @@
 /* eslint-disable jsx-a11y/alt-text */
-import React from 'react';
-import { useQuery } from '@apollo/client';
+import React, { useEffect } from 'react';
+import { useMutation, useQuery } from '@apollo/client';
+import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { RouteComponentProps } from 'react-router';
-import { getWorldList } from '../../utils/query';
+import { getWorldList, getAccessToken } from '../../utils/query';
 import { WorldSelector } from '../../components/SelectWorld';
+import userState from '../../store/userState';
 
 const SelectWorld = (props: RouteComponentProps) => {
     const { loading, error, data } = useQuery(getWorldList);
+    const [fetchUser] = useMutation(getAccessToken);
+    const [user, setUser] = useRecoilState(userState);
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const code = searchParams.get('code');
+
+    useEffect(() => {
+        if (code) {
+            const Login = async (code: string) => {
+                const userInfo = (await fetchUser({ variables: { code } })).data.user;
+                setUser(userInfo);
+            };
+            Login(code);
+        } else if (user.id === 1) {
+            props.history.push('/login');
+        }
+    }, []);
 
     const redirectSetting = (event: React.MouseEvent) => {
         event.preventDefault();

@@ -8,8 +8,10 @@ import { Clickable } from '../../utils/css';
 const Login = () => {
     const requestLogin = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const worldPageUrl = '/selectworld';
-        window.location.href = worldPageUrl;
+        const clientId = '2cc30cf9721c0fef25ed';
+        const cbUrl = 'http://localhost:3000/selectWorld';
+        const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${cbUrl}`;
+        window.location.href = url;
     };
 
     return (

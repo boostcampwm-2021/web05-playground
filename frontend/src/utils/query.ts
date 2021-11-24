@@ -31,8 +31,8 @@ export const getCharacterList = gql`
 `;
 
 export const setUserInfo = gql`
-    mutation Mutation($setUserInfoId: Int, $nickname: String, $imageUrl: String) {
-        setUserInfo(id: $setUserInfoId, nickname: $nickname, imageUrl: $imageUrl) {
+    mutation Mutation($id: Int, $nickname: String, $imageUrl: String) {
+        setUserInfo(id: $id, nickname: $nickname, imageUrl: $imageUrl) {
             id
             email
             nickname
@@ -50,6 +50,17 @@ export const getBuildingAndObjectUrls = gql`
         objectUrl {
             id
             url
+        }
+    }
+`;
+
+export const getAccessToken = gql`
+    mutation Mutation($code: String) {
+        user(code: $code) {
+            id
+            email
+            nickname
+            imageUrl
         }
     }
 `;
