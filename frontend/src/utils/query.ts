@@ -55,5 +55,7 @@ export const getBuildingAndObjectUrls = gql`
 `;
 
 export const getUploadUrl = gql`
-    getUploadUrl(fileUrl: String): String!
+    mutation Mutation($fileUrl: String) {
+        getUploadUrl(fileUrl: $fileUrl)
+    }
 `;

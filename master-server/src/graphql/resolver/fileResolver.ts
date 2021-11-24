@@ -7,12 +7,12 @@ export const fileResolver: IResolvers = {
             _: void,
             args: { fileUrl: string },
         ): Promise<string> {
+            console.log(args.fileUrl);
             const signedUrl = S3.getSignedUrl('putObject', {
                 Bucket: bucketName,
                 Key: args.fileUrl,
-                Expires: 300,
+                Expires: 30000,
             });
-
             return signedUrl;
         },
     },

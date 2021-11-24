@@ -3,9 +3,11 @@
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useMutation } from '@apollo/client';
+import axios from 'axios';
 import React, { useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
+import { isAsExpression } from 'typescript';
 
 import { socketClient } from '../../socket/socket';
 
@@ -23,7 +25,7 @@ const setBuildingModal = () => {
     const userInfo = useRecoilValue<IUser>(userState);
     const [buildObject, setBuildObject] = useRecoilState(buildObjectState);
     const [file, setFile] = useState<File>();
-    const [getSignedUrl] = useMutation(getUploadUrl);
+    const [getSignedUrl, { data, loading, error }] = useMutation(getUploadUrl);
 
     const cancleBuild = () => {
         const selectedObjectInfo = {
@@ -44,21 +46,25 @@ const setBuildingModal = () => {
             y: buildObject.locationY,
             bid: buildObject.roomId,
             imageUrl: buildObject.src,
-            fileUrl: '',
+            fileUrl: 'https://kr.object.ncloudstorage.com/playground/%ED%8F%AC%ED%95%AD.jpg',
         };
 
         if (file === undefined) socketClient.emit('buildObject', objectInfo);
         else {
             // console.log({ file, name: file.name, mimeType: file.type, bid: buildObject.roomId });
-            const url = `${worldInfo.id}/${buildObject.roomId}/${userInfo.id}/${Date.now()}/${
-                file.name
-            }`;
+            const url = [worldInfo.id, buildObject.roomId, userInfo.id, Date.now(), file.name].join(
+                '/',
+            );
 
-            const preSignedUrl = JSON.stringify(await getSignedUrl({ variables: { url } }));
-            await fetch(preSignedUrl, {
-                method: 'PUT',
-                body: file,
+            const preSignedUrl: string = (await getSignedUrl({ variables: { fileUrl: url } })).data
+                .getUploadUrl;
+            const prepreSignedUrl = preSignedUrl.replace('https', 'http');
+
+            await axios.put(preSignedUrl, file, {
+                headers: { 'Content-Type': file.type },
+                withCredentials: false,
             });
+
             socketClient.emit('buildObject', { ...objectInfo, fileUrl: url });
         }
 
