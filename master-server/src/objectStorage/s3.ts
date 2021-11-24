@@ -1,10 +1,9 @@
 import AWS from 'aws-sdk';
-import { PutObjectCommand } from '@aws-sdk/client-s3';
 
-const endpoint = new AWS.Endpoint('pfrtwzglkdkt9048310.cdn.ntruss.com');
-const region = 'kr-standard';
-const accessKey = 'VouTJ0RlGKTifqzMz7z3';
-const secretKey = '4qBnWfUJrTkqwciZ48Y2FZ1KRDKJog9V9YAc8FBD';
+const endpoint = new AWS.Endpoint(process.env.ENDPOINT!);
+const region = process.env.AWS_REGION;
+const accessKey = process.env.AWS_ACCESS_KEY!;
+const secretKey = process.env.AWS_SECRET_KEY!;
 
 export const bucketName = 'playground';
 
@@ -18,4 +17,5 @@ AWS.config.update({
 
 export const S3 = new AWS.S3({
     endpoint: endpoint.href,
+    signatureVersion: 'v4',
 });

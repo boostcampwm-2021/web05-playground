@@ -7,7 +7,6 @@ import axios from 'axios';
 import React, { useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
-import { isAsExpression } from 'typescript';
 
 import { socketClient } from '../../socket/socket';
 
@@ -46,7 +45,7 @@ const setBuildingModal = () => {
             y: buildObject.locationY,
             bid: buildObject.roomId,
             imageUrl: buildObject.src,
-            fileUrl: 'https://kr.object.ncloudstorage.com/playground/%ED%8F%AC%ED%95%AD.jpg',
+            fileUrl: '',
         };
 
         if (file === undefined) socketClient.emit('buildObject', objectInfo);
@@ -55,15 +54,10 @@ const setBuildingModal = () => {
             const url = [worldInfo.id, buildObject.roomId, userInfo.id, Date.now(), file.name].join(
                 '/',
             );
-
             const preSignedUrl: string = (await getSignedUrl({ variables: { fileUrl: url } })).data
                 .getUploadUrl;
-            const prepreSignedUrl = preSignedUrl.replace('https', 'http');
 
-            await axios.put(preSignedUrl, file, {
-                headers: { 'Content-Type': file.type },
-                withCredentials: false,
-            });
+            await axios.put(preSignedUrl, file);
 
             socketClient.emit('buildObject', { ...objectInfo, fileUrl: url });
         }
