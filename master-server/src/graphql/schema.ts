@@ -14,7 +14,6 @@ import characterResolver from './resolver/characterResolver';
 import userResolver from './resolver/userResolver';
 import userTypeDef from './schema/user';
 import objectTypeDef from './schema/object';
-import { fileResolver } from './resolver/fileResolver';
 import { GraphQLSchema } from 'graphql';
 
 const typeDefs = [
@@ -32,7 +31,6 @@ const resolvers = [
     characterResolver,
     userResolver,
     objectResolver,
-    fileResolver,
 ];
 
 const schema: GraphQLSchema = makeExecutableSchema({

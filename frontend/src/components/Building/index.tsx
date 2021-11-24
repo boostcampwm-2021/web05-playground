@@ -147,8 +147,7 @@ const Building = (props: IProps) => {
                 if (dataSize === 1) {
                     objectData[index] = id;
                     objectListForCharacter.set(id, building);
-                } else if (id === 1) buildingData[index] = 0;
-                else {
+                } else {
                     buildingData[index] = id;
                     buildingListForCharacter.set(id, building);
                 }

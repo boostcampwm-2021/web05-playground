@@ -17,15 +17,16 @@ const SelectWorld = (props: RouteComponentProps) => {
     const code = searchParams.get('code');
 
     useEffect(() => {
+        if (user.id !== 1) return;
         if (code) {
             const Login = async (code: string) => {
                 const userInfo = (await fetchUser({ variables: { code } })).data.user;
                 setUser(userInfo);
             };
             Login(code);
-        } else if (user.id === 1) {
-            props.history.push('/login');
+            return;
         }
+        props.history.push('/login');
     }, []);
 
     const redirectSetting = (event: React.MouseEvent) => {
