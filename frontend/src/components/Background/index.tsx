@@ -31,6 +31,7 @@ interface IEnter {
     roomId: number;
 }
 
+let worker: Worker;
 const WorldBackground = (props: IProps) => {
     const layers = props.data;
     const InBuilding = props.current;
@@ -39,6 +40,8 @@ const WorldBackground = (props: IProps) => {
     const user = useRecoilValue(userState);
     const commonWidth = layers[0].width;
     const tileSize = 32;
+
+    // let worker: Worker;
 
     const [buildingInfo, setBuildingInfo] = useState({
         buildings: [
@@ -83,7 +86,6 @@ const WorldBackground = (props: IProps) => {
         socketClient.emit('enter', enterInfo);
 
         socketClient.on('enter', (data: IBuildingInfo) => {
-            console.log(data);
             setBuildingInfo(data);
         });
 
@@ -93,32 +95,57 @@ const WorldBackground = (props: IProps) => {
     }, [socketClient, InBuilding]);
 
     useEffect(() => {
-        const backgroundImageList: HTMLImageElement[] = [];
-        let cnt = 0;
-        layers.forEach((layer) => {
-            const backgroundImg = new Image();
-            backgroundImg.src = layer.imgSrc;
-            backgroundImg.onload = () => {
-                cnt++;
-                backgroundImageList.push(backgroundImg);
-                if (cnt === layers.length) {
-                    setTileBackground([...backgroundImageList]);
-                }
-            };
-        });
-    }, [layers]);
+        // const backgroundImageList: HTMLImageElement[] = [];
+        // let cnt = 0;
+        // layers.forEach((layer) => {
+        //     const backgroundImg = new Image();
+        //     backgroundImg.src = layer.imgSrc;
+        //     backgroundImg.onload = () => {
+        //         cnt++;
+        //         backgroundImageList.push(backgroundImg);
+        //         if (cnt === layers.length) {
+        //             setTileBackground([...backgroundImageList]);
+        //         }
+        //     };
+        // });
 
-    useEffect(() => {
-        const canvas: HTMLCanvasElement | null = canvasRef.current;
-        if (canvas === null) {
-            return;
-        }
+        const canvas: any = canvasRef.current;
+        if (canvas === null) return;
+
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
 
-        ctx = canvas.getContext('2d');
-        drawGame();
-    }, [tileBackground, user, window.innerWidth, window.innerHeight]);
+        const offscreen = canvas.transferControlToOffscreen();
+        worker = new Worker('../../workers/Background/index.ts', {
+            type: 'module',
+        });
+
+        worker.onmessage = async (e) => {
+            const { msg } = e.data;
+
+            if (msg) console.log(msg);
+        };
+
+        worker.postMessage({ type: 'init', offscreen, layers, user }, [offscreen]);
+
+        return () => {
+            worker.terminate();
+        };
+    }, [layers]);
+
+    useEffect(() => {
+        // const canvas: HTMLCanvasElement | null = canvasRef.current;
+        // if (canvas === null) {
+        //     return;
+        // }
+        // canvas.width = window.innerWidth;
+        // canvas.height = window.innerHeight;
+        // ctx = canvas.getContext('2d');
+        // drawGame();
+
+        if (worker === undefined) return;
+        worker.postMessage({ type: 'update', layers, user }, []);
+    }, [user, worker, window.innerWidth, window.innerHeight]);
 
     const drawGame = () => {
         if (!ctx || !tileBackground) return;
