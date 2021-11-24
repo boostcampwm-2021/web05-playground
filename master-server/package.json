@@ -63,6 +63,7 @@
     "@graphql-tools/utils": "^8.5.1",
     "@types/cors": "^2.8.12",
     "apollo-server-express": "^3.4.0",
+    "axios": "^0.24.0",
     "command-line-args": "^5.2.0",
     "compression": "^1.7.4",
     "cookie-parser": "^1.4.5",
