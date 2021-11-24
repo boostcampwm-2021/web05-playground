@@ -3,16 +3,24 @@
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import { socketClient } from '../../socket/socket';
 
 import buildObjectState from '../../store/buildObjectState';
-import { NONE } from '../../utils/constants';
+import currentWorldState from '../../store/currentWorldState';
+import userState from '../../store/userState';
+
+import { DEFAULT_INDEX, NONE } from '../../utils/constants';
+
+import { IUser, IWorld } from '../../utils/model';
 
 const setBuildingModal = () => {
+    const worldInfo = useRecoilValue<IWorld>(currentWorldState);
+    const userInfo = useRecoilValue<IUser>(userState);
     const [buildObject, setBuildObject] = useRecoilState(buildObjectState);
+    const [file, setFile] = useState<File>();
 
     const cancleBuild = () => {
         const selectedObjectInfo = {
@@ -27,13 +35,13 @@ const setBuildingModal = () => {
         setBuildObject(selectedObjectInfo);
     };
 
-    const completeBuild = () => {
+    const completeBuild = async () => {
         const objectInfo = {
             x: buildObject.locationX,
             y: buildObject.locationY,
             bid: buildObject.roomId,
             imageUrl: buildObject.src,
-            fileUrl: '',
+            fileUrl: 'https://kr.object.ncloudstorage.com/playground/%ED%8F%AC%ED%95%AD.jpg',
         };
 
         socketClient.emit('buildObject', objectInfo);
@@ -51,10 +59,25 @@ const setBuildingModal = () => {
         alert('추가되었습니다.');
     };
 
+    const makeFileList = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const target = e.target as HTMLInputElement;
+        if (target.files === null) return;
+        setFile(target.files[DEFAULT_INDEX]);
+    };
+
     return (
         <ModalDiv>
             <BtnWrapper>
                 <StyledBtn onClick={cancleBuild}>취소</StyledBtn>
+                <StyledInput
+                    id="uploadFile"
+                    type="file"
+                    accept=".doc,.docx,.pdf,image/*"
+                    onChange={makeFileList}
+                />
+                <StyledBtn>
+                    <label htmlFor="uploadFile">업로드</label>
+                </StyledBtn>
                 <StyledBtn onClick={completeBuild}>확인</StyledBtn>
             </BtnWrapper>
         </ModalDiv>
@@ -94,4 +117,8 @@ const StyledBtn = styled.button`
     width: 70px;
     background-color: #c4c4c4c4;
     border-radius: 20px;
+`;
+
+const StyledInput = styled.input`
+    display: none;
 `;

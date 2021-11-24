@@ -14,6 +14,7 @@
     "@types/react-router-dom": "^5.3.2",
     "@types/socket.io-client": "^3.0.0",
     "@types/styled-components": "^5.1.15",
+    "axios": "^0.24.0",
     "graphql": "^16.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
@@ -57,5 +58,6 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "prettier": "^2.4.1"
-  }
+  },
+  "proxy":"https://playground.pfrtwzglkdkt9048310.cdn.ntruss.com"
 }

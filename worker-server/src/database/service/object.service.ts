@@ -39,9 +39,10 @@ export const addObject = async (data: IObject): Promise<Receiver> => {
             data.imageUrl,
             data.fileUrl,
         ];
-        await pool2.query(sql, values);
 
-        result.addedObject = data;
+        const [ret] = await pool2.query(sql, values);
+        const objectId = JSON.parse(JSON.stringify(ret)).insertId;
+        result.addedObject = { ...data, id: objectId };
         return result;
     } catch (err) {
         console.log(err);

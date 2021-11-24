@@ -3,10 +3,10 @@ import React, { useState } from 'react';
 import { useRecoilState } from 'recoil';
 
 import styled from 'styled-components';
-import buildingInfoState from '../../store/buildingInfoState';
-import isInBuildingState from '../../store/isInBuildingState';
-import { socketClient } from '../../socket/socket';
-import { NONE } from '../../utils/constants';
+import buildingInfoState from '../../../store/buildingInfoState';
+import isInBuildingState from '../../../store/isInBuildingState';
+import { socketClient } from '../../../socket/socket';
+import { NONE } from '../../../utils/constants';
 
 const BuildingInfo = () => {
     const [buildingInfo, setBuildingInfo] = useRecoilState(buildingInfoState);

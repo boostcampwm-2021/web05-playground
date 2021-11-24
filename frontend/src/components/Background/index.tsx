@@ -83,7 +83,6 @@ const WorldBackground = (props: IProps) => {
         socketClient.emit('enter', enterInfo);
 
         socketClient.on('enter', (data: IBuildingInfo) => {
-            console.log(data);
             setBuildingInfo(data);
         });
 
