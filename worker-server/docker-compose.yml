@@ -1,6 +1,6 @@
 services:
   worker:
-    image: kimsungho97/playground-worker:1.0.1
+    image: kimsungho97/playground-worker
     restart: always
     ports:
       - ${PORT}:8000
