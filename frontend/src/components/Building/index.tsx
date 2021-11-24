@@ -77,6 +77,7 @@ const Building = (props: IProps) => {
         }
 
         objctx?.clearRect(0, 0, objCanvas.width, objCanvas.height);
+
         buildingData.fill(0);
         objectData.fill(0);
 
@@ -160,13 +161,8 @@ const Building = (props: IProps) => {
         const height = Math.floor(window.innerHeight / 2);
         const dx = width - (width % tileSize);
         const dy = height - (height % tileSize);
-        let layerX = user.x! - dx / tileSize;
-        let layerY = user.y! - dy / tileSize;
-
-        if (layerX < 0) layerX = 0;
-        if (layerY < 0) layerY = 0;
-        if (layerX > 70) layerX = 70;
-        if (layerY > 50) layerY = 50;
+        const layerX = user.x! - dx / tileSize;
+        const layerY = user.y! - dy / tileSize;
 
         return { layerX, layerY };
     };

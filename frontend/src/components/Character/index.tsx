@@ -101,8 +101,8 @@ export const Character = () => {
                     0,
                     characterWidth,
                     characterHeight,
-                    user.x! * characterWidth < dx ? user.x! * characterWidth : dx,
-                    user.y! * characterWidth < dy ? user.y! * characterWidth : dy,
+                    dx,
+                    dy,
                     characterWidth,
                     characterHeight,
                 );
@@ -156,6 +156,8 @@ export const Character = () => {
             default:
                 break;
         }
+        if (newLocation.x! < 0 || newLocation.x! + 1 > commonWidth) return;
+        if (newLocation.y! + 1 < 0 || newLocation.y! + 2 > commonHeight) return;
 
         setUser(newLocation);
         socketClient.emit('move', newLocation);
@@ -197,9 +199,9 @@ export const Character = () => {
         if (building === undefined) {
             return {
                 id: 0,
-                x: -1,
-                y: -1,
-                uid: -1,
+                x: NONE,
+                y: NONE,
+                uid: NONE,
                 description: '',
                 scope: '',
                 password: '',

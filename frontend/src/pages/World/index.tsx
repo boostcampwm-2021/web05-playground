@@ -3,6 +3,7 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 import { RouteComponentProps } from 'react-router';
 import { useQuery } from '@apollo/client';
 
+import styled from 'styled-components';
 import currentWorldState from '../../store/currentWorldState';
 import currentModalState from '../../store/currentModalState';
 import buildBuildingState from '../../store/buildBuildingState';
@@ -93,7 +94,7 @@ const World = (props: RouteComponentProps) => {
     if (error) return <p>Error :(</p>;
 
     return (
-        <>
+        <Inner>
             {/* 아래 recoil 두 가지 상태에따라 맵이 다시 그려지니까 상태관련된 것은 하위컴포넌트 or 다른 곳으로 빼자 */}
             <Background
                 data={isInBuilding === NONE ? mapLayers : buildingLayer}
@@ -106,8 +107,15 @@ const World = (props: RouteComponentProps) => {
             <NavigationBar props={props} />
             {buildBuilding.isLocated ? <SetBuildingModal /> : <></>}
             {buildObject.isLocated ? <SetObjectModal /> : <></>}
-        </>
+        </Inner>
     );
 };
+
+const Inner = styled.div`
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #d1daa5;
+`;
 
 export default World;
