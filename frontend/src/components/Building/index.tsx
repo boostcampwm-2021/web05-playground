@@ -29,10 +29,14 @@ let ctx: CanvasRenderingContext2D | null;
 let checkingCtx: CanvasRenderingContext2D | null;
 const buildingImageCache = new Map();
 
-const objCanvas = document.createElement('canvas');
-const objctx = objCanvas.getContext('2d');
-objCanvas.width = commonWidth * tileSize;
-objCanvas.height = commonHeight * tileSize;
+// const objCanvas = document.createElement('canvas');
+// const objctx = objCanvas.getContext('2d');
+// objCanvas.width = commonWidth * tileSize;
+// objCanvas.height = commonHeight * tileSize;
+
+// 이렇게 전역으로 두니까 모든 월드에 적용되어 버리는듯?... 아닌가
+const offscreen = new OffscreenCanvas(window.innerWidth, window.innerHeight);
+let backgroundImage: any;
 
 const Building = (props: IProps) => {
     const { layers, buildingList, objectList, current: InBuilding } = props;
@@ -43,7 +47,7 @@ const Building = (props: IProps) => {
     const currentModal = useRecoilValue(currentModalState);
     const user = useRecoilValue(userState);
 
-    let cnt = 0;
+    const cnt = 0;
 
     const obstacleLayer = layers[OBJECT].data;
 
@@ -54,13 +58,13 @@ const Building = (props: IProps) => {
         if (socketClient === undefined) return;
         socketClient.on('buildBuilding', (data: IBuilding) => {
             fillBuildingPosition(data);
-            drawOriginBuildings(data);
-            drawObjCanvas();
+            // drawOriginBuildings(data);
+            // drawObjCanvas();
         });
         socketClient.on('buildObject', (data: IObject) => {
             fillBuildingPosition(data);
-            drawOriginBuildings(data);
-            drawObjCanvas();
+            // drawOriginBuildings(data);
+            // drawObjCanvas();
         });
         return () => {
             socketClient.removeListener('buildBuilding');
@@ -75,7 +79,7 @@ const Building = (props: IProps) => {
             return;
         }
 
-        objctx?.clearRect(0, 0, objCanvas.width, objCanvas.height);
+        // objctx?.clearRect(0, 0, objCanvas.width, objCanvas.height);
         buildingData.fill(0);
         objectData.fill(0);
 
@@ -87,21 +91,49 @@ const Building = (props: IProps) => {
         ctx = canvas.getContext('2d');
         checkingCtx = checkingCanvas.getContext('2d');
 
+        const worker = new Worker('../../workers/Building/index.ts', {
+            type: 'module',
+        });
+
+        worker.onmessage = async (e) => {
+            const { msg, backImage } = e.data;
+
+            // 버퍼에 대한 포인터만 가져옴 => 카피가 안 일어나서 더 효율적
+            // 결론 backgroundCanvas의 전체 이미지 카피없이 포인터만으로 굉장히 효율적인 렌더링을 수행할 수 있음
+            if (ctx === null) return;
+
+            backgroundImage = backImage;
+            drawObjCanvas();
+            // ctx.drawImage(backgroundImage, 0, 0, window.innerWidth, window.innerHeight);
+        };
+
+        const itemList: any = [];
         if (buildingList.length !== 0 && buildingList[DEFAULT_INDEX].id !== -1) {
             buildingList.forEach((building) => {
                 fillBuildingPosition(building);
-                drawOriginBuildings(building);
+                itemList.push(building);
+                // drawOriginBuildings(building);
             });
-            drawObjCanvas();
+            // worker.postMessage({ offscreen, buildingList }, [offscreen]);
+            // drawObjCanvas();
         }
 
         if (objectList.length !== 0 && objectList[0].id !== -1) {
             objectList.forEach((object) => {
                 fillBuildingPosition(object);
-                drawOriginBuildings(object);
+                itemList.push(object);
+                // drawOriginBuildings(object);
             });
             drawObjCanvas();
         }
+
+        // 오브젝트 리스트(빌등, 오브젝)에 한번에 포함하기 위해 구현중 => 조건문 수정필요
+        if (buildingList.length !== 0 && buildingList[DEFAULT_INDEX].id !== -1) {
+            worker.postMessage({ offscreen, itemList }, [offscreen]);
+        }
+        return () => {
+            worker.terminate();
+        };
     }, [buildingList, objectList, window.innerHeight, window.innerWidth]);
 
     useEffect(() => {
@@ -322,39 +354,39 @@ const Building = (props: IProps) => {
         return true;
     };
 
-    const drawOriginBuildings = (building: IBuilding | IObject) => {
-        if (!ctx) return;
-        if (!objctx) return;
+    // const drawOriginBuildings = (building: IBuilding | IObject) => {
+    //     if (!ctx) return;
+    //     if (!objctx) return;
 
-        const dataSize = Object.keys(building).includes('uid') ? 4 : 2;
+    //     const dataSize = Object.keys(building).includes('uid') ? 4 : 2;
 
-        const buildingOutputSize = tileSize * dataSize;
-        const sx = building.x * tileSize - buildingOutputSize / 2;
-        const sy = building.y * tileSize - buildingOutputSize / 2;
-        const dx = buildingOutputSize;
-        const dy = buildingOutputSize;
+    //     const buildingOutputSize = tileSize * dataSize;
+    //     const sx = building.x * tileSize - buildingOutputSize / 2;
+    //     const sy = building.y * tileSize - buildingOutputSize / 2;
+    //     const dx = buildingOutputSize;
+    //     const dy = buildingOutputSize;
 
-        // Todo - 캐싱이미지의 경우 오프스크린에 미리 그려서 캔버스에 입히는 식으로 성능 개선을 해보자
-        const cachingImage = buildingImageCache.get(building.imageUrl);
-        if (cachingImage) {
-            drawFunction(objctx, cachingImage, sx, sy, dx, dy);
-            cnt++;
-            if (cnt === buildingList.length) {
-                drawObjCanvas();
-            }
-        } else {
-            const buildingObject = new Image();
-            buildingObject.src = building.imageUrl;
-            buildingObject.onload = () => {
-                drawFunction(objctx, buildingObject, sx, sy, dx, dy);
-                buildingImageCache.set(building.imageUrl, buildingObject);
-                cnt++;
-                if (cnt === buildingList.length - 1) {
-                    drawObjCanvas();
-                }
-            };
-        }
-    };
+    //     // Todo - 캐싱이미지의 경우 오프스크린에 미리 그려서 캔버스에 입히는 식으로 성능 개선을 해보자
+    //     const cachingImage = buildingImageCache.get(building.imageUrl);
+    //     if (cachingImage) {
+    //         drawFunction(objctx, cachingImage, sx, sy, dx, dy);
+    //         cnt++;
+    //         if (cnt === buildingList.length) {
+    //             drawObjCanvas();
+    //         }
+    //     } else {
+    //         const buildingObject = new Image();
+    //         buildingObject.src = building.imageUrl;
+    //         buildingObject.onload = () => {
+    //             drawFunction(objctx, buildingObject, sx, sy, dx, dy);
+    //             buildingImageCache.set(building.imageUrl, buildingObject);
+    //             cnt++;
+    //             if (cnt === buildingList.length - 1) {
+    //                 drawObjCanvas();
+    //             }
+    //         };
+    //     }
+    // };
 
     const drawObjCanvas = () => {
         ctx?.clearRect(0, 0, window.innerWidth, window.innerHeight);
@@ -363,9 +395,11 @@ const Building = (props: IProps) => {
 
         const sx = -layerX * tileSize;
         const sy = -layerY * tileSize;
-        const dx = commonWidth * tileSize;
-        const dy = commonHeight * tileSize;
-        drawFunction(ctx, objCanvas, sx, sy, dx, dy);
+        const dx = window.innerWidth; // commonWidth * tileSize;
+        const dy = window.innerHeight; // commonHeight * tileSize;
+
+        if (!backgroundImage) return;
+        drawFunction(ctx, backgroundImage, sx, sy, dx, dy);
     };
 
     return (
