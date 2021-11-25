@@ -37,6 +37,7 @@ interface customWorldInfo {
 const worldsInfo: customWorldInfo = {
     world1: worldPark,
     world2: worldWinter,
+    'test-world': worldPark,
 };
 
 const World = (props: RouteComponentProps) => {
@@ -59,7 +60,9 @@ const World = (props: RouteComponentProps) => {
 
     // 기존에는 useState로 관리했는데, 상태변경이 없으면 굳이?? 이유가 있을까
     // 리렌더링 될때만 값을 새로 선언하는게 문제라면 useMemo를 적용해봐도 되지 않을까?
-    const [mapLayers, setMapLayer] = useState(worldsInfo[currentWorld.name].layers);
+    const [mapLayers, setMapLayer] = useState(
+        worldsInfo[currentWorld.name] ? worldsInfo[currentWorld.name].layers : worldPark.layers,
+    );
     const [buildingLayer, setBuildingLayer] = useState(buildingInside.layers);
 
     useEffect(() => {

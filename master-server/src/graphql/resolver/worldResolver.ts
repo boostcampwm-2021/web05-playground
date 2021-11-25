@@ -26,14 +26,22 @@ const worldResolver: IResolvers = {
             args: { uid: number; name: string },
         ): Promise<boolean> {
             const result = await getMaxWorldPort();
+            console.log('getmaxWorld: ', result);
             if (result.status === STATUS_CODE.FAIL) return false;
 
             const worldsPort = result.maxWorldPort!;
             const maxPort = getEnablePort(worldsPort);
-
             exec(
                 `PORT=${maxPort} docker-compose -f ../worker-server/docker-compose.yml -p ${args.name} up -d`,
+                function (error: any, stdout: any, stderr: any) {
+                    console.log(error);
+                    console.log(stdout);
+                    console.log(stderr);
+                    // work with result
+                },
             );
+
+            console.log('getmaxWorld: ', result);
 
             const dbResult = await addWorld(
                 args.uid,
@@ -41,6 +49,8 @@ const worldResolver: IResolvers = {
                 maxPort!,
                 '/assets/world-park',
             );
+
+            console.log('dbResult: ', dbResult);
 
             if (dbResult.status === STATUS_CODE.SUCCESS) return true;
             else return false;
@@ -64,7 +74,7 @@ const getEnablePort = (port: number) => {
             },
         );
 
-        if (!result) return maxPort;
+        if (result) return maxPort;
     }
 };
 
