@@ -1,9 +1,11 @@
+/* eslint-disable no-return-await */
 /* eslint-disable no-restricted-globals */
-import makeImageBitMapList from '../loadImage2';
+import getImageBitMap from '../loadImage2';
 
 const worker = self;
 let offscreenCanvas: any;
 let offscreenCtx: any;
+let backgroundImage: any;
 
 const tileSize = 32;
 
@@ -11,7 +13,7 @@ const buildingImageCache = new Map();
 
 // 빌딩만이 아니라 빌딩 + 오브젝트임
 worker.onmessage = async (e) => {
-    const { type, offscreen, itemList } = e.data;
+    const { type, offscreen, itemList, buildedItem } = e.data;
 
     if (type === 'init') {
         offscreenCanvas = offscreen;
@@ -21,7 +23,9 @@ worker.onmessage = async (e) => {
         return;
     }
     if (type === 'sendItemList') {
-        const imageBitmapList = await makeImageBitMapList(itemList);
+        const imageBitmapList = await Promise.all(
+            itemList.map(async (item: any) => await getImageBitMap(item.imageUrl)),
+        );
 
         let cnt = 0;
         itemList.forEach((building: any) => {
@@ -30,6 +34,7 @@ worker.onmessage = async (e) => {
         });
 
         const backImage = offscreenCanvas.transferToImageBitmap();
+        backgroundImage = backImage;
         worker.postMessage({
             type: 'draw background',
             backImage,
@@ -37,7 +42,26 @@ worker.onmessage = async (e) => {
         return;
     }
     if (type === 'buildItem') {
-        console.log('여기도 로직 추가해야한다.');
+        const imageBitmap = await getImageBitMap(buildedItem.imageUrl);
+
+        offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+        drawFunction(
+            offscreenCtx,
+            backgroundImage,
+            0,
+            0,
+            offscreenCanvas.width,
+            offscreenCanvas.height,
+        );
+        drawOriginBuildings(buildedItem, imageBitmap);
+
+        const backImage = offscreenCanvas.transferToImageBitmap();
+        backgroundImage = backImage;
+        worker.postMessage({
+            type: 'draw background',
+            backImage,
+        });
+        return;
     }
     if (type === 'terminate') {
         offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);

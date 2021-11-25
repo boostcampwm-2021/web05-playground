@@ -26,12 +26,6 @@ imageMap.set(
 );
 
 const cnt = 0;
-const makeImageBitMapList = async (objectList: any) => {
-    const list = await Promise.all(
-        objectList.map(async (object: any) => await getImageBitMap(object.imageUrl)),
-    );
-    return list;
-};
 
 // 일단 지금 cors 설정때문에 임시로 데이터 변경
 const getImageBitMap = async (imgUrl: string) => {
@@ -47,4 +41,4 @@ const getImageBitMap = async (imgUrl: string) => {
     return imageBitmap;
 };
 
-export default makeImageBitMapList;
+export default getImageBitMap;

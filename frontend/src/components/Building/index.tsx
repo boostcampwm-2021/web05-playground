@@ -56,13 +56,14 @@ const Building = (props: IProps) => {
     let buildTargetY = NONE;
 
     useEffect(() => {
-        const canvas: any = canvasRef.current;
-        if (canvas === null) return;
+        // const canvas: any = canvasRef.current;
+        // if (canvas === null) return;
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        // canvas.width = window.innerWidth;
+        // canvas.height = window.innerHeight;
 
-        offscreen = new OffscreenCanvas(window.innerWidth, window.innerHeight);
+        // 아 여기에 초기 캔버스 크기 잘못설정했네...
+        offscreen = new OffscreenCanvas(70 * 32, 50 * 32);
         worker = new Worker('../../workers/Building/index.ts', {
             type: 'module',
         });
@@ -77,6 +78,9 @@ const Building = (props: IProps) => {
                 backgroundImage = backImage;
                 drawObjCanvas();
             }
+            // if (type === 'add builded item') {
+            //     backgroundImage.drawImage(backImage, 0, 0, 100, 100);
+            // }
         };
 
         worker.postMessage({ type: 'init', offscreen }, [offscreen]);
@@ -84,28 +88,28 @@ const Building = (props: IProps) => {
             // 종료는 여기서 딱한번만 수행!
             worker.postMessage({ type: 'terminate' }, []);
             worker.terminate();
-            ctx?.clearRect(0, 0, window.innerWidth, window.innerHeight);
             backgroundImage = null;
-            console.log('빌딩워커', '종료');
         };
     }, []);
 
     useEffect(() => {
         if (socketClient === undefined) return;
+
+        // 아래 두개 이벤트 통합해도 될듯 6주차에 리팩토링
         socketClient.on('buildBuilding', (data: IBuilding) => {
             fillBuildingPosition(data);
-            // drawOriginBuildings(data);
-            // drawObjCanvas();
+            console.log(backgroundImage);
+            worker.postMessage({ type: 'buildItem', buildedItem: data }, []);
         });
         socketClient.on('buildObject', (data: IObject) => {
             fillBuildingPosition(data);
-            // drawOriginBuildings(data);
-            // drawObjCanvas();
+            worker.postMessage({ type: 'buildItem', buildedItem: data }, []);
         });
         return () => {
             socketClient.removeListener('buildBuilding');
             socketClient.removeListener('buildObject');
         };
+        // user 없어도 괜찮을듯
     }, [socketClient, user]);
 
     useEffect(() => {
@@ -138,7 +142,7 @@ const Building = (props: IProps) => {
             // drawObjCanvas();
         }
 
-        if (objectList.length !== 0 && objectList[0].id !== -1) {
+        if (objectList.length !== 0 && objectList[DEFAULT_INDEX].id !== -1) {
             objectList.forEach((object) => {
                 fillBuildingPosition(object);
                 itemList.push(object);
@@ -414,8 +418,10 @@ const Building = (props: IProps) => {
 
         const sx = -layerX * tileSize;
         const sy = -layerY * tileSize;
-        const dx = window.innerWidth; // commonWidth * tileSize;
-        const dy = window.innerHeight; // commonHeight * tileSize;
+
+        // 여기까지 해서 총 2개 수정 => 크기잘못설정한거 커밋묶어서해
+        const dx = commonWidth * tileSize; // window.innerWidth; // commonWidth * tileSize;
+        const dy = commonHeight * tileSize; // window.innerHeight; // commonHeight * tileSize;
 
         if (!backgroundImage) return;
         drawFunction(ctx, backgroundImage, sx, sy, dx, dy);
