@@ -107,7 +107,7 @@ const Building = (props: IProps) => {
             // ctx.drawImage(backgroundImage, 0, 0, window.innerWidth, window.innerHeight);
         };
 
-        const itemList: any = [];
+        let itemList: any = [];
         if (buildingList.length !== 0 && buildingList[DEFAULT_INDEX].id !== -1) {
             buildingList.forEach((building) => {
                 fillBuildingPosition(building);
@@ -129,6 +129,7 @@ const Building = (props: IProps) => {
 
         // 오브젝트 리스트(빌등, 오브젝)에 한번에 포함하기 위해 구현중 => 조건문 수정필요
         if (buildingList.length !== 0 && buildingList[DEFAULT_INDEX].id !== -1) {
+            itemList = itemList.filter((item: any) => item.imageUrl !== null);
             worker.postMessage({ offscreen, itemList }, [offscreen]);
         }
         return () => {
