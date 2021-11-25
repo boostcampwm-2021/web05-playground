@@ -8,9 +8,7 @@ import { Clickable } from '../../utils/css';
 const Login = () => {
     const requestLogin = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const clientId = '2cc30cf9721c0fef25ed';
-        const cbUrl = 'http://localhost:3000/selectWorld';
-        const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${cbUrl}`;
+        const url = process.env.AUTH_URL!;
         window.location.href = url;
     };
 
