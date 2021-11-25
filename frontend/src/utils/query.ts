@@ -70,3 +70,9 @@ export const getUploadUrl = gql`
         getUploadUrl(fileUrl: $fileUrl)
     }
 `;
+
+export const fetchCreateWorld = gql`
+    mutation Mutation($uid: Int, $name: String) {
+        createWorld(uid: $uid, name: $name)
+    }
+`;
