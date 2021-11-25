@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-plusplus */
 /* eslint-disable react/destructuring-assignment */
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
@@ -29,12 +29,6 @@ let ctx: CanvasRenderingContext2D | null;
 let checkingCtx: CanvasRenderingContext2D | null;
 const buildingImageCache = new Map();
 
-// const objCanvas = document.createElement('canvas');
-// const objctx = objCanvas.getContext('2d');
-// objCanvas.width = commonWidth * tileSize;
-// objCanvas.height = commonHeight * tileSize;
-
-// 이렇게 전역으로 두니까 모든 월드에 적용되어 버리는듯?... 아닌가
 let offscreen: OffscreenCanvas;
 let worker: Worker;
 let backgroundImage: any;
@@ -48,40 +42,16 @@ const Building = (props: IProps) => {
     const currentModal = useRecoilValue(currentModalState);
     const user = useRecoilValue(userState);
 
-    const cnt = 0;
-
     const obstacleLayer = layers[OBJECT].data;
 
     let buildTargetX = NONE;
     let buildTargetY = NONE;
 
     useEffect(() => {
-        // const canvas: any = canvasRef.current;
-        // if (canvas === null) return;
-
-        // canvas.width = window.innerWidth;
-        // canvas.height = window.innerHeight;
-
-        // 아 여기에 초기 캔버스 크기 잘못설정했네...
         offscreen = new OffscreenCanvas(70 * 32, 50 * 32);
         worker = new Worker('../../workers/Building/index.ts', {
             type: 'module',
         });
-
-        worker.onmessage = async (e) => {
-            const { type, backImage } = e.data;
-
-            // 버퍼에 대한 포인터만 가져옴 => 카피가 안 일어나서 더 효율적
-            // 결론 backgroundCanvas의 전체 이미지 카피없이 포인터만으로 굉장히 효율적인 렌더링을 수행할 수 있음
-            if (type === 'init') return;
-            if (type === 'draw background') {
-                backgroundImage = backImage;
-                drawObjCanvas();
-            }
-            // if (type === 'add builded item') {
-            //     backgroundImage.drawImage(backImage, 0, 0, 100, 100);
-            // }
-        };
 
         worker.postMessage({ type: 'init', offscreen }, [offscreen]);
         return () => {
@@ -98,7 +68,6 @@ const Building = (props: IProps) => {
         // 아래 두개 이벤트 통합해도 될듯 6주차에 리팩토링
         socketClient.on('buildBuilding', (data: IBuilding) => {
             fillBuildingPosition(data);
-            console.log(backgroundImage);
             worker.postMessage({ type: 'buildItem', buildedItem: data }, []);
         });
         socketClient.on('buildObject', (data: IObject) => {
@@ -109,8 +78,24 @@ const Building = (props: IProps) => {
             socketClient.removeListener('buildBuilding');
             socketClient.removeListener('buildObject');
         };
-        // user 없어도 괜찮을듯
-    }, [socketClient, user]);
+    }, [socketClient]);
+
+    useEffect(() => {
+        worker.onmessage = async (e) => {
+            const { type, backImage } = e.data;
+
+            // 버퍼에 대한 포인터만 가져옴 => 카피가 안 일어나서 더 효율적
+            // 결론 backgroundCanvas의 전체 이미지 카피없이 포인터만으로 굉장히 효율적인 렌더링을 수행할 수 있음
+            if (type === 'init') return;
+            if (type === 'draw background') {
+                console.log('배경그린다.');
+                backgroundImage = backImage;
+                drawObjCanvas();
+            }
+        };
+        if (backgroundImage === undefined) return;
+        drawObjCanvas();
+    }, [user, InBuilding]);
 
     useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;
@@ -136,22 +121,16 @@ const Building = (props: IProps) => {
             buildingList.forEach((building) => {
                 fillBuildingPosition(building);
                 itemList.push(building);
-                // drawOriginBuildings(building);
             });
-            // worker.postMessage({ offscreen, buildingList }, [offscreen]);
-            // drawObjCanvas();
         }
 
         if (objectList.length !== 0 && objectList[DEFAULT_INDEX].id !== -1) {
             objectList.forEach((object) => {
                 fillBuildingPosition(object);
                 itemList.push(object);
-                // drawOriginBuildings(object);
             });
-            drawObjCanvas();
         }
 
-        // 오브젝트 리스트(빌등, 오브젝)에 한번에 포함하기 위해 구현중 => 조건문 수정필요
         itemList = itemList.filter((item: any) => item.imageUrl !== null);
         if (itemList.length > 0) {
             worker.postMessage({ type: 'sendItemList', itemList }, []);
@@ -167,10 +146,6 @@ const Building = (props: IProps) => {
             window.removeEventListener('mousemove', updatePosition);
         };
     }, [buildBuilding, buildObject]);
-
-    useEffect(() => {
-        drawObjCanvas();
-    }, [user]);
 
     useEffect(() => {
         if (checkingCtx !== null) {
@@ -239,7 +214,6 @@ const Building = (props: IProps) => {
         const { src, isLocated, isData } = cur;
 
         if (!isData && src !== 'none' && !isLocated) {
-            // 없어도 될듯??
             if (flag === 0) {
                 setBuildBuilding({
                     ...buildBuilding,
@@ -376,40 +350,6 @@ const Building = (props: IProps) => {
         return true;
     };
 
-    // const drawOriginBuildings = (building: IBuilding | IObject) => {
-    //     if (!ctx) return;
-    //     if (!objctx) return;
-
-    //     const dataSize = Object.keys(building).includes('uid') ? 4 : 2;
-
-    //     const buildingOutputSize = tileSize * dataSize;
-    //     const sx = building.x * tileSize - buildingOutputSize / 2;
-    //     const sy = building.y * tileSize - buildingOutputSize / 2;
-    //     const dx = buildingOutputSize;
-    //     const dy = buildingOutputSize;
-
-    //     // Todo - 캐싱이미지의 경우 오프스크린에 미리 그려서 캔버스에 입히는 식으로 성능 개선을 해보자
-    //     const cachingImage = buildingImageCache.get(building.imageUrl);
-    //     if (cachingImage) {
-    //         drawFunction(objctx, cachingImage, sx, sy, dx, dy);
-    //         cnt++;
-    //         if (cnt === buildingList.length) {
-    //             drawObjCanvas();
-    //         }
-    //     } else {
-    //         const buildingObject = new Image();
-    //         buildingObject.src = building.imageUrl;
-    //         buildingObject.onload = () => {
-    //             drawFunction(objctx, buildingObject, sx, sy, dx, dy);
-    //             buildingImageCache.set(building.imageUrl, buildingObject);
-    //             cnt++;
-    //             if (cnt === buildingList.length - 1) {
-    //                 drawObjCanvas();
-    //             }
-    //         };
-    //     }
-    // };
-
     const drawObjCanvas = () => {
         ctx?.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
@@ -418,10 +358,8 @@ const Building = (props: IProps) => {
         const sx = -layerX * tileSize;
         const sy = -layerY * tileSize;
 
-        // 여기까지 해서 총 2개 수정 => 크기잘못설정한거 커밋묶어서해
-        const dx = commonWidth * tileSize; // window.innerWidth; // commonWidth * tileSize;
-        const dy = commonHeight * tileSize; // window.innerHeight; // commonHeight * tileSize;
-
+        const dx = commonWidth * tileSize;
+        const dy = commonHeight * tileSize;
         if (!backgroundImage) return;
         drawFunction(ctx, backgroundImage, sx, sy, dx, dy);
     };

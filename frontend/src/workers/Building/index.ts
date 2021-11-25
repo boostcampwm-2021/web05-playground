@@ -45,14 +45,16 @@ worker.onmessage = async (e) => {
         const imageBitmap = await getImageBitMap(buildedItem.imageUrl);
 
         offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
-        drawFunction(
-            offscreenCtx,
-            backgroundImage,
-            0,
-            0,
-            offscreenCanvas.width,
-            offscreenCanvas.height,
-        );
+        if (backgroundImage !== undefined) {
+            drawFunction(
+                offscreenCtx,
+                backgroundImage,
+                0,
+                0,
+                offscreenCanvas.width,
+                offscreenCanvas.height,
+            );
+        }
         drawOriginBuildings(buildedItem, imageBitmap);
 
         const backImage = offscreenCanvas.transferToImageBitmap();
