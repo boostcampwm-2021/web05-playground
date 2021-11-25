@@ -2,10 +2,11 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/control-has-associated-label */
+import axios from 'axios';
 import React, { useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
-
+import { useMutation } from '@apollo/client';
 import { socketClient } from '../../socket/socket';
 
 import buildObjectState from '../../store/buildObjectState';
@@ -15,11 +16,13 @@ import userState from '../../store/userState';
 import { DEFAULT_INDEX, NONE } from '../../utils/constants';
 
 import { IUser, IWorld } from '../../utils/model';
+import { getUploadUrl } from '../../utils/query';
 
 const setBuildingModal = () => {
     const worldInfo = useRecoilValue<IWorld>(currentWorldState);
     const userInfo = useRecoilValue<IUser>(userState);
     const [buildObject, setBuildObject] = useRecoilState(buildObjectState);
+    const [getSignedUrl] = useMutation(getUploadUrl);
     const [file, setFile] = useState<File>();
 
     const cancleBuild = () => {
@@ -41,10 +44,22 @@ const setBuildingModal = () => {
             y: buildObject.locationY,
             bid: buildObject.roomId,
             imageUrl: buildObject.src,
-            fileUrl: 'https://kr.object.ncloudstorage.com/playground/%ED%8F%AC%ED%95%AD.jpg',
+            fileUrl: '',
         };
 
-        socketClient.emit('buildObject', objectInfo);
+        if (file === undefined) socketClient.emit('buildObject', objectInfo);
+        else {
+            // console.log({ file, name: file.name, mimeType: file.type, bid: buildObject.roomId });
+            const url = [worldInfo.id, buildObject.roomId, userInfo.id, Date.now(), file.name].join(
+                '/',
+            );
+            const preSignedUrl: string = (await getSignedUrl({ variables: { fileUrl: url } })).data
+                .getUploadUrl;
+
+            await axios.put(preSignedUrl, file);
+
+            socketClient.emit('buildObject', { ...objectInfo, fileUrl: url });
+        }
 
         const selectedObjectInfo = {
             src: 'none',

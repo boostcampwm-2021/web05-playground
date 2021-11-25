@@ -64,3 +64,9 @@ export const getAccessToken = gql`
         }
     }
 `;
+
+export const getUploadUrl = gql`
+    mutation Mutation($fileUrl: String) {
+        getUploadUrl(fileUrl: $fileUrl)
+    }
+`;

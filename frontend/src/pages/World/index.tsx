@@ -74,9 +74,7 @@ const World = (props: RouteComponentProps) => {
             props.history.push('/selectworld');
         };
 
-        setSocket(
-            process.env.REACT_APP_BASE_SOCKET_URI!.concat(`:${currentWorld.port.toString()}`),
-        );
+        setSocket(process.env.REACT_APP_BASE_SOCKET_URI!, currentWorld.port);
 
         return () => {
             socketClient.disconnect();
