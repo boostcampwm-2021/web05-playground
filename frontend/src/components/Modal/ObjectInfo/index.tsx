@@ -34,7 +34,7 @@ const ObjectInfo = () => {
                 {objectInfo.fileUrl === '' ? null : (
                     <StyledA
                         target="_blank"
-                        href={`${process.env.REACT_APP_PREFIX}${objectInfo.fileUrl}`}
+                        href={`https://${process.env.REACT_APP_PREFIX}${objectInfo.fileUrl}`}
                         download
                         rel="noreferrer"
                     >
