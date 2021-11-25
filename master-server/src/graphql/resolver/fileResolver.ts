@@ -1,7 +1,7 @@
 import { IResolvers } from 'graphql-tools';
 import { bucketName, S3 } from 'src/objectStorage/s3';
 
-export const fileResolver: IResolvers = {
+const fileResolver: IResolvers = {
     Mutation: {
         async getUploadUrl(
             _: void,
@@ -18,3 +18,5 @@ export const fileResolver: IResolvers = {
         },
     },
 };
+
+export default fileResolver;
