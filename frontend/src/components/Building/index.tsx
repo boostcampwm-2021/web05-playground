@@ -115,6 +115,7 @@ const Building = (props: IProps) => {
             return;
         }
 
+        backgroundImage = null;
         buildingData.fill(0);
         objectData.fill(0);
 
@@ -145,8 +146,6 @@ const Building = (props: IProps) => {
             });
             drawObjCanvas();
         }
-
-        ctx?.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
         // 오브젝트 리스트(빌등, 오브젝)에 한번에 포함하기 위해 구현중 => 조건문 수정필요
         if (buildingList.length !== 0 && buildingList[DEFAULT_INDEX].id !== -1) {
