@@ -35,7 +35,8 @@ const buildingImageCache = new Map();
 // objCanvas.height = commonHeight * tileSize;
 
 // 이렇게 전역으로 두니까 모든 월드에 적용되어 버리는듯?... 아닌가
-const offscreen = new OffscreenCanvas(window.innerWidth, window.innerHeight);
+let offscreen: OffscreenCanvas;
+let worker: Worker;
 let backgroundImage: any;
 
 const Building = (props: IProps) => {
@@ -53,6 +54,40 @@ const Building = (props: IProps) => {
 
     let buildTargetX = NONE;
     let buildTargetY = NONE;
+
+    useEffect(() => {
+        const canvas: any = canvasRef.current;
+        if (canvas === null) return;
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        offscreen = new OffscreenCanvas(window.innerWidth, window.innerHeight);
+        worker = new Worker('../../workers/Building/index.ts', {
+            type: 'module',
+        });
+
+        worker.onmessage = async (e) => {
+            const { type, backImage } = e.data;
+
+            // 버퍼에 대한 포인터만 가져옴 => 카피가 안 일어나서 더 효율적
+            // 결론 backgroundCanvas의 전체 이미지 카피없이 포인터만으로 굉장히 효율적인 렌더링을 수행할 수 있음
+            if (type === 'init') return;
+            if (type === 'draw background') {
+                backgroundImage = backImage;
+                drawObjCanvas();
+            }
+            // ctx.drawImage(backgroundImage, 0, 0, window.innerWidth, window.innerHeight);
+        };
+
+        worker.postMessage({ type: 'init', offscreen }, [offscreen]);
+        return () => {
+            // 종료는 여기서 딱한번만 수행!
+            worker.postMessage({ type: 'terminate' }, []);
+            worker.terminate();
+            console.log('빌딩워커', '종료');
+        };
+    }, []);
 
     useEffect(() => {
         if (socketClient === undefined) return;
@@ -91,22 +126,6 @@ const Building = (props: IProps) => {
         ctx = canvas.getContext('2d');
         checkingCtx = checkingCanvas.getContext('2d');
 
-        const worker = new Worker('../../workers/Building/index.ts', {
-            type: 'module',
-        });
-
-        worker.onmessage = async (e) => {
-            const { msg, backImage } = e.data;
-
-            // 버퍼에 대한 포인터만 가져옴 => 카피가 안 일어나서 더 효율적
-            // 결론 backgroundCanvas의 전체 이미지 카피없이 포인터만으로 굉장히 효율적인 렌더링을 수행할 수 있음
-            if (ctx === null) return;
-
-            backgroundImage = backImage;
-            drawObjCanvas();
-            // ctx.drawImage(backgroundImage, 0, 0, window.innerWidth, window.innerHeight);
-        };
-
         let itemList: any = [];
         if (buildingList.length !== 0 && buildingList[DEFAULT_INDEX].id !== -1) {
             buildingList.forEach((building) => {
@@ -130,11 +149,8 @@ const Building = (props: IProps) => {
         // 오브젝트 리스트(빌등, 오브젝)에 한번에 포함하기 위해 구현중 => 조건문 수정필요
         if (buildingList.length !== 0 && buildingList[DEFAULT_INDEX].id !== -1) {
             itemList = itemList.filter((item: any) => item.imageUrl !== null);
-            worker.postMessage({ offscreen, itemList }, [offscreen]);
+            worker.postMessage({ type: 'sendItemList', itemList }, []);
         }
-        return () => {
-            worker.terminate();
-        };
     }, [buildingList, objectList, window.innerHeight, window.innerWidth]);
 
     useEffect(() => {

@@ -16,31 +16,41 @@ const spriteTileSize = 32;
 
 worker.onmessage = async (e) => {
     const { type, offscreen, layers, user } = e.data;
+
+    if (type === 'init') {
+        offscreenCanvas = offscreen;
+        offscreenCtx = offscreenCanvas.getContext('2d');
+        worker.postMessage({ msg: 'sent offscreen' });
+        return;
+    }
+    if (type === 'sendLayer') {
+        commonWidth = layers[0].width;
+
+        imageBitmapList = await makeImageBitMapList(layers);
+        drawGame(layers, user);
+        worker.postMessage({ msg: 'sent LayerInfo' });
+        return;
+    }
     if (type === 'update') {
         if (imageBitmapList === undefined) return;
-        drawGame(layers, user, 2);
+        drawGame(layers, user);
         worker.postMessage({ msg: 'draw background by usermove' });
         return;
     }
-
-    offscreenCanvas = offscreen;
-    offscreenCtx = offscreenCanvas.getContext('2d');
-
-    commonWidth = layers[0].width;
-
-    imageBitmapList = await makeImageBitMapList(layers);
-    drawGame(layers, user, 1);
+    if (type === 'terminate') {
+        offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+        return;
+    }
 
     worker.postMessage({ msg: 'Drawing images on offscreencanvas is finish' });
 };
 
-const drawGame = (layers: any, user: any, d: number) => {
+const drawGame = (layers: any, user: any) => {
     if (!offscreenCtx) return;
 
     offscreenCtx?.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
     layers.forEach((layer: any) => {
         const indexOfLayers = layers.indexOf(layer);
-        console.log(d, indexOfLayers);
         drawBackground(layer, indexOfLayers, user);
     });
 };

@@ -11,21 +11,37 @@ const buildingImageCache = new Map();
 
 // 빌딩만이 아니라 빌딩 + 오브젝트임
 worker.onmessage = async (e) => {
-    const { offscreen, itemList } = e.data;
+    const { type, offscreen, itemList } = e.data;
 
-    offscreenCanvas = offscreen;
-    const imageBitmapList = await makeImageBitMapList(itemList);
+    if (type === 'init') {
+        offscreenCanvas = offscreen;
+        offscreenCtx = offscreenCanvas.getContext('2d');
 
-    offscreenCtx = offscreenCanvas.getContext('2d');
-    let cnt = 0;
+        worker.postMessage({ type: 'init offscreen' });
+        return;
+    }
+    if (type === 'sendItemList') {
+        const imageBitmapList = await makeImageBitMapList(itemList);
 
-    itemList.forEach((building: any) => {
-        drawOriginBuildings(building, imageBitmapList[cnt]);
-        cnt += 1;
-    });
+        let cnt = 0;
+        itemList.forEach((building: any) => {
+            drawOriginBuildings(building, imageBitmapList[cnt]);
+            cnt += 1;
+        });
 
-    const backImage = offscreenCanvas.transferToImageBitmap();
-    worker.postMessage({ msg: 'Drawing images on offscreencanvas is finish', backImage });
+        const backImage = offscreenCanvas.transferToImageBitmap();
+        worker.postMessage({
+            type: 'draw background',
+            backImage,
+        });
+        return;
+    }
+    if (type === 'buildItem') {
+        console.log('여기도 로직 추가해야한다.');
+    }
+    if (type === 'terminate') {
+        offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+    }
 };
 
 const drawOriginBuildings = (building: any, imageBitmap: any) => {

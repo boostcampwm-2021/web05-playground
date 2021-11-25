@@ -31,6 +31,7 @@ interface IEnter {
     roomId: number;
 }
 
+let offscreen: any;
 let worker: Worker;
 const WorldBackground = (props: IProps) => {
     const layers = props.data;
@@ -40,8 +41,6 @@ const WorldBackground = (props: IProps) => {
     const user = useRecoilValue(userState);
     const commonWidth = layers[0].width;
     const tileSize = 32;
-
-    // let worker: Worker;
 
     const [buildingInfo, setBuildingInfo] = useState({
         buildings: [
@@ -79,6 +78,32 @@ const WorldBackground = (props: IProps) => {
     };
 
     useEffect(() => {
+        const canvas: any = canvasRef.current;
+        if (canvas === null) return;
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        offscreen = canvas.transferControlToOffscreen();
+        worker = new Worker('../../workers/Background/index.ts', {
+            type: 'module',
+        });
+
+        worker.onmessage = async (e) => {
+            const { msg } = e.data;
+            if (msg) console.log(msg);
+        };
+
+        worker.postMessage({ type: 'init', offscreen }, [offscreen]);
+        return () => {
+            // 종료는 여기서 딱한번만 수행!
+            worker.postMessage({ type: 'terminate' }, []);
+            worker.terminate();
+            console.log('배경워커', '종료');
+        };
+    }, []);
+
+    useEffect(() => {
         const enterInfo = {
             user: user.nickname,
             roomId: InBuilding,
@@ -95,54 +120,10 @@ const WorldBackground = (props: IProps) => {
     }, [socketClient, InBuilding]);
 
     useEffect(() => {
-        // const backgroundImageList: HTMLImageElement[] = [];
-        // let cnt = 0;
-        // layers.forEach((layer) => {
-        //     const backgroundImg = new Image();
-        //     backgroundImg.src = layer.imgSrc;
-        //     backgroundImg.onload = () => {
-        //         cnt++;
-        //         backgroundImageList.push(backgroundImg);
-        //         if (cnt === layers.length) {
-        //             setTileBackground([...backgroundImageList]);
-        //         }
-        //     };
-        // });
-
-        const canvas: any = canvasRef.current;
-        if (canvas === null) return;
-
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        const offscreen = canvas.transferControlToOffscreen();
-        worker = new Worker('../../workers/Background/index.ts', {
-            type: 'module',
-        });
-
-        worker.onmessage = async (e) => {
-            const { msg } = e.data;
-
-            if (msg) console.log(msg);
-        };
-
-        worker.postMessage({ type: 'init', offscreen, layers, user }, [offscreen]);
-
-        return () => {
-            worker.terminate();
-        };
+        worker.postMessage({ type: 'sendLayer', layers, user }, []);
     }, [layers]);
 
     useEffect(() => {
-        // const canvas: HTMLCanvasElement | null = canvasRef.current;
-        // if (canvas === null) {
-        //     return;
-        // }
-        // canvas.width = window.innerWidth;
-        // canvas.height = window.innerHeight;
-        // ctx = canvas.getContext('2d');
-        // drawGame();
-
         if (worker === undefined) return;
         worker.postMessage({ type: 'update', layers, user }, []);
     }, [user, worker, window.innerWidth, window.innerHeight]);
