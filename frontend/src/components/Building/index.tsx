@@ -77,7 +77,6 @@ const Building = (props: IProps) => {
                 backgroundImage = backImage;
                 drawObjCanvas();
             }
-            // ctx.drawImage(backgroundImage, 0, 0, window.innerWidth, window.innerHeight);
         };
 
         worker.postMessage({ type: 'init', offscreen }, [offscreen]);
@@ -85,6 +84,8 @@ const Building = (props: IProps) => {
             // 종료는 여기서 딱한번만 수행!
             worker.postMessage({ type: 'terminate' }, []);
             worker.terminate();
+            ctx?.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            backgroundImage = null;
             console.log('빌딩워커', '종료');
         };
     }, []);
@@ -114,7 +115,6 @@ const Building = (props: IProps) => {
             return;
         }
 
-        // objctx?.clearRect(0, 0, objCanvas.width, objCanvas.height);
         buildingData.fill(0);
         objectData.fill(0);
 
@@ -146,9 +146,12 @@ const Building = (props: IProps) => {
             drawObjCanvas();
         }
 
+        ctx?.clearRect(0, 0, window.innerWidth, window.innerHeight);
+
         // 오브젝트 리스트(빌등, 오브젝)에 한번에 포함하기 위해 구현중 => 조건문 수정필요
         if (buildingList.length !== 0 && buildingList[DEFAULT_INDEX].id !== -1) {
             itemList = itemList.filter((item: any) => item.imageUrl !== null);
+            console.log(itemList);
             worker.postMessage({ type: 'sendItemList', itemList }, []);
         }
     }, [buildingList, objectList, window.innerHeight, window.innerWidth]);
