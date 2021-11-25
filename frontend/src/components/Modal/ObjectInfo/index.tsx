@@ -32,7 +32,12 @@ const ObjectInfo = () => {
             </ElementDiv>
             <ElementDiv>
                 {objectInfo.fileUrl === '' ? null : (
-                    <StyledA target="_blank" href={objectInfo.fileUrl} download rel="noreferrer">
+                    <StyledA
+                        target="_blank"
+                        href={`${process.env.REACT_APP_PREFIX}${objectInfo.fileUrl}`}
+                        download
+                        rel="noreferrer"
+                    >
                         {objectInfo.fileUrl}
                     </StyledA>
                 )}
