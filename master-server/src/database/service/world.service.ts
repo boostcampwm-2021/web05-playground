@@ -29,7 +29,7 @@ export const getMaxWorldPort = async (): Promise<Receiver> => {
     try {
         const sql = `SELECT Max(port) FROM world`;
         const [worlds] = await pool.query(sql);
-        const data: number = JSON.parse(JSON.stringify(worlds));
+        const data: number = JSON.parse(JSON.stringify(worlds))[0]['Max(port)'];
         result.maxWorldPort = data;
         return result;
     } catch (err) {
