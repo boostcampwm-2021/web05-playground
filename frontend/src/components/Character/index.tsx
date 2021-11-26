@@ -16,6 +16,9 @@ import { buildingData, buildingListForCharacter } from '../../utils/variables/bu
 const commonWidth = 70;
 const commonHeight = 50;
 
+let offscreen: any;
+let worker: Worker;
+
 export const Character = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [user, setUser] = useRecoilState(userState);
@@ -27,6 +30,32 @@ export const Character = () => {
     const characterHeight = 64;
 
     useEffect(() => {
+        const canvas: any = canvasRef.current;
+        if (canvas === null) return;
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        offscreen = canvas.transferControlToOffscreen();
+        worker = new Worker('../../workers/Character/index.ts', {
+            type: 'module',
+        });
+
+        worker.onmessage = async (e) => {
+            const { msg } = e.data;
+            if (msg) console.log(msg);
+        };
+
+        worker.postMessage({ type: 'init', offscreen }, [offscreen]);
+        return () => {
+            // 종료는 여기서 딱한번만 수행!
+            worker.postMessage({ type: 'terminate' }, []);
+            worker.terminate();
+            console.log('캐릭터워커', '종료');
+        };
+    }, []);
+
+    useEffect(() => {
         if (socketClient === undefined) return;
         socketClient.emit('user', user);
         socketClient.on('user', (data: UserMap) => {
@@ -36,16 +65,12 @@ export const Character = () => {
     }, [socketClient]);
 
     useEffect(() => {
-        const canvas: HTMLCanvasElement | null = canvasRef.current;
-        if (canvas === null) return;
-        const ctx = canvas.getContext('2d');
-
         let frameNum = 0;
         let frameId = 0;
 
         const render = () => {
             frameNum += 1;
-            draw(ctx);
+            worker.postMessage({ type: 'update', characters, user }, []);
             frameId = window.requestAnimationFrame(render);
         };
         render();
