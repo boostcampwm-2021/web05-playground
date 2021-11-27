@@ -9,7 +9,7 @@ import isInBuildingState from '../../../store/isInBuildingState';
 
 import { Clickable } from '../../../utils/css';
 
-const icons = ['fileUpload', 'buildBuilding', 'buildObject', 'users', 'chat', 'setting'];
+const icons = ['buildBuilding', 'buildObject', 'users', 'chat', 'setting'];
 
 const Menu = ({ props }: { props: RouteComponentProps }) => {
     const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
@@ -38,15 +38,30 @@ const Menu = ({ props }: { props: RouteComponentProps }) => {
     return (
         <>
             {isInBuilding !== -1 ? (
-                <Icons
-                    key="voiceChat"
-                    src={
-                        device.video === true ? '/assets/voiceChat.png' : '/assets/voiceChatOff.png'
-                    }
-                    onClick={() => {
-                        setDevice({ ...device, video: !device.video, voice: !device.voice });
-                    }}
-                />
+                <>
+                    <Icons
+                        key="voiceChat"
+                        src={
+                            device.voice === true
+                                ? '/assets/voiceChat.png'
+                                : '/assets/voiceChatOff.png'
+                        }
+                        onClick={() => {
+                            setDevice({ ...device, voice: !device.voice });
+                        }}
+                    />
+                    <Icons
+                        key="video"
+                        src={
+                            device.video === true
+                                ? '/assets/videocam.png'
+                                : '/assets/videocamOff.png'
+                        }
+                        onClick={() => {
+                            setDevice({ ...device, video: !device.video });
+                        }}
+                    />
+                </>
             ) : null}
             {menuList}
         </>

@@ -192,12 +192,16 @@ const Video = () => {
     useEffect(() => {
         if (!myStream) return;
         myStream
-            .getAudioTracks()
-            .forEach((track: MediaStreamTrack) => (track.enabled = device.video));
-        myStream
             .getVideoTracks()
             .forEach((track: MediaStreamTrack) => (track.enabled = device.video));
-    }, [device]);
+    }, [device.video]);
+
+    useEffect(() => {
+        if (!myStream) return;
+        myStream
+            .getAudioTracks()
+            .forEach((track: MediaStreamTrack) => (track.enabled = device.voice));
+    }, [device.voice]);
 
     return (
         <Wrapper>
