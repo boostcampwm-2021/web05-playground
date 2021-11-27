@@ -10,6 +10,7 @@ import { IUser } from '../database/entities/User';
 import { IBuilding } from 'src/database/entities/Building';
 import { IObject } from 'src/database/entities/Object';
 
+import { WORLD, ROOM_CAPACITY } from '../shared/constants';
 interface IWorldInfo {
     buildings?: IBuilding[];
     objects?: IObject[];
@@ -62,16 +63,24 @@ export default class RoomSocket {
                 //console.log(data);
                 this.moveHandler(data);
             });
+            socket.on('checkCapacity', (data: string) => {
+                const usersInRoom = rooms.get(data);
+                console.log(usersInRoom);
+                const isFull =
+                    usersInRoom === undefined ||
+                    usersInRoom.length < ROOM_CAPACITY
+                        ? false
+                        : true;
+                this.io.sockets.to(socket.id).emit('checkCapacity', isFull);
+            });
             socket.on('enter', (data: IEnter) =>
                 this.getWorldHandler(socket, data),
             );
             socket.on('buildBuilding', (data: IBuilding) => {
-                //console.log(data);
                 this.buildBuildingHandler(data);
             });
 
             socket.on('buildObject', (data: IObject) => {
-                //console.log(data);
                 this.buildObjectHandler(data);
             });
 
@@ -80,7 +89,6 @@ export default class RoomSocket {
             });
 
             socket.on('leaveRoom', (data: number) => {
-                //console.log(data);
                 this.leaveRoomHandler(data, socket);
             });
 
@@ -105,6 +113,14 @@ export default class RoomSocket {
                 });
             });
 
+            socket.on('disconnecting', () => {
+                for (const room of socket.rooms) {
+                    if (room !== socket.id) {
+                        this.leaveRoomHandler(parseInt(room), socket);
+                    }
+                }
+            });
+
             socket.on('disconnect', () => {
                 this.deleteUserHandler(socket);
             });
@@ -126,11 +142,11 @@ export default class RoomSocket {
     async getWorldHandler(socket: MySocket, data: IEnter) {
         const worldInfo: IWorldInfo = {};
         const buildings =
-            data.roomId === -1 ? await this.getBuildingHandler() : [];
+            data.roomId === WORLD ? await this.getBuildingHandler() : [];
         const objects = await this.getObjectHandler(
-            data.roomId === -1 ? 1 : data.roomId,
+            data.roomId === WORLD ? 1 : data.roomId,
         );
-        if (data.roomId !== -1) {
+        if (data.roomId !== WORLD) {
             this.joinRoomHandler(data.roomId, socket);
         }
 
@@ -208,6 +224,7 @@ export default class RoomSocket {
             .get(roomId)
             .filter((user: string) => socket.id !== user);
         rooms.set(roomId, users);
-        this.io.sockets.to(roomId).emit('user_exit', socket.id);
+        console.log(roomId, socket.id);
+        this.io.sockets.to(roomId).emit('userExit', socket.id);
     }
 }
