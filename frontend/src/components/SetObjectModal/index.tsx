@@ -56,7 +56,9 @@ const setBuildingModal = () => {
             const preSignedUrl: string = (await getSignedUrl({ variables: { fileUrl: url } })).data
                 .getUploadUrl;
 
-            await axios.put(preSignedUrl, file);
+            await axios.put(preSignedUrl, file, {
+                headers: { 'Content-Type': file.type, 'x-amz-acl': 'public-read' },
+            });
 
             socketClient.emit('buildObject', { ...objectInfo, fileUrl: url });
         }
