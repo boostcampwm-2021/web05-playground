@@ -2,11 +2,12 @@
 /* eslint-disable no-return-assign */
 /* eslint-disable consistent-return */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
 import OtherVideo from './otherVideo';
 import deviceState from '../../store/deviceState';
+import { Clickable } from '../../utils/css';
 
 let myStream: MediaStream;
 const serverUrls = {
@@ -163,7 +164,7 @@ const Video = () => {
                 },
             );
 
-            socketClient.on('user_exit', (id: string) => {
+            socketClient.on('userExit', (id: string) => {
                 if (!pcsRef.current[id]) return;
                 pcsRef.current[id].close();
                 delete pcsRef.current[id];
@@ -179,7 +180,7 @@ const Video = () => {
             socketClient.removeListener('offer');
             socketClient.removeListener('answer');
             socketClient.removeListener('ice');
-            socketClient.removeListener('user_exit');
+            socketClient.removeListener('userExit');
             users.forEach((user) => {
                 if (!pcsRef.current[user.id]) return;
                 pcsRef.current[user.id].close();
@@ -211,7 +212,7 @@ const Video = () => {
 export default Video;
 
 const MyVideo = styled.video`
-    z-index: 101;
+    z-index: 4;
     width: 140px;
     height: 100px;
     border: 2px solid #f1ea65;
@@ -221,7 +222,7 @@ const MyVideo = styled.video`
 
 const Wrapper = styled.div`
     position: float;
-    z-index: 101;
+    z-index: 4;
     display: flex;
     justify-content: center;
 `;
