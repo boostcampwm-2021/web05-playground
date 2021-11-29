@@ -29,8 +29,6 @@ const cnt = 0;
 
 // 일단 지금 cors 설정때문에 임시로 데이터 변경
 const getImageBitMap = async (imgUrl: string) => {
-    // cnt += 1;
-    console.log(imgUrl);
     const convertImgUrl = imageMap.get(imgUrl);
     const response = await fetch(convertImgUrl, {
         mode: 'cors',

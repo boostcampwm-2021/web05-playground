@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-globals */
-import makeImageBitMapList from '../loadImage';
+import makeImageBitMapList from '../backgroundLoad';
 
 const worker = self;
 

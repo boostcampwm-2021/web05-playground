@@ -1,6 +1,6 @@
 /* eslint-disable no-return-await */
 /* eslint-disable no-restricted-globals */
-import getImageBitMap from '../loadImage2';
+import getImageBitMap from '../buildingLoad';
 
 const worker = self;
 let offscreenCanvas: any;

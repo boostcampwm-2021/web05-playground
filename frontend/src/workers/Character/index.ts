@@ -1,5 +1,5 @@
 /* eslint-disable no-restricted-globals */
-import makeImageBitMapList from '../loadImage3';
+import makeImageBitMapList from '../characterLoad';
 
 const worker = self;
 
