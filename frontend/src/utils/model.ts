@@ -67,6 +67,7 @@ export interface IProps {
 export interface MessageInfo {
     id: string;
     message: string;
+    target: string;
 }
 
 export interface MessageInfos {

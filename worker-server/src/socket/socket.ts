@@ -23,6 +23,7 @@ interface UserMap {
 interface Message {
     id: string;
     message: string;
+    target: string;
 }
 
 class MySocket extends Socket {
@@ -156,7 +157,6 @@ export default class RoomSocket {
     }
 
     async getBuildingHandler() {
-        // 이미 워커로 들어온 상태이므로 select all
         const buildings = await getBuildingInfo();
         return buildings;
     }
@@ -179,9 +179,11 @@ export default class RoomSocket {
 
     async messageHandler(data: Message, roomName: string) {
         if (roomName === 'Everyone') {
+            data.target = 'World';
             this.io.emit('message', data);
             return;
         }
+        data.target = 'Building';
         this.io.to(roomName).emit('message', data);
     }
 
