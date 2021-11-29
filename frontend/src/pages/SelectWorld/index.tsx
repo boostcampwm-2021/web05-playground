@@ -17,28 +17,16 @@ const SelectWorld = (props: RouteComponentProps) => {
     const code = searchParams.get('code');
 
     useEffect(() => {
-        // if (user.id !== 1) return;
-        // if (code) {
-        //     const Login = async (code: string) => {
-        //         const userInfo = (await fetchUser({ variables: { code } })).data.user;
-        //         setUser(userInfo);
-        //     };
-        //     Login(code);
-        //     return;
-        // }
-        // props.history.push('/login');
-        const Login = async () => {
-            // const userInfo = (await fetchUser({ variables: { code } })).data.user;
-            setUser({
-                id: 1,
-                nickname: 'minjae',
-                email: 'minjaec023@gmail.com',
-                x: 10,
-                y: 10,
-                imageUrl: '/assets/character1.png',
-            });
-        };
-        Login();
+        if (user.id !== 1) return;
+        if (code) {
+            const Login = async (code: string) => {
+                const userInfo = (await fetchUser({ variables: { code } })).data.user;
+                setUser(userInfo);
+            };
+            Login(code);
+            return;
+        }
+        props.history.push('/login');
     }, []);
 
     const redirectSetting = (event: React.MouseEvent) => {
