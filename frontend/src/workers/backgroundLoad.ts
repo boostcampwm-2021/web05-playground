@@ -8,7 +8,7 @@ const makeImageBitMapList = async (objectList: any) => {
 
 const getImageBitMap = async (imgUrl: string) => {
     const response = await fetch(imgUrl, {
-        mode: 'no-cors',
+        mode: 'cors',
         credentials: 'include',
     });
     const blob = await response.blob();

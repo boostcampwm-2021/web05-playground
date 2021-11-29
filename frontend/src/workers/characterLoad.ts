@@ -14,7 +14,7 @@ const getImageBitMap = async (imgUrl: string) => {
     if (cachedImg) return cachedImg;
 
     const response = await fetch(imgUrl, {
-        mode: 'no-cors',
+        mode: 'cors',
         credentials: 'include',
     });
     const blob = await response.blob();
