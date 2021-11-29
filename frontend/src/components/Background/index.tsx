@@ -37,10 +37,7 @@ const WorldBackground = (props: IProps) => {
     const layers = props.data;
     const InBuilding = props.current;
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    const [tileBackground, setTileBackground] = useState<HTMLImageElement[]>();
     const user = useRecoilValue(userState);
-    const commonWidth = layers[0].width;
-    const tileSize = 32;
 
     const [buildingInfo, setBuildingInfo] = useState({
         buildings: [
@@ -67,17 +64,6 @@ const WorldBackground = (props: IProps) => {
         ],
     });
 
-    let ctx: CanvasRenderingContext2D | null;
-    let sourceX = 0;
-    let sourceY = 0;
-
-    const spriteTileSize = 32;
-
-    const getIndex = (x: number, y: number) => {
-        if (x < 0) return -1;
-        return y * commonWidth + x;
-    };
-
     useEffect(() => {
         const canvas: any = canvasRef.current;
         if (canvas === null) return;
@@ -92,15 +78,12 @@ const WorldBackground = (props: IProps) => {
 
         worker.onmessage = async (e) => {
             const { msg } = e.data;
-            if (msg) console.log(msg);
         };
 
         worker.postMessage({ type: 'init', offscreen }, [offscreen]);
         return () => {
-            // 종료는 여기서 딱한번만 수행!
             worker.postMessage({ type: 'terminate' }, []);
             worker.terminate();
-            console.log('배경워커', '종료');
         };
     }, []);
 
@@ -128,58 +111,6 @@ const WorldBackground = (props: IProps) => {
         if (worker === undefined) return;
         worker.postMessage({ type: 'update', layers, user }, []);
     }, [user, worker, window.innerWidth, window.innerHeight]);
-
-    const drawGame = () => {
-        if (!ctx || !tileBackground) return;
-
-        layers.forEach((layer) => {
-            const indexOfLayers = layers.indexOf(layer);
-            drawBackground(layer, indexOfLayers);
-        });
-    };
-
-    const drawBackground = (layer: ILayer, indexOfLayers: number) => {
-        const width = Math.floor(window.innerWidth / 2);
-        const height = Math.floor(window.innerHeight / 2);
-        const dx = width - (width % tileSize);
-        const dy = height - (height % tileSize);
-        const layerX = user.x! - dx / tileSize;
-        const layerY = user.y! - dy / tileSize;
-
-        if (!ctx || !tileBackground) return;
-
-        let colEnd = layer.height + layerY;
-        let rowEnd = layer.width + layerX;
-
-        if (colEnd < 0) colEnd = 0;
-        if (rowEnd < 0) rowEnd = 0;
-        if (colEnd > 50) colEnd = 50;
-        if (rowEnd > 70) rowEnd = 70;
-
-        if (layerY === colEnd && layerX === rowEnd) return;
-
-        for (let col = layerY; col < colEnd; ++col) {
-            for (let row = layerX; row < rowEnd; ++row) {
-                let tileVal = layer.data[getIndex(row, col)];
-                if (tileVal !== 0) {
-                    tileVal -= 1;
-                    sourceY = Math.floor(tileVal / layer.columnCount) * spriteTileSize;
-                    sourceX = (tileVal % layer.columnCount) * spriteTileSize;
-                    ctx.drawImage(
-                        tileBackground[indexOfLayers],
-                        sourceX,
-                        sourceY,
-                        spriteTileSize,
-                        spriteTileSize,
-                        (row - layerX) * tileSize,
-                        (col - layerY) * tileSize,
-                        tileSize,
-                        tileSize,
-                    );
-                }
-            }
-        }
-    };
 
     return (
         <>

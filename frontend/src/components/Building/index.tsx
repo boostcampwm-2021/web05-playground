@@ -49,7 +49,7 @@ const Building = (props: IProps) => {
     let buildTargetY = NONE;
 
     useEffect(() => {
-        offscreen = new OffscreenCanvas(70 * 32, 50 * 32);
+        offscreen = new OffscreenCanvas(commonWidth * tileSize, commonHeight * tileSize);
         worker = new Worker('../../workers/Building/index.ts', {
             type: 'module',
         });
@@ -89,7 +89,6 @@ const Building = (props: IProps) => {
             // 결론 backgroundCanvas의 전체 이미지 카피없이 포인터만으로 굉장히 효율적인 렌더링을 수행할 수 있음
             if (type === 'init') return;
             if (type === 'draw background') {
-                console.log('배경그린다.');
                 backgroundImage = backImage;
                 drawObjCanvas();
             }

@@ -1,7 +1,7 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable consistent-return */
 import React, { useRef, useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
 import buildingInfoState from '../../store/buildingInfoState';
@@ -34,9 +34,6 @@ export const Character = () => {
     const setObjectInfo = useSetRecoilState(objectInfoState);
     const [isInBuilding, setIsInBuilding] = useRecoilState(isInBuildingState);
 
-    const characterWidth = 32;
-    const characterHeight = 64;
-
     useEffect(() => {
         const canvas: any = canvasRef.current;
         if (canvas === null) return;
@@ -51,7 +48,6 @@ export const Character = () => {
 
         worker.onmessage = async (e) => {
             const { msg } = e.data;
-            if (msg) console.log(msg);
         };
 
         worker.postMessage(
@@ -59,10 +55,8 @@ export const Character = () => {
             [offscreen],
         );
         return () => {
-            // 종료는 여기서 딱한번만 수행!
             worker.postMessage({ type: 'terminate' }, []);
             worker.terminate();
-            console.log('캐릭터워커', '종료');
         };
     }, []);
 
@@ -105,55 +99,6 @@ export const Character = () => {
 
     const getIndex = (x: number, y: number) => {
         return y * commonWidth + x;
-    };
-
-    const draw = (ctx: CanvasRenderingContext2D | null) => {
-        if (!ctx) return;
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-        ctx.beginPath();
-        const width = Math.floor(window.innerWidth / 2);
-        const height = Math.floor(window.innerHeight / 2);
-        const dx = width - (width % characterWidth);
-        const dy = height - (height % characterWidth);
-
-        Object.keys(characters).forEach((id) => {
-            const character = characters[id];
-            if (id === user.id.toString()) {
-                // my-Char
-                const characterImg = new Image();
-                characterImg.src = character.imageUrl;
-
-                ctx.drawImage(
-                    characterImg,
-                    0,
-                    0,
-                    characterWidth,
-                    characterHeight,
-                    dx,
-                    dy,
-                    characterWidth,
-                    characterHeight,
-                );
-            } else {
-                // other-Char
-                const distanceX = (character.x! - user.x!) * characterWidth;
-                const distanceY = (character.y! - user.y!) * characterWidth;
-
-                const characterImg = new Image();
-                characterImg.src = character.imageUrl;
-                ctx.drawImage(
-                    characterImg,
-                    0,
-                    0,
-                    characterWidth,
-                    characterHeight,
-                    dx + distanceX,
-                    dy + distanceY,
-                    characterWidth,
-                    characterHeight,
-                );
-            }
-        });
     };
 
     const addMoveEvent = (event: KeyboardEvent) => {
