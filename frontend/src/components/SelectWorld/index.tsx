@@ -1,19 +1,24 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 /* eslint-disable jsx-a11y/alt-text */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RouteComponentProps } from 'react-router';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import styled from 'styled-components';
 import currentWorldState from '../../store/currentWorldState';
+import userState from '../../store/userState';
 import { DEFAULT_INDEX } from '../../utils/constants';
 import { Clickable } from '../../utils/css';
 import { useSlide } from '../../utils/hooks/useSlide';
 import { IWorld } from '../../utils/model';
+import SetWorldModal from '../SetWorldModal';
 
 export function WorldSelector({ props, data }: { props: RouteComponentProps; data: IWorld[] }) {
     const [currentWorld, setCurrentWorld] = useRecoilState<IWorld>(currentWorldState);
     const [current, nextClick, prevClick] = useSlide(data, setCurrentWorld);
+    const [creationState, setCreationState] = useState(false);
+
+    const user = useRecoilValue(userState);
 
     useEffect(() => {
         setCurrentWorld(data[DEFAULT_INDEX]);
@@ -30,10 +35,18 @@ export function WorldSelector({ props, data }: { props: RouteComponentProps; dat
                 <World thumbnail={current.thumbnail}>{current.name}</World>
                 <ArrowButton src="/assets/nextbtn.png" onClick={nextClick} />
             </Selector>
-            <SelectBtn onClick={(e) => redirectWorld(e)}>선택</SelectBtn>
+            <BtnGroup>
+                <SelectBtn onClick={(e) => redirectWorld(e)}>선택</SelectBtn>
+                <CreateBtn onClick={() => setCreationState(true)}>월드생성</CreateBtn>
+            </BtnGroup>
+            {creationState ? <SetWorldModal setModalState={setCreationState} /> : null}
         </>
     );
 }
+
+const create = () => {
+    return 0;
+};
 
 const World = styled.div<{ thumbnail: string }>`
     height: 400px;
@@ -64,6 +77,14 @@ const Selector = styled.div`
     align-items: center;
 `;
 
+const BtnGroup = styled.div`
+    width: 500px;
+    height: 60px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+`;
+
 const SelectBtn = styled.div`
     margin: 40px;
     height: 60px;
@@ -77,6 +98,24 @@ const SelectBtn = styled.div`
     font-style: normal;
     font-weight: 150;
     font-size: 40px;
+    font-weight: 500;
+
+    ${Clickable}
+`;
+
+const CreateBtn = styled.div`
+    margin: 40px;
+    height: 60px;
+    width: 200px;
+    background-color: #c4c4c4;
+    text-align: center;
+    line-height: 60px;
+    border-radius: 20px;
+
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 150;
+    font-size: 25px;
     font-weight: 500;
 
     ${Clickable}

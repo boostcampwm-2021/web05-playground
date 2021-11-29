@@ -1,5 +1,5 @@
 import 'graphql-import-node';
-import { GraphQLSchema } from 'graphql';
+
 import { makeExecutableSchema } from 'graphql-tools';
 
 import worldResolver from './resolver/worldResolver';
@@ -12,8 +12,10 @@ import buildingTypeDef from './schema/building';
 import characterTypeDef from './schema/character';
 import characterResolver from './resolver/characterResolver';
 import userResolver from './resolver/userResolver';
+import fileResolver from './resolver/fileResolver';
 import userTypeDef from './schema/user';
 import objectTypeDef from './schema/object';
+import { GraphQLSchema } from 'graphql';
 
 const typeDefs = [
     queryTypeDefs,
@@ -23,12 +25,14 @@ const typeDefs = [
     characterTypeDef,
     objectTypeDef,
 ];
+
 const resolvers = [
     worldResolver,
     buildingResolver,
     characterResolver,
     userResolver,
     objectResolver,
+    fileResolver,
 ];
 
 const schema: GraphQLSchema = makeExecutableSchema({

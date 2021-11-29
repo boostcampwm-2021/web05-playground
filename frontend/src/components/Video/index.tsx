@@ -2,11 +2,12 @@
 /* eslint-disable no-return-assign */
 /* eslint-disable consistent-return */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
 import OtherVideo from './otherVideo';
 import deviceState from '../../store/deviceState';
+import { Clickable } from '../../utils/css';
 
 let myStream: MediaStream;
 const serverUrls = {
@@ -39,9 +40,7 @@ const Video = () => {
         try {
             myStream = await navigator.mediaDevices.getUserMedia(initialConstrains);
 
-            console.log('asdf');
             if (videoRef.current === undefined || videoRef.current === null) return;
-            console.log('asdf212');
             videoRef.current.srcObject = myStream;
         } catch (e) {
             console.log(e);
@@ -165,11 +164,11 @@ const Video = () => {
                 },
             );
 
-            socketClient.on('user_exit', (data: { id: string }) => {
-                if (!pcsRef.current[data.id]) return;
-                pcsRef.current[data.id].close();
-                delete pcsRef.current[data.id];
-                setUsers((prevUsers) => prevUsers.filter((user) => user.id !== data.id));
+            socketClient.on('userExit', (id: string) => {
+                if (!pcsRef.current[id]) return;
+                pcsRef.current[id].close();
+                delete pcsRef.current[id];
+                setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
             });
         };
 
@@ -181,7 +180,7 @@ const Video = () => {
             socketClient.removeListener('offer');
             socketClient.removeListener('answer');
             socketClient.removeListener('ice');
-            socketClient.removeListener('user_exit');
+            socketClient.removeListener('userExit');
             users.forEach((user) => {
                 if (!pcsRef.current[user.id]) return;
                 pcsRef.current[user.id].close();
@@ -193,12 +192,16 @@ const Video = () => {
     useEffect(() => {
         if (!myStream) return;
         myStream
-            .getAudioTracks()
-            .forEach((track: MediaStreamTrack) => (track.enabled = device.video));
-        myStream
             .getVideoTracks()
             .forEach((track: MediaStreamTrack) => (track.enabled = device.video));
-    }, [device]);
+    }, [device.video]);
+
+    useEffect(() => {
+        if (!myStream) return;
+        myStream
+            .getAudioTracks()
+            .forEach((track: MediaStreamTrack) => (track.enabled = device.voice));
+    }, [device.voice]);
 
     return (
         <Wrapper>
@@ -213,7 +216,7 @@ const Video = () => {
 export default Video;
 
 const MyVideo = styled.video`
-    z-index: 101;
+    z-index: 4;
     width: 140px;
     height: 100px;
     border: 2px solid #f1ea65;
@@ -223,7 +226,7 @@ const MyVideo = styled.video`
 
 const Wrapper = styled.div`
     position: float;
-    z-index: 101;
+    z-index: 4;
     display: flex;
     justify-content: center;
 `;

@@ -1,17 +1,31 @@
 /* eslint-disable no-alert */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 
 import styled from 'styled-components';
-import buildingInfoState from '../../store/buildingInfoState';
-import isInBuildingState from '../../store/isInBuildingState';
-import { socketClient } from '../../socket/socket';
-import { NONE } from '../../utils/constants';
+import buildingInfoState from '../../../store/buildingInfoState';
+import isInBuildingState from '../../../store/isInBuildingState';
+import { socketClient } from '../../../socket/socket';
+import { NONE } from '../../../utils/constants';
 
 const BuildingInfo = () => {
     const [buildingInfo, setBuildingInfo] = useRecoilState(buildingInfoState);
     const [password, setPassword] = useState('');
     const [isInbuilding, setIsInBuilding] = useRecoilState(isInBuildingState);
+
+    useEffect(() => {
+        socketClient.on('checkCapacity', (isFull: boolean) => {
+            if (isFull) {
+                alert('방이 꽉찼습니다!');
+                return;
+            }
+            setIsInBuilding(buildingInfo.id);
+            cancle();
+        });
+        return () => {
+            socketClient.removeListener('checkCapacity');
+        };
+    }, [socketClient]);
 
     const cancle = () => {
         setBuildingInfo({
@@ -34,8 +48,7 @@ const BuildingInfo = () => {
     };
 
     const joinRoom = () => {
-        setIsInBuilding(buildingInfo.id);
-        cancle();
+        socketClient.emit('checkCapacity', buildingInfo.id.toString(10));
     };
 
     const changed = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
