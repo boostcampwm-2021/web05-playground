@@ -16,3 +16,7 @@ export const buildingUrlError = 'Fail to get Building Url List';
 export const characterError = 'Fail to get Charater List';
 export const setUserError = 'Fail to set User Info';
 export const addUserError = 'Fail to add User Info';
+
+//socket/socket Constant
+export const ROOM_CAPACITY = 6;
+export const WORLD = -1;
