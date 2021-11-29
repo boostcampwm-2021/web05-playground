@@ -1,17 +1,24 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable consistent-return */
 import React, { useRef, useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
 import buildingInfoState from '../../store/buildingInfoState';
 import userState from '../../store/userState';
-import { UserMap, IUser, IBuilding } from '../../utils/model';
+import { UserMap, IUser, IBuilding, IObject } from '../../utils/model';
 
 import isInBuildingState from '../../store/isInBuildingState';
+import objectInfoState from '../../store/objectInfoState';
+
 import { NONE } from '../../utils/constants';
 
-import { buildingData, buildingListForCharacter } from '../../utils/variables/buildingData';
+import {
+    buildingData,
+    buildingListForCharacter,
+    objectData,
+    objectListForCharacter,
+} from '../../utils/variables/buildingData';
 
 const commonWidth = 70;
 const commonHeight = 50;
@@ -20,8 +27,9 @@ export const Character = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [user, setUser] = useRecoilState(userState);
     const [characters, setCharacters] = useState<UserMap>({});
-    const [buildingInfo, setBuildingInfo] = useRecoilState(buildingInfoState);
-    const isInBuilding = useRecoilValue(isInBuildingState);
+    const setBuildingInfo = useSetRecoilState(buildingInfoState);
+    const setObjectInfo = useSetRecoilState(objectInfoState);
+    const [isInBuilding, setIsInBuilding] = useRecoilState(isInBuildingState);
 
     const characterWidth = 32;
     const characterHeight = 64;
@@ -93,8 +101,8 @@ export const Character = () => {
                     0,
                     characterWidth,
                     characterHeight,
-                    user.x! * characterWidth < dx ? user.x! * characterWidth : dx,
-                    user.y! * characterWidth < dy ? user.y! * characterWidth : dy,
+                    dx,
+                    dy,
                     characterWidth,
                     characterHeight,
                 );
@@ -148,13 +156,19 @@ export const Character = () => {
             default:
                 break;
         }
+        if (newLocation.x! < 0 || newLocation.x! + 1 > commonWidth) return;
+        if (newLocation.y! + 1 < 0 || newLocation.y! + 2 > commonHeight) return;
 
         setUser(newLocation);
         socketClient.emit('move', newLocation);
         // 건물 입장 로직
         if (isInBuilding === NONE) {
             isBuilding(newLocation.x!, newLocation.y!);
+        } else if ((user.x! === 2 || user.x! === 3) && user.y! <= 0) {
+            socketClient.emit('leaveRoom', isInBuilding);
+            setIsInBuilding(NONE);
         }
+        isObject(newLocation.x!, newLocation.y!);
     };
 
     const isBuilding = (userX: number, userY: number) => {
@@ -185,9 +199,9 @@ export const Character = () => {
         if (building === undefined) {
             return {
                 id: 0,
-                x: -1,
-                y: -1,
-                uid: -1,
+                x: NONE,
+                y: NONE,
+                uid: NONE,
                 description: '',
                 scope: '',
                 password: '',
@@ -195,6 +209,42 @@ export const Character = () => {
             };
         }
         return building;
+    };
+
+    const isObject = (userX: number, userY: number) => {
+        const oid = objectData[getIndex(userX, userY)];
+        if (oid > 0) {
+            const object: IObject = findObject(oid);
+            setObjectInfo({
+                isObject: true,
+                ...object,
+            });
+        } else {
+            setObjectInfo({
+                isObject: false,
+                id: 0,
+                bid: NONE,
+                x: NONE,
+                y: NONE,
+                imageUrl: '',
+                fileUrl: '',
+            });
+        }
+    };
+
+    const findObject = (oid: number): IObject => {
+        const object = objectListForCharacter.get(oid);
+        if (object === undefined) {
+            return {
+                id: 0,
+                bid: NONE,
+                x: NONE,
+                y: NONE,
+                imageUrl: '',
+                fileUrl: '',
+            };
+        }
+        return object;
     };
 
     return (

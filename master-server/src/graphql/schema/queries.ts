@@ -9,6 +9,9 @@ const queryTypeDefs = gql`
     }
     type Mutation {
         setUserInfo(id: Int, nickname: String, imageUrl: String): IUser!
+        user(code: String): IUser!
+        getUploadUrl(fileUrl: String): String!
+        createWorld(uid: Int, name: String): Boolean!
     }
 `;
 

@@ -23,4 +23,5 @@ export interface Receiver {
     worldArr?: Array<IWorld>;
     userArr?: Array<IUser>;
     user?: IUser;
+    maxWorldPort?: number;
 }

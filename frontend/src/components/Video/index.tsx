@@ -39,9 +39,7 @@ const Video = () => {
         try {
             myStream = await navigator.mediaDevices.getUserMedia(initialConstrains);
 
-            console.log('asdf');
             if (videoRef.current === undefined || videoRef.current === null) return;
-            console.log('asdf212');
             videoRef.current.srcObject = myStream;
         } catch (e) {
             console.log(e);
@@ -165,11 +163,11 @@ const Video = () => {
                 },
             );
 
-            socketClient.on('user_exit', (data: { id: string }) => {
-                if (!pcsRef.current[data.id]) return;
-                pcsRef.current[data.id].close();
-                delete pcsRef.current[data.id];
-                setUsers((prevUsers) => prevUsers.filter((user) => user.id !== data.id));
+            socketClient.on('user_exit', (id: string) => {
+                if (!pcsRef.current[id]) return;
+                pcsRef.current[id].close();
+                delete pcsRef.current[id];
+                setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
             });
         };
 

@@ -45,3 +45,33 @@ export const setUser = async (
         return result;
     }
 };
+
+export const insertUser = async (
+    id: number,
+    nickname: string,
+    email: string,
+): Promise<Receiver> => {
+    const res = await getUser(id);
+    if (res.status === STATUS_CODE.FAIL) {
+        const result: Receiver = {
+            status: STATUS_CODE.SUCCESS,
+        };
+        try {
+            const sql = `INSERT INTO user VALUES(?,?,?,?)`;
+            await pool.query(sql, [
+                id,
+                email,
+                nickname,
+                'assets/character1.png',
+            ]);
+            return await getUser(id);
+        } catch (err) {
+            console.log(err);
+            result.status = STATUS_CODE.FAIL;
+            result.err = userListError;
+            return result;
+        }
+    } else {
+        return res;
+    }
+};

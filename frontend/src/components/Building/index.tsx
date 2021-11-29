@@ -19,6 +19,7 @@ import {
     buildingData,
     objectData,
     buildingListForCharacter,
+    objectListForCharacter,
 } from '../../utils/variables/buildingData';
 
 const commonWidth = 70;
@@ -76,6 +77,7 @@ const Building = (props: IProps) => {
         }
 
         objctx?.clearRect(0, 0, objCanvas.width, objCanvas.height);
+
         buildingData.fill(0);
         objectData.fill(0);
 
@@ -135,6 +137,7 @@ const Building = (props: IProps) => {
         }
     }, [currentModal]);
 
+    // 빌딩 오브젝트 둘 중 하나 처리하는 함수인데 이름은 그냥 빌딩으로 해놨음
     const fillBuildingPosition = (building: IBuilding | IObject) => {
         const { id, x, y } = building;
         const dataSize = Object.keys(building).includes('uid') ? 2 : 1;
@@ -142,9 +145,10 @@ const Building = (props: IProps) => {
         for (let i = x - dataSize; i < x + dataSize; i++) {
             for (let j = y - dataSize; j < y + dataSize; j++) {
                 const index = getIndex(i, j);
-                if (dataSize === 1) objectData[index] = id;
-                else if (id === 1) buildingData[index] = 0;
-                else {
+                if (dataSize === 1) {
+                    objectData[index] = id;
+                    objectListForCharacter.set(id, building);
+                } else {
                     buildingData[index] = id;
                     buildingListForCharacter.set(id, building);
                 }
@@ -157,13 +161,8 @@ const Building = (props: IProps) => {
         const height = Math.floor(window.innerHeight / 2);
         const dx = width - (width % tileSize);
         const dy = height - (height % tileSize);
-        let layerX = user.x! - dx / tileSize;
-        let layerY = user.y! - dy / tileSize;
-
-        if (layerX < 0) layerX = 0;
-        if (layerY < 0) layerY = 0;
-        if (layerX > 70) layerX = 70;
-        if (layerY > 50) layerY = 50;
+        const layerX = user.x! - dx / tileSize;
+        const layerY = user.y! - dy / tileSize;
 
         return { layerX, layerY };
     };

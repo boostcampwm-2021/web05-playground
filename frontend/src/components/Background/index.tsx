@@ -72,6 +72,7 @@ const WorldBackground = (props: IProps) => {
     const spriteTileSize = 32;
 
     const getIndex = (x: number, y: number) => {
+        if (x < 0) return -1;
         return y * commonWidth + x;
     };
 
@@ -83,7 +84,6 @@ const WorldBackground = (props: IProps) => {
         socketClient.emit('enter', enterInfo);
 
         socketClient.on('enter', (data: IBuildingInfo) => {
-            console.log(data);
             setBuildingInfo(data);
         });
 
@@ -134,19 +134,16 @@ const WorldBackground = (props: IProps) => {
         const height = Math.floor(window.innerHeight / 2);
         const dx = width - (width % tileSize);
         const dy = height - (height % tileSize);
-        let layerX = user.x! - dx / tileSize;
-        let layerY = user.y! - dy / tileSize;
+        const layerX = user.x! - dx / tileSize;
+        const layerY = user.y! - dy / tileSize;
 
         if (!ctx || !tileBackground) return;
-
-        if (layerX < 0) layerX = 0;
-        if (layerY < 0) layerY = 0;
-        if (layerX > 70) layerX = 70;
-        if (layerY > 50) layerY = 50;
 
         let colEnd = layer.height + layerY;
         let rowEnd = layer.width + layerX;
 
+        if (colEnd < 0) colEnd = 0;
+        if (rowEnd < 0) rowEnd = 0;
         if (colEnd > 50) colEnd = 50;
         if (rowEnd > 70) rowEnd = 70;
 

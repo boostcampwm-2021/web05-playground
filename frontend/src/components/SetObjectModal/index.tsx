@@ -2,17 +2,28 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable react/button-has-type */
 /* eslint-disable jsx-a11y/control-has-associated-label */
+import axios from 'axios';
 import React, { useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
-
+import { useMutation } from '@apollo/client';
 import { socketClient } from '../../socket/socket';
 
 import buildObjectState from '../../store/buildObjectState';
-import { NONE } from '../../utils/constants';
+import currentWorldState from '../../store/currentWorldState';
+import userState from '../../store/userState';
+
+import { DEFAULT_INDEX, NONE } from '../../utils/constants';
+
+import { IUser, IWorld } from '../../utils/model';
+import { getUploadUrl } from '../../utils/query';
 
 const setBuildingModal = () => {
+    const worldInfo = useRecoilValue<IWorld>(currentWorldState);
+    const userInfo = useRecoilValue<IUser>(userState);
     const [buildObject, setBuildObject] = useRecoilState(buildObjectState);
+    const [getSignedUrl] = useMutation(getUploadUrl);
+    const [file, setFile] = useState<File>();
 
     const cancleBuild = () => {
         const selectedObjectInfo = {
@@ -27,7 +38,7 @@ const setBuildingModal = () => {
         setBuildObject(selectedObjectInfo);
     };
 
-    const completeBuild = () => {
+    const completeBuild = async () => {
         const objectInfo = {
             x: buildObject.locationX,
             y: buildObject.locationY,
@@ -36,7 +47,21 @@ const setBuildingModal = () => {
             fileUrl: '',
         };
 
-        socketClient.emit('buildObject', objectInfo);
+        if (file === undefined) socketClient.emit('buildObject', objectInfo);
+        else {
+            // console.log({ file, name: file.name, mimeType: file.type, bid: buildObject.roomId });
+            const url = [worldInfo.id, buildObject.roomId, userInfo.id, Date.now(), file.name].join(
+                '/',
+            );
+            const preSignedUrl: string = (await getSignedUrl({ variables: { fileUrl: url } })).data
+                .getUploadUrl;
+
+            await axios.put(preSignedUrl, file, {
+                headers: { 'Content-Type': file.type, 'x-amz-acl': 'public-read' },
+            });
+
+            socketClient.emit('buildObject', { ...objectInfo, fileUrl: url });
+        }
 
         const selectedObjectInfo = {
             src: 'none',
@@ -51,10 +76,25 @@ const setBuildingModal = () => {
         alert('추가되었습니다.');
     };
 
+    const makeFileList = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const target = e.target as HTMLInputElement;
+        if (target.files === null) return;
+        setFile(target.files[DEFAULT_INDEX]);
+    };
+
     return (
         <ModalDiv>
             <BtnWrapper>
                 <StyledBtn onClick={cancleBuild}>취소</StyledBtn>
+                <StyledInput
+                    id="uploadFile"
+                    type="file"
+                    accept=".doc,.docx,.pdf,image/*"
+                    onChange={makeFileList}
+                />
+                <StyledBtn>
+                    <label htmlFor="uploadFile">업로드</label>
+                </StyledBtn>
                 <StyledBtn onClick={completeBuild}>확인</StyledBtn>
             </BtnWrapper>
         </ModalDiv>
@@ -94,4 +134,8 @@ const StyledBtn = styled.button`
     width: 70px;
     background-color: #c4c4c4c4;
     border-radius: 20px;
+`;
+
+const StyledInput = styled.input`
+    display: none;
 `;

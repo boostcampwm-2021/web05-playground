@@ -8,8 +8,8 @@ import { Clickable } from '../../utils/css';
 const Login = () => {
     const requestLogin = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        const worldPageUrl = '/selectworld';
-        window.location.href = worldPageUrl;
+        const url = process.env.REACT_APP_AUTH_URL!;
+        window.location.href = url;
     };
 
     return (

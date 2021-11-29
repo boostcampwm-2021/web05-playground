@@ -8,12 +8,21 @@ docker stop $(docker ps -a -q)
 echo "delete container"
 docker rm $(docker ps -a -q)
 
-mkdir ~/web05-playground/worker-server/src/pre-start/env
-mv /root/env.txt ~/web05-playground/worker-server/src/pre-start/env
+#env파일 추가
+mkdir ./worker-server/src/pre-start/env
+cp /root/env/worker-server/* ./worker-server/src/pre-start/env
+
+mkdir ./master-server/src/pre-start/env
+cp /root/env/master-server/* ./master-server/src/pre-start/env
+
+cp /root/env/frontend/.env ./frontend
+
+#frontend 빌드
+yarn --cwd ./frontend/ build
 
 # 노드 서버 이미지 빌드
 echo "image build"
-docker build ./worker-server --tag kimsungho97/worker-server
+docker build ./worker-server --tag kimsungho97/playground-worker
 
 # db 서버 이미지 빌드
 echo "db build"
