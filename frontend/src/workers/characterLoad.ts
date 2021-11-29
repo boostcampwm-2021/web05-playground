@@ -1,8 +1,8 @@
 /* eslint-disable no-return-await */
 const imageMap = new Map();
-imageMap.set('/assets/character1.png', '/character1.png');
-imageMap.set('/assets/character2.png', '/character2.png');
-imageMap.set('/assets/character3.png', '/character3.png');
+imageMap.set('/assets/character1.png', 'https://jwwhhmlzueei8656692.cdn.ntruss.com/character1.png');
+imageMap.set('/assets/character2.png', 'https://jwwhhmlzueei8656692.cdn.ntruss.com/character2.png');
+imageMap.set('/assets/character3.png', 'https://jwwhhmlzueei8656692.cdn.ntruss.com/character3.png');
 
 const buildingImageCache = new Map();
 
