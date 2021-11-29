@@ -13,10 +13,7 @@ const getImageBitMap = async (imgUrl: string) => {
     const cachedImg = buildingImageCache.get(imgUrl);
     if (cachedImg) return cachedImg;
 
-    const response = await fetch(imgUrl, {
-        mode: 'cors',
-        credentials: 'include',
-    });
+    const response = await fetch(imgUrl);
     const blob = await response.blob();
     const imageBitmap = await createImageBitmap(blob);
     buildingImageCache.set(imgUrl, imageBitmap);
