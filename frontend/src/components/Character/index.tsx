@@ -54,7 +54,10 @@ export const Character = () => {
             if (msg) console.log(msg);
         };
 
-        worker.postMessage({ type: 'init', offscreen }, [offscreen]);
+        worker.postMessage(
+            { type: 'init', offscreen, width: window.innerWidth, height: window.innerHeight },
+            [offscreen],
+        );
         return () => {
             // 종료는 여기서 딱한번만 수행!
             worker.postMessage({ type: 'terminate' }, []);

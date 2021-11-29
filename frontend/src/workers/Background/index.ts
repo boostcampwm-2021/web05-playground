@@ -60,19 +60,18 @@ const drawBackground = (layer: any, indexOfLayers: number, user: any) => {
     const height = Math.floor(offscreenCanvas.height / 2);
     const dx = width - (width % tileSize);
     const dy = height - (height % tileSize);
-    let layerX = user.x - dx / tileSize;
-    let layerY = user.y - dy / tileSize;
-
-    if (layerX < 0) layerX = 0;
-    if (layerY < 0) layerY = 0;
-    if (layerX > 70) layerX = 70;
-    if (layerY > 50) layerY = 50;
+    const layerX = user.x - dx / tileSize;
+    const layerY = user.y - dy / tileSize;
 
     let colEnd = layer.height + layerY;
     let rowEnd = layer.width + layerX;
 
+    if (colEnd < 0) colEnd = 0;
+    if (rowEnd < 0) rowEnd = 0;
     if (colEnd > 50) colEnd = 50;
     if (rowEnd > 70) rowEnd = 70;
+
+    if (layerY === colEnd && layerX === rowEnd) return;
 
     for (let col = layerY; col < colEnd; col += 1) {
         for (let row = layerX; row < rowEnd; row += 1) {
@@ -98,5 +97,6 @@ const drawBackground = (layer: any, indexOfLayers: number, user: any) => {
 };
 
 const getIndex = (x: number, y: number) => {
+    if (x < 0) return -1;
     return y * commonWidth + x;
 };

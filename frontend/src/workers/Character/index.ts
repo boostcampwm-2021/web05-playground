@@ -10,12 +10,17 @@ let imageBitmapList: any;
 const characterWidth = 32;
 const characterHeight = 64;
 
+let backgroundWidth: any;
+let backgroundHeight: any;
+
 worker.onmessage = async (e) => {
-    const { type, offscreen, characters, user } = e.data;
+    const { type, offscreen, characters, user, width, height } = e.data;
 
     if (type === 'init') {
         offscreenCanvas = offscreen;
         offscreenCtx = offscreenCanvas.getContext('2d');
+        backgroundWidth = width;
+        backgroundHeight = height;
         worker.postMessage({ msg: 'sent offscreen' });
         return;
     }
@@ -26,15 +31,15 @@ worker.onmessage = async (e) => {
         return;
     }
     if (type === 'terminate') {
-        offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+        offscreenCtx.clearRect(0, 0, backgroundWidth, backgroundHeight);
     }
 };
 
 const draw = (characters: any, user: any, imageBitmapList: any) => {
-    offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+    offscreenCtx.clearRect(0, 0, backgroundWidth, backgroundHeight);
 
-    const width = Math.floor(offscreenCanvas.width / 2);
-    const height = Math.floor(offscreenCanvas.height / 2);
+    const width = Math.floor(backgroundWidth / 2);
+    const height = Math.floor(backgroundHeight / 2);
     const dx = width - (width % characterWidth);
     const dy = height - (height % characterWidth);
 
@@ -50,8 +55,8 @@ const draw = (characters: any, user: any, imageBitmapList: any) => {
                 0,
                 characterWidth,
                 characterHeight,
-                user.x! * characterWidth < dx ? user.x! * characterWidth : dx,
-                user.y! * characterWidth < dy ? user.y! * characterWidth : dy,
+                dx,
+                dy,
                 characterWidth,
                 characterHeight,
             );
