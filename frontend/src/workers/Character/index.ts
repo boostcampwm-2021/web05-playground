@@ -60,7 +60,7 @@ const draw = (characters: any, user: any, imageBitmapList: any) => {
                 characterWidth,
                 characterHeight,
             );
-        } else {
+        } else if (character.isInBuilding === user.isInBuilding) {
             // other-Char
             const distanceX = (character.x! - user.x!) * characterWidth;
             const distanceY = (character.y! - user.y!) * characterWidth;

@@ -221,6 +221,7 @@ export default class RoomSocket {
     }
 
     async leaveRoomHandler(data: number, socket: MySocket) {
+        if (socket.uid) this.userMap[socket.uid].isInBuilding = -1;
         const roomId = data.toString(10);
         socket.leave(roomId);
         const users = rooms

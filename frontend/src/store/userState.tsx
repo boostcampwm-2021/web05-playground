@@ -10,6 +10,7 @@ const userState = atom<IUser>({
         x: 10,
         y: 10,
         imageUrl: '/assets/character1.png',
+        isInBuilding: -1,
     },
 });
 

@@ -5,6 +5,7 @@ export interface IUser {
     x?: number;
     y?: number;
     imageUrl: string;
+    isInBuilding: number;
 }
 
 export interface UserMap {

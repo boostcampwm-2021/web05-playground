@@ -67,6 +67,10 @@ export const Character = () => {
             setUser(data[user.id.toString()]);
             setCharacters(data);
         });
+
+        return () => {
+            socketClient.removeListener('user');
+        };
     }, [socketClient]);
 
     useEffect(() => {
@@ -97,6 +101,10 @@ export const Character = () => {
         };
     }, [characters, user, isInBuilding]);
 
+    useEffect(() => {
+        socketClient.emit('move', user);
+    }, [user]);
+
     const getIndex = (x: number, y: number) => {
         return y * commonWidth + x;
     };
@@ -111,6 +119,7 @@ export const Character = () => {
             x: user.x,
             y: user.y,
             imageUrl: user.imageUrl,
+            isInBuilding: user.isInBuilding,
         };
 
         switch (event.key) {
@@ -133,13 +142,15 @@ export const Character = () => {
         if (newLocation.y! + 1 < 0 || newLocation.y! + 2 > commonHeight) return;
 
         setUser(newLocation);
-        socketClient.emit('move', newLocation);
         // 건물 입장 로직
         if (isInBuilding === NONE) {
             isBuilding(newLocation.x!, newLocation.y!);
         } else if ((user.x! === 2 || user.x! === 3) && user.y! <= 0) {
             socketClient.emit('leaveRoom', isInBuilding);
             setIsInBuilding(NONE);
+            const updatedUser = { ...user };
+            updatedUser.isInBuilding = -1;
+            setUser(updatedUser);
         }
         isObject(newLocation.x!, newLocation.y!);
     };
