@@ -40,8 +40,8 @@ worker.onmessage = async (e) => {
 };
 const draw = (characters: any, user: any, imageBitmapList: any) => {
     offscreenCtx.clearRect(0, 0, backgroundWidth, backgroundHeight);
-    const width = Math.floor(window.innerWidth / 2);
-    const height = Math.floor(window.innerHeight / 2);
+    const width = Math.floor(backgroundWidth / 2);
+    const height = Math.floor(backgroundHeight / 2);
     const dx = width - (width % characterWidth);
     const dy = height - (height % characterWidth);
 
