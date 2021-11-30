@@ -5,7 +5,7 @@ import styled from 'styled-components';
 
 import currentModalState from '../../../store/currentModalState';
 import deviceState from '../../../store/deviceState';
-import isInBuildingState from '../../../store/isInBuildingState';
+import userState from '../../../store/userState';
 
 import { Clickable } from '../../../utils/css';
 
@@ -14,7 +14,7 @@ const icons = ['buildBuilding', 'buildObject', 'users', 'chat', 'setting'];
 const Menu = ({ props }: { props: RouteComponentProps }) => {
     const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
     const [device, setDevice] = useRecoilState(deviceState);
-    const isInBuilding = useRecoilValue(isInBuildingState);
+    const user = useRecoilValue(userState);
 
     const redirectSetting = (event: React.MouseEvent) => {
         event.preventDefault();
@@ -37,7 +37,7 @@ const Menu = ({ props }: { props: RouteComponentProps }) => {
 
     return (
         <>
-            {isInBuilding !== -1 ? (
+            {user.isInBuilding !== -1 ? (
                 <>
                     <Icons
                         key="voiceChat"

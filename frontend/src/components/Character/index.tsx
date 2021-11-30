@@ -8,7 +8,6 @@ import buildingInfoState from '../../store/buildingInfoState';
 import userState from '../../store/userState';
 import { UserMap, IUser, IBuilding, IObject, Direction } from '../../utils/model';
 
-import isInBuildingState from '../../store/isInBuildingState';
 import objectInfoState from '../../store/objectInfoState';
 
 import { NONE } from '../../utils/constants';
@@ -29,7 +28,6 @@ export const Character = () => {
     const [characters, setCharacters] = useState<UserMap>({});
     const setBuildingInfo = useSetRecoilState(buildingInfoState);
     const setObjectInfo = useSetRecoilState(objectInfoState);
-    const [isInBuilding, setIsInBuilding] = useRecoilState(isInBuildingState);
 
     const characterWidth = 32;
     const characterHeight = 64;
@@ -43,6 +41,9 @@ export const Character = () => {
             setUser(data[user.id.toString()]);
             setCharacters(data);
         });
+        return () => {
+            socketClient.removeListener('user');
+        };
     }, [socketClient]);
 
     useEffect(() => {
@@ -77,7 +78,11 @@ export const Character = () => {
             window.removeEventListener('keyup', addKeyUpEvent);
             socketClient.removeListener('move');
         };
-    }, [characters, user, isInBuilding]);
+    }, [characters, user]);
+
+    useEffect(() => {
+        socketClient.emit('move', user);
+    }, [user]);
 
     const getIndex = (x: number, y: number) => {
         return y * commonWidth + x;
@@ -110,7 +115,7 @@ export const Character = () => {
                     characterWidth,
                     characterHeight,
                 );
-            } else {
+            } else if (character.isInBuilding === user.isInBuilding) {
                 // other-Char
                 const distanceX = (character.x! - user.x!) * characterWidth;
                 const distanceY = (character.y! - user.y!) * characterWidth;
@@ -152,10 +157,10 @@ export const Character = () => {
             imageUrl: user.imageUrl,
             direction: user.direction,
             toggle: -1,
+            isInBuilding: user.isInBuilding,
         };
 
         setUser(newLocation);
-        socketClient.emit('move', newLocation);
     };
 
     const addMoveEvent = (event: KeyboardEvent) => {
@@ -167,6 +172,7 @@ export const Character = () => {
             x: user.x,
             y: user.y,
             imageUrl: user.imageUrl,
+            isInBuilding: user.isInBuilding,
         };
 
         switch (event.key) {
@@ -197,14 +203,15 @@ export const Character = () => {
         else newLocation.toggle = 0;
 
         setUser(newLocation);
-        socketClient.emit('move', newLocation);
 
         // 건물 입장 로직
-        if (isInBuilding === NONE) {
+        if (user.isInBuilding === NONE) {
             isBuilding(newLocation.x!, newLocation.y!);
         } else if ((user.x! === 2 || user.x! === 3) && user.y! <= 0) {
-            socketClient.emit('leaveRoom', isInBuilding);
-            setIsInBuilding(NONE);
+            socketClient.emit('leaveRoom', user.isInBuilding);
+            const updatedUser = { ...user };
+            updatedUser.isInBuilding = -1;
+            setUser(updatedUser);
         }
         isObject(newLocation.x!, newLocation.y!);
     };

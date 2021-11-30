@@ -14,6 +14,7 @@ export interface IUser {
     imageUrl: string;
     direction?: number;
     toggle?: number;
+    isInBuilding: number;
 }
 
 export interface UserMap {

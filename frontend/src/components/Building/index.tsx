@@ -59,9 +59,12 @@ const Building = (props: IProps) => {
             drawObjCanvas();
         });
         socketClient.on('buildObject', (data: IObject) => {
-            fillBuildingPosition(data);
-            drawOriginBuildings(data);
-            drawObjCanvas();
+            const bid = data.bid === 1 ? -1 : data.bid;
+            if (bid === user.isInBuilding) {
+                fillBuildingPosition(data);
+                drawOriginBuildings(data);
+                drawObjCanvas();
+            }
         });
         return () => {
             socketClient.removeListener('buildBuilding');

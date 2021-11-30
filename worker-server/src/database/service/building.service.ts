@@ -52,3 +52,31 @@ export const addBuilding = async (data: IBuilding): Promise<Receiver> => {
         return result;
     }
 };
+
+export const addFirstBuilding = async (): Promise<Receiver> => {
+    const result: Receiver = {
+        status: STATUS_CODE.SUCCESS,
+    };
+
+    try {
+        const sql = `INSERT INTO building(id, x, y, uid, description, scope, password, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+        const values = [1, -1000, -1000, -1, 'world', 'public', '', ''];
+        await pool2.query(sql, values);
+        result.addedBuilding = {
+            id: 1,
+            x: -1000,
+            y: -1000,
+            uid: -1,
+            description: 'world',
+            scope: 'public',
+            password: '',
+            imageUrl: '',
+        };
+        return result;
+    } catch (err) {
+        console.log(err);
+        result.status = STATUS_CODE.FAIL;
+        result.err = addBuildingError;
+        return result;
+    }
+};
