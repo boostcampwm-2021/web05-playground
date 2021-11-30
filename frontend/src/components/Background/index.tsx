@@ -3,15 +3,16 @@
 /* eslint-disable import/no-absolute-path */
 /* eslint-disable no-plusplus */
 import React, { useRef, useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 import userState from '../../store/userState';
 
 import Building from '../../components/Building';
 import { socketClient } from '../../socket/socket';
-import { IBuildingInfo } from '../../utils/model';
+import { IBuildingInfo, UserMap } from '../../utils/model';
 import { Character } from '../Character';
 import Video from '../Video';
+import allUserListState from '../../store/allUserListState';
 
 interface ILayer {
     data: number[];
@@ -38,6 +39,7 @@ const WorldBackground = (props: IProps) => {
     const InBuilding = props.current;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const user = useRecoilValue(userState);
+    const [allUser, setAllUser] = useRecoilState(allUserListState);
 
     const [buildingInfo, setBuildingInfo] = useState({
         buildings: [
@@ -89,7 +91,7 @@ const WorldBackground = (props: IProps) => {
 
     useEffect(() => {
         const enterInfo = {
-            user: user.nickname,
+            user,
             roomId: InBuilding,
         };
         socketClient.emit('enter', enterInfo);
@@ -98,8 +100,13 @@ const WorldBackground = (props: IProps) => {
             setBuildingInfo(data);
         });
 
+        socketClient.on('allUserList', (data: UserMap) => {
+            setAllUser(data);
+        });
+
         return () => {
             socketClient.removeListener('enter');
+            socketClient.removeListener('allUserList');
         };
     }, [socketClient, InBuilding]);
 
