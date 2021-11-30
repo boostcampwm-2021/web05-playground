@@ -5,6 +5,8 @@ export interface IUser {
     x?: number;
     y?: number;
     imageUrl: string;
+    direction?: number;
+    toggle?: number;
 }
 
 export class User implements IUser {

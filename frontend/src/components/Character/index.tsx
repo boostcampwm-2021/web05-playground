@@ -1,12 +1,12 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable consistent-return */
 import React, { useRef, useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
 import buildingInfoState from '../../store/buildingInfoState';
 import userState from '../../store/userState';
-import { UserMap, IUser, IBuilding, IObject } from '../../utils/model';
+import { UserMap, IUser, IBuilding, IObject, Direction } from '../../utils/model';
 
 import isInBuildingState from '../../store/isInBuildingState';
 import objectInfoState from '../../store/objectInfoState';
@@ -33,6 +33,8 @@ export const Character = () => {
 
     const characterWidth = 32;
     const characterHeight = 64;
+    const directionInteval = 32 * 3;
+    const cycle = 8;
 
     useEffect(() => {
         if (socketClient === undefined) return;
@@ -68,9 +70,11 @@ export const Character = () => {
         });
 
         window.addEventListener('keydown', addMoveEvent);
+        window.addEventListener('keyup', addKeyUpEvent);
         return () => {
             window.cancelAnimationFrame(frameId);
             window.removeEventListener('keydown', addMoveEvent);
+            window.removeEventListener('keyup', addKeyUpEvent);
             socketClient.removeListener('move');
         };
     }, [characters, user, isInBuilding]);
@@ -97,7 +101,7 @@ export const Character = () => {
 
                 ctx.drawImage(
                     characterImg,
-                    0,
+                    getPoseCharacter(character),
                     0,
                     characterWidth,
                     characterHeight,
@@ -115,7 +119,7 @@ export const Character = () => {
                 characterImg.src = character.imageUrl;
                 ctx.drawImage(
                     characterImg,
-                    0,
+                    getPoseCharacter(character),
                     0,
                     characterWidth,
                     characterHeight,
@@ -128,10 +132,35 @@ export const Character = () => {
         });
     };
 
+    const getPoseCharacter = (character: IUser) => {
+        if (character.direction === undefined) return 0;
+        if (character.toggle === undefined) return character.direction * directionInteval;
+        return (
+            character.direction * directionInteval +
+            (Math.floor(character.toggle / (cycle / 2)) + 1) * characterWidth
+        );
+    };
+
+    const addKeyUpEvent = (event: KeyboardEvent) => {
+        if (socketClient === undefined) return;
+        const newLocation: IUser = {
+            id: user.id,
+            nickname: user.nickname,
+            email: user.email,
+            x: user.x,
+            y: user.y,
+            imageUrl: user.imageUrl,
+            direction: user.direction,
+            toggle: -1,
+        };
+
+        setUser(newLocation);
+        socketClient.emit('move', newLocation);
+    };
+
     const addMoveEvent = (event: KeyboardEvent) => {
         if (socketClient === undefined) return;
-
-        const newLocation = {
+        const newLocation: IUser = {
             id: user.id,
             nickname: user.nickname,
             email: user.email,
@@ -143,15 +172,19 @@ export const Character = () => {
         switch (event.key) {
             case 'ArrowLeft':
                 newLocation.x! -= 1;
+                newLocation.direction = Direction.LEFT;
                 break;
             case 'ArrowRight':
                 newLocation.x! += 1;
+                newLocation.direction = Direction.RIGHT;
                 break;
             case 'ArrowUp':
                 newLocation.y! -= 1;
+                newLocation.direction = Direction.UP;
                 break;
             case 'ArrowDown':
                 newLocation.y! += 1;
+                newLocation.direction = Direction.DOWN;
                 break;
             default:
                 break;
@@ -159,8 +192,13 @@ export const Character = () => {
         if (newLocation.x! < 0 || newLocation.x! + 1 > commonWidth) return;
         if (newLocation.y! + 1 < 0 || newLocation.y! + 2 > commonHeight) return;
 
+        if (user.toggle !== undefined && user.direction === newLocation.direction)
+            newLocation.toggle = (user.toggle + 1) % cycle;
+        else newLocation.toggle = 0;
+
         setUser(newLocation);
         socketClient.emit('move', newLocation);
+
         // 건물 입장 로직
         if (isInBuilding === NONE) {
             isBuilding(newLocation.x!, newLocation.y!);
