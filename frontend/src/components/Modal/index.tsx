@@ -9,12 +9,13 @@ import Chat from './Chat';
 
 import currentModalState from '../../store/currentModalState';
 import { Clickable } from '../../utils/css';
+import { ActiveModal } from '../../utils/model';
 
 const Modal = () => {
     const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
 
     return (
-        <ModalDiv>
+        <ModalDiv active={currentModal === 'none'}>
             <BackBtn src="/assets/nextbtn.png" onClick={() => setCurrentModal('none')} />
             <BuildBuilding active={currentModal === 'buildBuilding'} />
             <BuildObject active={currentModal === 'buildObject'} />
@@ -25,7 +26,7 @@ const Modal = () => {
 
 export default Modal;
 
-const ModalDiv = styled.div`
+const ModalDiv = styled.div<ActiveModal>`
     position: fixed;
     z-index: 3;
 
@@ -36,7 +37,7 @@ const ModalDiv = styled.div`
     top: 0px;
     border: 3px solid black;
 
-    display: flex;
+    display: ${(props) => (props.active === true ? 'none' : 'flex')};
     flex-direction: column;
 `;
 

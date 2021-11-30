@@ -5,7 +5,6 @@ import { useQuery } from '@apollo/client';
 
 import styled from 'styled-components';
 import currentWorldState from '../../store/currentWorldState';
-import currentModalState from '../../store/currentModalState';
 import buildBuildingState from '../../store/buildBuildingState';
 import buildObjectState from '../../store/buildObjectState';
 import buildingUrls from '../../store/buildingUrlState';
@@ -44,7 +43,6 @@ const World = (props: RouteComponentProps) => {
     const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
     const [buildingUrl, setBuildingUrl] = useRecoilState(buildingUrls);
     const [objectUrl, setObjectUrl] = useRecoilState(objectUrls);
-    const currentModal = useRecoilValue(currentModalState);
     const buildBuilding = useRecoilValue(buildBuildingState);
     const buildObject = useRecoilValue(buildObjectState);
     const buildingInfo = useRecoilValue(buildingInfoState);
@@ -58,8 +56,6 @@ const World = (props: RouteComponentProps) => {
         return <></>;
     }
 
-    // 기존에는 useState로 관리했는데, 상태변경이 없으면 굳이?? 이유가 있을까
-    // 리렌더링 될때만 값을 새로 선언하는게 문제라면 useMemo를 적용해봐도 되지 않을까?
     const [mapLayers, setMapLayer] = useState(
         worldsInfo[currentWorld.name] ? worldsInfo[currentWorld.name].layers : worldPark.layers,
     );
@@ -104,7 +100,7 @@ const World = (props: RouteComponentProps) => {
             {/* 빌딩이면 비디오 컴포넌트 추가 해야함 */}
             {buildingInfo.isBuilding ? <BuildingInfo /> : <></>}
             {objectInfo.isObject ? <ObjectInfo /> : <></>}
-            {currentModal !== 'none' ? <Modal /> : <></>}
+            <Modal />
             <NavigationBar props={props} />
             {buildBuilding.isLocated ? <SetBuildingModal /> : <></>}
             {buildObject.isLocated ? <SetObjectModal /> : <></>}
