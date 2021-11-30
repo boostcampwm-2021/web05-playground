@@ -3,11 +3,7 @@ import { Server, Socket } from 'socket.io';
 import * as http from 'http';
 
 import { addUserInfo, deleteUserInfo, moveUserInfo } from './socket.user';
-import {
-    addBuildingInfo,
-    addFirstBuildingInfo,
-    getBuildingInfo,
-} from './socket.building';
+import { addBuildingInfo, getBuildingInfo } from './socket.building';
 import { addObjectInfo, getObjectInfo } from './socket.object';
 
 import { IUser } from '../database/entities/User';
@@ -148,16 +144,8 @@ export default class RoomSocket {
 
     async getWorldHandler(socket: MySocket, data: IEnter) {
         const worldInfo: IWorldInfo = {};
-        let buildings =
+        const buildings =
             data.roomId === WORLD ? await this.getBuildingHandler() : [];
-        if (data.roomId === WORLD) {
-            if (buildings.length === 0) {
-                await addFirstBuildingInfo();
-                buildings = [];
-            } else {
-                buildings.shift();
-            }
-        }
         const objects = await this.getObjectHandler(
             data.roomId === WORLD ? 1 : data.roomId,
         );
