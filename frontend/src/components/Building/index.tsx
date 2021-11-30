@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 /* eslint-disable no-plusplus */
 /* eslint-disable react/destructuring-assignment */
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
@@ -30,10 +30,9 @@ let ctx: CanvasRenderingContext2D | null;
 let checkingCtx: CanvasRenderingContext2D | null;
 const buildingImageCache = new Map();
 
-const objCanvas = document.createElement('canvas');
-const objctx = objCanvas.getContext('2d');
-objCanvas.width = commonWidth * tileSize;
-objCanvas.height = commonHeight * tileSize;
+let offscreen: OffscreenCanvas;
+let worker: Worker;
+let backgroundImage: any;
 
 const Building = (props: IProps) => {
     const { layers, buildingList, objectList, current: InBuilding } = props;
@@ -44,30 +43,59 @@ const Building = (props: IProps) => {
     const currentModal = useRecoilValue(currentModalState);
     const user = useRecoilValue(userState);
 
-    let cnt = 0;
-
     const obstacleLayer = layers[OBJECT].data;
 
     let buildTargetX = NONE;
     let buildTargetY = NONE;
 
     useEffect(() => {
+        offscreen = new OffscreenCanvas(commonWidth * tileSize, commonHeight * tileSize);
+        worker = new Worker('../../workers/Building/index.ts', {
+            type: 'module',
+        });
+
+        worker.postMessage({ type: 'init', offscreen }, [offscreen]);
+        return () => {
+            // 종료는 여기서 딱한번만 수행!
+            worker.postMessage({ type: 'terminate' }, []);
+            worker.terminate();
+            backgroundImage = null;
+        };
+    }, [InBuilding]);
+
+    useEffect(() => {
         if (socketClient === undefined) return;
+
+        // 아래 두개 이벤트 통합해도 될듯 6주차에 리팩토링
         socketClient.on('buildBuilding', (data: IBuilding) => {
             fillBuildingPosition(data);
-            drawOriginBuildings(data);
-            drawObjCanvas();
+            worker.postMessage({ type: 'buildItem', buildedItem: data }, []);
         });
         socketClient.on('buildObject', (data: IObject) => {
             fillBuildingPosition(data);
-            drawOriginBuildings(data);
-            drawObjCanvas();
+            worker.postMessage({ type: 'buildItem', buildedItem: data }, []);
         });
         return () => {
             socketClient.removeListener('buildBuilding');
             socketClient.removeListener('buildObject');
         };
-    }, [socketClient, user]);
+    }, [socketClient]);
+
+    useEffect(() => {
+        worker.onmessage = async (e) => {
+            const { type, backImage } = e.data;
+
+            // 버퍼에 대한 포인터만 가져옴 => 카피가 안 일어나서 더 효율적
+            // 결론 backgroundCanvas의 전체 이미지 카피없이 포인터만으로 굉장히 효율적인 렌더링을 수행할 수 있음
+            if (type === 'init') return;
+            if (type === 'draw background') {
+                backgroundImage = backImage;
+                drawObjCanvas();
+            }
+        };
+        if (backgroundImage === undefined) return;
+        drawObjCanvas();
+    }, [user, InBuilding]);
 
     useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;
@@ -76,8 +104,7 @@ const Building = (props: IProps) => {
             return;
         }
 
-        objctx?.clearRect(0, 0, objCanvas.width, objCanvas.height);
-
+        backgroundImage = null;
         buildingData.fill(0);
         objectData.fill(0);
 
@@ -89,20 +116,24 @@ const Building = (props: IProps) => {
         ctx = canvas.getContext('2d');
         checkingCtx = checkingCanvas.getContext('2d');
 
+        let itemList: any = [];
         if (buildingList.length !== 0 && buildingList[DEFAULT_INDEX].id !== -1) {
             buildingList.forEach((building) => {
                 fillBuildingPosition(building);
-                drawOriginBuildings(building);
+                itemList.push(building);
             });
-            drawObjCanvas();
         }
 
-        if (objectList.length !== 0 && objectList[0].id !== -1) {
+        if (objectList.length !== 0 && objectList[DEFAULT_INDEX].id !== -1) {
             objectList.forEach((object) => {
                 fillBuildingPosition(object);
-                drawOriginBuildings(object);
+                itemList.push(object);
             });
-            drawObjCanvas();
+        }
+
+        itemList = itemList.filter((item: any) => item.imageUrl !== null);
+        if (itemList.length > 0) {
+            worker.postMessage({ type: 'sendItemList', itemList }, []);
         }
     }, [buildingList, objectList, window.innerHeight, window.innerWidth]);
 
@@ -115,10 +146,6 @@ const Building = (props: IProps) => {
             window.removeEventListener('mousemove', updatePosition);
         };
     }, [buildBuilding, buildObject]);
-
-    useEffect(() => {
-        drawObjCanvas();
-    }, [user]);
 
     useEffect(() => {
         if (checkingCtx !== null) {
@@ -184,7 +211,6 @@ const Building = (props: IProps) => {
         const { src, isLocated, isData } = cur;
 
         if (!isData && src !== 'none' && !isLocated) {
-            // 없어도 될듯??
             if (flag === 0) {
                 setBuildBuilding({
                     ...buildBuilding,
@@ -321,40 +347,6 @@ const Building = (props: IProps) => {
         return true;
     };
 
-    const drawOriginBuildings = (building: IBuilding | IObject) => {
-        if (!ctx) return;
-        if (!objctx) return;
-
-        const dataSize = Object.keys(building).includes('uid') ? 4 : 2;
-
-        const buildingOutputSize = tileSize * dataSize;
-        const sx = building.x * tileSize - buildingOutputSize / 2;
-        const sy = building.y * tileSize - buildingOutputSize / 2;
-        const dx = buildingOutputSize;
-        const dy = buildingOutputSize;
-
-        // Todo - 캐싱이미지의 경우 오프스크린에 미리 그려서 캔버스에 입히는 식으로 성능 개선을 해보자
-        const cachingImage = buildingImageCache.get(building.imageUrl);
-        if (cachingImage) {
-            drawFunction(objctx, cachingImage, sx, sy, dx, dy);
-            cnt++;
-            if (cnt === buildingList.length) {
-                drawObjCanvas();
-            }
-        } else {
-            const buildingObject = new Image();
-            buildingObject.src = building.imageUrl;
-            buildingObject.onload = () => {
-                drawFunction(objctx, buildingObject, sx, sy, dx, dy);
-                buildingImageCache.set(building.imageUrl, buildingObject);
-                cnt++;
-                if (cnt === buildingList.length - 1) {
-                    drawObjCanvas();
-                }
-            };
-        }
-    };
-
     const drawObjCanvas = () => {
         ctx?.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
@@ -362,9 +354,11 @@ const Building = (props: IProps) => {
 
         const sx = -layerX * tileSize;
         const sy = -layerY * tileSize;
+
         const dx = commonWidth * tileSize;
         const dy = commonHeight * tileSize;
-        drawFunction(ctx, objCanvas, sx, sy, dx, dy);
+        if (!backgroundImage) return;
+        drawFunction(ctx, backgroundImage, sx, sy, dx, dy);
     };
 
     return (

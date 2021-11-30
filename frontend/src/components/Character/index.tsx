@@ -23,6 +23,10 @@ import {
 const commonWidth = 70;
 const commonHeight = 50;
 
+let offscreen: any;
+let worker: Worker;
+const cycle = 8;
+
 export const Character = () => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [user, setUser] = useRecoilState(userState);
@@ -31,10 +35,31 @@ export const Character = () => {
     const setObjectInfo = useSetRecoilState(objectInfoState);
     const [isInBuilding, setIsInBuilding] = useRecoilState(isInBuildingState);
 
-    const characterWidth = 32;
-    const characterHeight = 64;
-    const directionInteval = 32 * 3;
-    const cycle = 8;
+    useEffect(() => {
+        const canvas: any = canvasRef.current;
+        if (canvas === null) return;
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        offscreen = canvas.transferControlToOffscreen();
+        worker = new Worker('../../workers/Character/index.ts', {
+            type: 'module',
+        });
+
+        worker.onmessage = async (e) => {
+            const { msg } = e.data;
+        };
+
+        worker.postMessage(
+            { type: 'init', offscreen, width: window.innerWidth, height: window.innerHeight },
+            [offscreen],
+        );
+        return () => {
+            worker.postMessage({ type: 'terminate' }, []);
+            worker.terminate();
+        };
+    }, []);
 
     useEffect(() => {
         if (socketClient === undefined) return;
@@ -46,16 +71,12 @@ export const Character = () => {
     }, [socketClient]);
 
     useEffect(() => {
-        const canvas: HTMLCanvasElement | null = canvasRef.current;
-        if (canvas === null) return;
-        const ctx = canvas.getContext('2d');
-
         let frameNum = 0;
         let frameId = 0;
 
         const render = () => {
             frameNum += 1;
-            draw(ctx);
+            worker.postMessage({ type: 'update', characters, user }, []);
             frameId = window.requestAnimationFrame(render);
         };
         render();
@@ -81,64 +102,6 @@ export const Character = () => {
 
     const getIndex = (x: number, y: number) => {
         return y * commonWidth + x;
-    };
-
-    const draw = (ctx: CanvasRenderingContext2D | null) => {
-        if (!ctx) return;
-        ctx.clearRect(0, 0, window.innerWidth, window.innerHeight);
-        ctx.beginPath();
-        const width = Math.floor(window.innerWidth / 2);
-        const height = Math.floor(window.innerHeight / 2);
-        const dx = width - (width % characterWidth);
-        const dy = height - (height % characterWidth);
-
-        Object.keys(characters).forEach((id) => {
-            const character = characters[id];
-            if (id === user.id.toString()) {
-                // my-Char
-                const characterImg = new Image();
-                characterImg.src = character.imageUrl;
-
-                ctx.drawImage(
-                    characterImg,
-                    getPoseCharacter(character),
-                    0,
-                    characterWidth,
-                    characterHeight,
-                    dx,
-                    dy,
-                    characterWidth,
-                    characterHeight,
-                );
-            } else {
-                // other-Char
-                const distanceX = (character.x! - user.x!) * characterWidth;
-                const distanceY = (character.y! - user.y!) * characterWidth;
-
-                const characterImg = new Image();
-                characterImg.src = character.imageUrl;
-                ctx.drawImage(
-                    characterImg,
-                    getPoseCharacter(character),
-                    0,
-                    characterWidth,
-                    characterHeight,
-                    dx + distanceX,
-                    dy + distanceY,
-                    characterWidth,
-                    characterHeight,
-                );
-            }
-        });
-    };
-
-    const getPoseCharacter = (character: IUser) => {
-        if (character.direction === undefined) return 0;
-        if (character.toggle === undefined) return character.direction * directionInteval;
-        return (
-            character.direction * directionInteval +
-            (Math.floor(character.toggle / (cycle / 2)) + 1) * characterWidth
-        );
     };
 
     const addKeyUpEvent = (event: KeyboardEvent) => {
