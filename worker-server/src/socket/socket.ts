@@ -3,7 +3,11 @@ import { Server, Socket } from 'socket.io';
 import * as http from 'http';
 
 import { addUserInfo, deleteUserInfo, moveUserInfo } from './socket.user';
-import { addBuildingInfo, getBuildingInfo } from './socket.building';
+import {
+    addBuildingInfo,
+    addFirstBuildingInfo,
+    getBuildingInfo,
+} from './socket.building';
 import { addObjectInfo, getObjectInfo } from './socket.object';
 
 import { IUser } from '../database/entities/User';
@@ -146,8 +150,16 @@ export default class RoomSocket {
 
     async getWorldHandler(socket: MySocket, data: IEnter) {
         const worldInfo: IWorldInfo = {};
-        const buildings =
+        let buildings =
             data.roomId === WORLD ? await this.getBuildingHandler() : [];
+        if (data.roomId === WORLD) {
+            if (buildings.length === 0) {
+                await addFirstBuildingInfo();
+                buildings = [];
+            } else {
+                buildings.shift();
+            }
+        }
         const objects = await this.getObjectHandler(
             data.roomId === WORLD ? 1 : data.roomId,
         );
@@ -169,6 +181,7 @@ export default class RoomSocket {
     }
 
     async buildBuildingHandler(data: IBuilding) {
+        console.log(data);
         const addedBuilding = await addBuildingInfo(data);
         this.io.emit('buildBuilding', addedBuilding);
     }
@@ -180,8 +193,7 @@ export default class RoomSocket {
 
     async buildObjectHandler(data: IObject) {
         const addedObject = await addObjectInfo(data);
-        if (data.bid === 1) this.io.emit('buildObject', addedObject);
-        else this.io.to(data.bid.toString()).emit('buildObject', addedObject);
+        this.io.emit('buildObject', addedObject);
     }
 
     async messageHandler(data: Message, roomName: string) {

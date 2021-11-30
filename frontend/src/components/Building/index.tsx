@@ -72,14 +72,17 @@ const Building = (props: IProps) => {
             worker.postMessage({ type: 'buildItem', buildedItem: data }, []);
         });
         socketClient.on('buildObject', (data: IObject) => {
-            fillBuildingPosition(data);
-            worker.postMessage({ type: 'buildItem', buildedItem: data }, []);
+            const bid = data.bid === 1 ? -1 : data.bid;
+            if (bid === user.isInBuilding) {
+                fillBuildingPosition(data);
+                worker.postMessage({ type: 'buildItem', buildedItem: data }, []);
+            }
         });
         return () => {
             socketClient.removeListener('buildBuilding');
             socketClient.removeListener('buildObject');
         };
-    }, [socketClient]);
+    }, [socketClient, user]);
 
     useEffect(() => {
         worker.onmessage = async (e) => {
