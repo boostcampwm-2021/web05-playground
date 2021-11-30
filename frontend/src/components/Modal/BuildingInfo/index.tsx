@@ -5,7 +5,6 @@ import { useRecoilState } from 'recoil';
 
 import styled from 'styled-components';
 import buildingInfoState from '../../../store/buildingInfoState';
-import isInBuildingState from '../../../store/isInBuildingState';
 import userState from '../../../store/userState';
 import { socketClient } from '../../../socket/socket';
 import { NONE } from '../../../utils/constants';
@@ -13,7 +12,6 @@ import { NONE } from '../../../utils/constants';
 const BuildingInfo = () => {
     const [buildingInfo, setBuildingInfo] = useRecoilState(buildingInfoState);
     const [password, setPassword] = useState('');
-    const [isInBuilding, setIsInBuilding] = useRecoilState(isInBuildingState);
     const [user, setUser] = useRecoilState(userState);
 
     useEffect(() => {
@@ -22,8 +20,6 @@ const BuildingInfo = () => {
                 alert('방이 꽉찼습니다!');
                 return;
             }
-            setIsInBuilding(buildingInfo.id);
-
             const updatedUser = { ...user };
             updatedUser.isInBuilding = buildingInfo.id;
             setUser(updatedUser);
