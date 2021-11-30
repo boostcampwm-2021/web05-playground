@@ -47,7 +47,7 @@ const Form = styled.form`
     & > button {
         display: block;
         width: 420px;
-        height: 10vh;
+        height: 8vh;
         margin: 0px auto;
 
         background-color: rgb(6, 214, 160);
