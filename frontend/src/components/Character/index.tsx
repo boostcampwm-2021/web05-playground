@@ -8,7 +8,6 @@ import buildingInfoState from '../../store/buildingInfoState';
 import userState from '../../store/userState';
 import { UserMap, IUser, IBuilding, IObject } from '../../utils/model';
 
-import isInBuildingState from '../../store/isInBuildingState';
 import objectInfoState from '../../store/objectInfoState';
 
 import { NONE } from '../../utils/constants';
@@ -32,7 +31,6 @@ export const Character = () => {
     const [characters, setCharacters] = useState<UserMap>({});
     const setBuildingInfo = useSetRecoilState(buildingInfoState);
     const setObjectInfo = useSetRecoilState(objectInfoState);
-    const [isInBuilding, setIsInBuilding] = useRecoilState(isInBuildingState);
 
     useEffect(() => {
         const canvas: any = canvasRef.current;
@@ -99,7 +97,7 @@ export const Character = () => {
             window.removeEventListener('keydown', addMoveEvent);
             socketClient.removeListener('move');
         };
-    }, [characters, user, isInBuilding]);
+    }, [characters, user]);
 
     useEffect(() => {
         socketClient.emit('move', user);
@@ -143,11 +141,10 @@ export const Character = () => {
 
         setUser(newLocation);
         // 건물 입장 로직
-        if (isInBuilding === NONE) {
+        if (user.isInBuilding === NONE) {
             isBuilding(newLocation.x!, newLocation.y!);
         } else if ((user.x! === 2 || user.x! === 3) && user.y! <= 0) {
-            socketClient.emit('leaveRoom', isInBuilding);
-            setIsInBuilding(NONE);
+            socketClient.emit('leaveRoom', user.isInBuilding);
             const updatedUser = { ...user };
             updatedUser.isInBuilding = -1;
             setUser(updatedUser);
