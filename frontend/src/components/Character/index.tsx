@@ -46,10 +46,6 @@ export const Character = () => {
             type: 'module',
         });
 
-        worker.onmessage = async (e) => {
-            const { msg } = e.data;
-        };
-
         worker.postMessage(
             { type: 'init', offscreen, width: window.innerWidth, height: window.innerHeight },
             [offscreen],

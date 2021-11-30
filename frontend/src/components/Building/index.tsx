@@ -26,16 +26,16 @@ const commonWidth = 70;
 const commonHeight = 50;
 const tileSize = 32;
 const OBJECT = 1;
-let ctx: CanvasRenderingContext2D | null;
+
 let checkingCtx: CanvasRenderingContext2D | null;
 const buildingImageCache = new Map();
 
-let offscreen: OffscreenCanvas;
+let buildingOffscreen: OffscreenCanvas;
+let buildingBgOffscreen: OffscreenCanvas;
 let worker: Worker;
-let backgroundImage: any;
 
 const Building = (props: IProps) => {
-    const { layers, buildingList, objectList, current: InBuilding } = props;
+    const { layers, buildingList, objectList, current: InBuilding, wholeWorker } = props;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const checkingRef = useRef<HTMLCanvasElement>(null);
     const [buildBuilding, setBuildBuilding] = useRecoilState(buildBuildingState);
@@ -49,18 +49,29 @@ const Building = (props: IProps) => {
     let buildTargetY = NONE;
 
     useEffect(() => {
-        offscreen = new OffscreenCanvas(commonWidth * tileSize, commonHeight * tileSize);
-        worker = new Worker('../../workers/Building/index.ts', {
-            type: 'module',
-        });
+        const canvas: HTMLCanvasElement | null = canvasRef.current;
+        if (canvas === null) return;
 
-        worker.postMessage({ type: 'init', offscreen }, [offscreen]);
-        return () => {
-            // 종료는 여기서 딱한번만 수행!
-            worker.postMessage({ type: 'terminate' }, []);
-            worker.terminate();
-            backgroundImage = null;
-        };
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        buildingOffscreen = canvas.transferControlToOffscreen();
+        buildingBgOffscreen = new OffscreenCanvas(commonWidth * tileSize, commonHeight * tileSize);
+    }, []);
+
+    useEffect(() => {
+        if (wholeWorker === undefined) return;
+
+        worker = wholeWorker;
+        worker.postMessage({ type: 'initBuilding', buildingOffscreen, buildingBgOffscreen }, [
+            buildingOffscreen,
+            buildingBgOffscreen,
+        ]);
+    }, [wholeWorker]);
+
+    useEffect(() => {
+        if (worker === undefined) return;
+        worker.postMessage({ type: 'resetBuildingBgImage' });
     }, [InBuilding]);
 
     useEffect(() => {
@@ -79,42 +90,21 @@ const Building = (props: IProps) => {
             socketClient.removeListener('buildBuilding');
             socketClient.removeListener('buildObject');
         };
-    }, [socketClient]);
+    }, [socketClient, worker]);
 
     useEffect(() => {
-        worker.onmessage = async (e) => {
-            const { type, backImage } = e.data;
-
-            // 버퍼에 대한 포인터만 가져옴 => 카피가 안 일어나서 더 효율적
-            // 결론 backgroundCanvas의 전체 이미지 카피없이 포인터만으로 굉장히 효율적인 렌더링을 수행할 수 있음
-            if (type === 'init') return;
-            if (type === 'draw background') {
-                backgroundImage = backImage;
-                drawObjCanvas();
-            }
-        };
-        if (backgroundImage === undefined) return;
-        drawObjCanvas();
-    }, [user, InBuilding]);
-
-    useEffect(() => {
-        const canvas: HTMLCanvasElement | null = canvasRef.current;
         const checkingCanvas: HTMLCanvasElement | null = checkingRef.current;
-        if (canvas === null || checkingCanvas === null) {
-            return;
-        }
+        if (checkingCanvas === null) return;
 
-        backgroundImage = null;
         buildingData.fill(0);
         objectData.fill(0);
 
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
         checkingCanvas.width = window.innerWidth;
         checkingCanvas.height = window.innerHeight;
 
-        ctx = canvas.getContext('2d');
         checkingCtx = checkingCanvas.getContext('2d');
+
+        if (worker === undefined) return;
 
         let itemList: any = [];
         if (buildingList.length !== 0 && buildingList[DEFAULT_INDEX].id !== -1) {
@@ -133,9 +123,9 @@ const Building = (props: IProps) => {
 
         itemList = itemList.filter((item: any) => item.imageUrl !== null);
         if (itemList.length > 0) {
-            worker.postMessage({ type: 'sendItemList', itemList }, []);
+            worker.postMessage({ type: 'sendItemList', itemList, user }, []);
         }
-    }, [buildingList, objectList, window.innerHeight, window.innerWidth]);
+    }, [worker, buildingList, objectList, window.innerHeight, window.innerWidth]);
 
     useEffect(() => {
         window.addEventListener('mousedown', processBuild);
@@ -347,20 +337,6 @@ const Building = (props: IProps) => {
         return true;
     };
 
-    const drawObjCanvas = () => {
-        ctx?.clearRect(0, 0, window.innerWidth, window.innerHeight);
-
-        const { layerX, layerY } = getLayerPos();
-
-        const sx = -layerX * tileSize;
-        const sy = -layerY * tileSize;
-
-        const dx = commonWidth * tileSize;
-        const dy = commonHeight * tileSize;
-        if (!backgroundImage) return;
-        drawFunction(ctx, backgroundImage, sx, sy, dx, dy);
-    };
-
     return (
         <>
             <BuildingCanvas id="canvas" ref={canvasRef} />
@@ -381,6 +357,7 @@ const BuildingCanvas = styled.canvas`
     right: 0;
     top: 0;
 `;
+
 const CheckingCanvas = styled.canvas`
     position: absolute;
     z-index: 2;

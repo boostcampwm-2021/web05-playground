@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /* eslint-disable no-return-await */
 /* eslint-disable no-restricted-globals */
 import getImageBitMap from '../buildingLoad';
@@ -5,27 +6,33 @@ import getImageBitMap from '../buildingLoad';
 const worker = self;
 let offscreenCanvas: any;
 let offscreenCtx: any;
+
+let bgOffscreenCanvas: any;
+let bgOffscreenCtx: any;
 let backgroundImage: any;
 
 const tileSize = 32;
 
-const buildingImageCache = new Map();
-
 // 빌딩만이 아니라 빌딩 + 오브젝트임
 worker.onmessage = async (e) => {
-    const { type, offscreen, itemList, buildedItem } = e.data;
+    const { type, offscreen, bgOffscreen, itemList, buildedItem, user } = e.data;
 
     if (type === 'init') {
         offscreenCanvas = offscreen;
         offscreenCtx = offscreenCanvas.getContext('2d');
 
+        bgOffscreenCanvas = bgOffscreen;
+        bgOffscreenCtx = bgOffscreenCanvas.getContext('2d');
+
         worker.postMessage({ type: 'init offscreen' });
         return;
     }
     if (type === 'sendItemList') {
-        const imageBitmapList = await Promise.all(
-            itemList.map(async (item: any) => await getImageBitMap(item.imageUrl)),
-        );
+        const imageBitmapList: any = [];
+        for await (const item of itemList) {
+            const bitMap = await getImageBitMap(item.imageUrl);
+            imageBitmapList.push(bitMap);
+        }
 
         let cnt = 0;
         itemList.forEach((building: any) => {
@@ -33,40 +40,49 @@ worker.onmessage = async (e) => {
             cnt += 1;
         });
 
-        const backImage = offscreenCanvas.transferToImageBitmap();
+        const backImage = bgOffscreenCanvas.transferToImageBitmap();
         backgroundImage = backImage;
+
+        drawObjCanvas(user);
         worker.postMessage({
             type: 'draw background',
             backImage,
+        });
+        return;
+    }
+    if (type === 'update') {
+        drawObjCanvas(user);
+        worker.postMessage({
+            type: 'update background',
         });
         return;
     }
     if (type === 'buildItem') {
         const imageBitmap = await getImageBitMap(buildedItem.imageUrl);
 
-        offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+        bgOffscreenCtx.clearRect(0, 0, bgOffscreenCanvas.width, bgOffscreenCanvas.height);
         if (backgroundImage !== undefined) {
             drawFunction(
-                offscreenCtx,
+                bgOffscreenCtx,
                 backgroundImage,
                 0,
                 0,
-                offscreenCanvas.width,
-                offscreenCanvas.height,
+                bgOffscreenCanvas.width,
+                bgOffscreenCanvas.height,
             );
         }
         drawOriginBuildings(buildedItem, imageBitmap);
 
-        const backImage = offscreenCanvas.transferToImageBitmap();
+        const backImage = bgOffscreenCanvas.transferToImageBitmap();
         backgroundImage = backImage;
         worker.postMessage({
-            type: 'draw background',
+            type: 'draw background after build',
             backImage,
         });
         return;
     }
     if (type === 'terminate') {
-        offscreenCtx.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+        bgOffscreenCtx.clearRect(0, 0, bgOffscreenCanvas.width, bgOffscreenCanvas.height);
     }
 };
 
@@ -79,17 +95,32 @@ const drawOriginBuildings = (building: any, imageBitmap: any) => {
     const dx = buildingOutputSize;
     const dy = buildingOutputSize;
 
-    // Todo - 캐싱이미지의 경우 오프스크린에 미리 그려서 캔버스에 입히는 식으로 성능 개선을 해보자
-    const cachingImage = buildingImageCache.get(imageBitmap);
+    drawFunction(bgOffscreenCtx, imageBitmap, sx, sy, dx, dy);
+};
 
-    // 로직 개선해야함
-    // 먼저 캐싱된거 확인 후 없으면 fetch 다음 비트맵 만들어서 그리도록
-    if (cachingImage) {
-        drawFunction(offscreenCtx, cachingImage, sx, sy, dx, dy);
-    } else {
-        drawFunction(offscreenCtx, imageBitmap, sx, sy, dx, dy);
-        buildingImageCache.set(building.imageUrl, imageBitmap);
-    }
+const drawObjCanvas = (user: any) => {
+    offscreenCtx?.clearRect(0, 0, offscreenCanvas.width, offscreenCanvas.height);
+
+    const { layerX, layerY } = getLayerPos(user);
+
+    const sx = -layerX * tileSize;
+    const sy = -layerY * tileSize;
+
+    const dx = bgOffscreenCanvas.width;
+    const dy = bgOffscreenCanvas.height;
+    if (!backgroundImage) return;
+    drawFunction(offscreenCtx, backgroundImage, sx, sy, dx, dy);
+};
+
+const getLayerPos = (user: any) => {
+    const width = Math.floor(offscreenCanvas.width / 2);
+    const height = Math.floor(offscreenCanvas.height / 2);
+    const dx = width - (width % tileSize);
+    const dy = height - (height % tileSize);
+    const layerX = user.x! - dx / tileSize;
+    const layerY = user.y! - dy / tileSize;
+
+    return { layerX, layerY };
 };
 
 const drawFunction = (ctx: any, img: any, sx: any, sy: any, dx: any, dy: any) => {

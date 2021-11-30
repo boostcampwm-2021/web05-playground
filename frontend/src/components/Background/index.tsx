@@ -26,11 +26,6 @@ interface IProps {
     current: number;
 }
 
-interface IEnter {
-    user: string;
-    roomId: number;
-}
-
 let offscreen: any;
 let worker: Worker;
 const WorldBackground = (props: IProps) => {
@@ -76,10 +71,6 @@ const WorldBackground = (props: IProps) => {
             type: 'module',
         });
 
-        worker.onmessage = async (e) => {
-            const { msg } = e.data;
-        };
-
         worker.postMessage({ type: 'init', offscreen }, [offscreen]);
         return () => {
             worker.postMessage({ type: 'terminate' }, []);
@@ -121,6 +112,7 @@ const WorldBackground = (props: IProps) => {
                 buildingList={buildingInfo.buildings}
                 objectList={buildingInfo.objects}
                 current={InBuilding}
+                wholeWorker={worker}
             />
             <Character />
         </>
