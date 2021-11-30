@@ -31,7 +31,7 @@ class MySocket extends Socket {
 }
 
 interface IEnter {
-    user: string;
+    user: IUser;
     roomId: number;
 }
 
@@ -73,9 +73,10 @@ export default class RoomSocket {
                         : true;
                 this.io.sockets.to(socket.id).emit('checkCapacity', isFull);
             });
-            socket.on('enter', (data: IEnter) =>
-                this.getWorldHandler(socket, data),
-            );
+            socket.on('enter', (data: IEnter) => {
+                this.allUserHandler(socket);
+                this.getWorldHandler(socket, data);
+            });
             socket.on('buildBuilding', (data: IBuilding) => {
                 this.buildBuildingHandler(data);
             });
@@ -133,6 +134,10 @@ export default class RoomSocket {
         this.io.emit('user', this.userMap);
     }
 
+    allUserHandler(socket: MySocket) {
+        socket.emit('allUserList', this.userMap);
+    }
+
     async moveHandler(data: IUser) {
         moveUserInfo(data, this.userMap);
         this.io.emit('move', data);
@@ -173,8 +178,7 @@ export default class RoomSocket {
 
     async buildObjectHandler(data: IObject) {
         const addedObject = await addObjectInfo(data);
-        if (data.bid === 1) this.io.emit('buildObject', addedObject);
-        else this.io.to(data.bid.toString()).emit('buildObject', addedObject);
+        this.io.emit('buildObject', addedObject);
     }
 
     async messageHandler(data: Message, roomName: string) {
@@ -187,9 +191,11 @@ export default class RoomSocket {
         this.io.to(roomName).emit('message', data);
     }
 
-    deleteUserHandler(socket: MySocket) {
-        if (socket.uid !== undefined) deleteUserInfo(socket.uid, this.userMap);
+    async deleteUserHandler(socket: MySocket) {
+        if (socket.uid !== undefined)
+            await deleteUserInfo(socket.uid, this.userMap);
         this.io.emit('user', this.userMap);
+        this.io.emit('exitUser', this.userMap);
         console.log(`${socket.id} 끊어졌습니다.`);
     }
 
@@ -214,6 +220,7 @@ export default class RoomSocket {
     }
 
     async leaveRoomHandler(data: number, socket: MySocket) {
+        if (socket.uid) this.userMap[socket.uid].isInBuilding = -1;
         const roomId = data.toString(10);
         socket.leave(roomId);
         const users = rooms

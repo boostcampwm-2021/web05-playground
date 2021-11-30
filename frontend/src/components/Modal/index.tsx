@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import BuildBuilding from './BuildBuilding';
 import BuildObject from './BuildObject';
 import Chat from './Chat';
+import AllUser from './AllUser';
 
 import currentModalState from '../../store/currentModalState';
 import { Clickable } from '../../utils/css';
@@ -20,6 +21,7 @@ const Modal = () => {
             <BuildBuilding active={currentModal === 'buildBuilding'} />
             <BuildObject active={currentModal === 'buildObject'} />
             <Chat active={currentModal === 'chat'} />
+            <AllUser active={currentModal === 'users'} />
         </ModalDiv>
     );
 };

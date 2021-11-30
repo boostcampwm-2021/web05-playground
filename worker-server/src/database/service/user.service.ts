@@ -19,6 +19,7 @@ export const getUser = async (id: number): Promise<Receiver> => {
         }
 
         result.user = JSON.parse(JSON.stringify(user))[0];
+        if (result.user) result.user.isInBuilding = -1;
         return result;
     } catch (err) {
         console.log(err);

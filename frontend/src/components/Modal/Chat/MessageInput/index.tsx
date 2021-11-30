@@ -8,7 +8,6 @@ import { socketClient } from '../../../../socket/socket';
 import { ModalToggle } from '../../../../utils/model';
 
 import userState from '../../../../store/userState';
-import isInBuidlingState from '../../../../store/isInBuildingState';
 
 interface customMouseEvent extends React.MouseEvent<HTMLButtonElement, MouseEvent> {
     target: HTMLButtonElement;
@@ -19,9 +18,6 @@ const MessageInput = () => {
     const [selectedGroup, setSelectedGroup] = useState('Everyone');
     const [modalToggle, setModalTogle] = useState(false);
     const useInfo = useRecoilValue(userState);
-
-    // 네이밍 변경이 필요해 보입니다. => true or false가 아닌 빌딩넘버를 뜻하기 때문에 수정해야합니다.
-    const isInBuidling = useRecoilValue(isInBuidlingState);
 
     const selectGroup = (e: customMouseEvent) => {
         const selectedValue = e.target.innerText;
@@ -42,7 +38,7 @@ const MessageInput = () => {
         };
 
         if (selectedGroup === 'In Building') {
-            socketClient.emit('message', messageInfo, isInBuidling.toString(10));
+            socketClient.emit('message', messageInfo, useInfo.isInBuilding.toString(10));
             return;
         }
         socketClient.emit('message', messageInfo, selectedGroup);
