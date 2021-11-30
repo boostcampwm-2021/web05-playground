@@ -1,5 +1,6 @@
 import {
     addBuilding,
+    addFirstBuilding,
     getBuildingList,
 } from '../database/service/building.service';
 import { IBuilding } from '../database/entities/Building';
@@ -22,4 +23,12 @@ export const addBuildingInfo = async (data: IBuilding): Promise<IBuilding> => {
     if (addBuilingInfo.status === STATUS_CODE.FAIL)
         throw new Error(addBuildingError);
     return addBuilingInfo.addedBuilding;
+};
+
+export const addFirstBuildingInfo = async () => {
+    const addFirstBuilingInfo = await addFirstBuilding();
+    if (addFirstBuilingInfo.addedBuilding === undefined)
+        throw new Error(addBuildingError);
+    if (addFirstBuilingInfo.status === STATUS_CODE.FAIL)
+        throw new Error(addBuildingError);
 };

@@ -27,9 +27,9 @@ import { getBuildingAndObjectUrls } from '../../utils/query';
 import BuildingInfo from '../../components/Modal/BuildingInfo';
 import objectInfoState from '../../store/objectInfoState';
 import buildingInfoState from '../../store/buildingInfoState';
-import isInBuildingState from '../../store/isInBuildingState';
 import { NONE } from '../../utils/constants';
 import ObjectInfo from '../../components/Modal/ObjectInfo';
+import userState from '../../store/userState';
 
 interface customWorldInfo {
     [world: string]: typeof worldPark;
@@ -49,7 +49,7 @@ const World = (props: RouteComponentProps) => {
     const buildObject = useRecoilValue(buildObjectState);
     const buildingInfo = useRecoilValue(buildingInfoState);
     const objectInfo = useRecoilValue(objectInfoState);
-    const isInBuilding = useRecoilValue(isInBuildingState);
+    const user = useRecoilValue(userState);
 
     const { loading, error, data } = useQuery(getBuildingAndObjectUrls);
 
@@ -98,8 +98,8 @@ const World = (props: RouteComponentProps) => {
         <Inner>
             {/* 아래 recoil 두 가지 상태에따라 맵이 다시 그려지니까 상태관련된 것은 하위컴포넌트 or 다른 곳으로 빼자 */}
             <Background
-                data={isInBuilding === NONE ? mapLayers : buildingLayer}
-                current={isInBuilding}
+                data={user.isInBuilding === NONE ? mapLayers : buildingLayer}
+                current={user.isInBuilding}
             />
             {/* 빌딩이면 비디오 컴포넌트 추가 해야함 */}
             {buildingInfo.isBuilding ? <BuildingInfo /> : <></>}

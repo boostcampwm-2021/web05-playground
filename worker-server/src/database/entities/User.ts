@@ -7,6 +7,7 @@ export interface IUser {
     imageUrl: string;
     direction?: number;
     toggle?: number;
+    isInBuilding?: number;
 }
 
 export class User implements IUser {
@@ -16,6 +17,7 @@ export class User implements IUser {
     public x: number;
     public y: number;
     public imageUrl: string;
+    public isInBuilding: number;
 
     constructor(
         id: number,
@@ -24,6 +26,7 @@ export class User implements IUser {
         x: number,
         y: number,
         imageUrl: string,
+        isInBuilding: number,
     ) {
         this.id = id;
         this.email = email;
@@ -31,5 +34,6 @@ export class User implements IUser {
         this.x = x;
         this.y = y;
         this.imageUrl = imageUrl;
+        this.isInBuilding = isInBuilding;
     }
 }
