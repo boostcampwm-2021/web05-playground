@@ -125,7 +125,6 @@ export const Character = () => {
         };
 
         setUser(newLocation);
-        socketClient.emit('move', newLocation);
     };
 
     const addMoveEvent = (event: KeyboardEvent) => {
@@ -168,8 +167,6 @@ export const Character = () => {
         else newLocation.toggle = 0;
 
         setUser(newLocation);
-
-        socketClient.emit('move', newLocation);
 
         // 건물 입장 로직
         if (user.isInBuilding === NONE) {
