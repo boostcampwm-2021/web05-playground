@@ -121,6 +121,7 @@ export const Character = () => {
             imageUrl: user.imageUrl,
             direction: user.direction,
             toggle: -1,
+            isInBuilding: user.isInBuilding,
         };
 
         setUser(newLocation);
