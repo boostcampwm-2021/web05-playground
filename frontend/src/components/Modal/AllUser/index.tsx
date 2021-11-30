@@ -26,7 +26,7 @@ const AllUser = ({ active }: ActiveModal) => {
                 return (
                     <UserDiv key={id}>
                         <UserImg>
-                            <img src={allUser[id].imageUrl} style={{ marginTop: '30%' }} />
+                            <img src={allUser[id].imageUrl} style={{ marginTop: '50%' }} />
                         </UserImg>
                         <UserName>{allUser[id].nickname}</UserName>
                     </UserDiv>
