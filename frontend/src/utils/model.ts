@@ -62,6 +62,7 @@ export interface IProps {
     buildingList: IBuilding[];
     objectList: IObject[];
     current: number;
+    wholeWorker: Worker;
 }
 
 export interface MessageInfo {
