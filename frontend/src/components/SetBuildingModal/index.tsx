@@ -25,7 +25,6 @@ interface customSetFunctions {
 }
 
 const setBuildingModal = () => {
-    const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [range, setRange] = useState('private');
     const [password, setPassword] = useState('');
@@ -33,7 +32,6 @@ const setBuildingModal = () => {
     const user = useRecoilValue(userState);
 
     const setFunctions: customSetFunctions = {
-        title: setTitle,
         description: setDescription,
         password: setPassword,
     };
@@ -61,9 +59,8 @@ const setBuildingModal = () => {
     };
 
     const completeBuild = () => {
-        if (title === '' || description === '') alert('값을 모두 입력해주세요');
+        if (description === '') alert('값을 모두 입력해주세요');
         else {
-            // title => 건물이름이 있어야됨, uid는 수정
             const buildingInfo = {
                 x: buildBuilding.locationX,
                 y: buildBuilding.locationY,
