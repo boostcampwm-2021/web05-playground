@@ -23,6 +23,7 @@ const SelectWorld = (props: RouteComponentProps) => {
         if (code) {
             const Login = async (code: string) => {
                 const userInfo = (await fetchUser({ variables: { code } })).data.user;
+                userInfo.isInBuilding = -1;
                 setUser(userInfo);
             };
             Login(code);
