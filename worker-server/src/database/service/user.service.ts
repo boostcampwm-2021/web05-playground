@@ -4,7 +4,6 @@ import { pool2 } from '../connection';
 import { IUser } from '../entities/User';
 
 export const getUser = async (id: number): Promise<Receiver> => {
-    console.log(id);
     const result: Receiver = {
         status: STATUS_CODE.SUCCESS,
     };
@@ -85,8 +84,6 @@ export const setExitUser = async (user: IUser): Promise<Receiver> => {
     };
     try {
         const sql = `UPDATE world_user SET x = ?, y = ? WHERE id = ?`;
-        console.log('setUSesr');
-        console.log(user);
         await pool2.query(sql, [user.x, user.y, user.id]);
         result.user = user;
         return result;

@@ -10,7 +10,7 @@ import { UserMap, IUser, IBuilding, IObject, Direction } from '../../utils/model
 
 import objectInfoState from '../../store/objectInfoState';
 
-import { NONE } from '../../utils/constants';
+import { COMMON_HEIGHT, COMMON_WIDTH, MIN_HEIGHT, MIN_WIDTH, NONE } from '../../utils/constants';
 
 import {
     buildingData,
@@ -18,9 +18,6 @@ import {
     objectData,
     objectListForCharacter,
 } from '../../utils/variables/buildingData';
-
-const commonWidth = 70;
-const commonHeight = 50;
 
 export const Character = React.memo(() => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -85,7 +82,7 @@ export const Character = React.memo(() => {
     }, [user]);
 
     const getIndex = (x: number, y: number) => {
-        return y * commonWidth + x;
+        return y * COMMON_WIDTH + x;
     };
 
     const draw = (ctx: CanvasRenderingContext2D | null) => {
@@ -100,7 +97,6 @@ export const Character = React.memo(() => {
         Object.keys(characters).forEach((id) => {
             const character = characters[id];
             if (id === user.id.toString()) {
-                // my-Char
                 const characterImg = new Image();
                 characterImg.src = character.imageUrl;
 
@@ -116,7 +112,6 @@ export const Character = React.memo(() => {
                     characterHeight,
                 );
             } else if (character.isInBuilding === user.isInBuilding) {
-                // other-Char
                 const distanceX = (character.x! - user.x!) * characterWidth;
                 const distanceY = (character.y! - user.y!) * characterWidth;
 
@@ -195,8 +190,8 @@ export const Character = React.memo(() => {
             default:
                 break;
         }
-        if (newLocation.x! < 0 || newLocation.x! + 1 > commonWidth) return;
-        if (newLocation.y! + 1 < 0 || newLocation.y! + 2 > commonHeight) return;
+        if (newLocation.x! < 0 || newLocation.x! + 1 > COMMON_WIDTH) return;
+        if (newLocation.y! + 1 < 0 || newLocation.y! + 2 > COMMON_HEIGHT) return;
 
         if (user.toggle !== undefined && user.direction === newLocation.direction)
             newLocation.toggle = (user.toggle + 1) % cycle;
@@ -204,7 +199,6 @@ export const Character = React.memo(() => {
 
         setUser(newLocation);
 
-        // 건물 입장 로직
         if (user.isInBuilding === NONE) {
             isBuilding(newLocation.x!, newLocation.y!);
         } else if ((user.x! === 2 || user.x! === 3) && user.y! <= 0) {

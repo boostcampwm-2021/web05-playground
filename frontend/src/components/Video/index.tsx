@@ -60,10 +60,6 @@ const Video = () => {
                 });
             };
 
-            pc.oniceconnectionstatechange = (e) => {
-                console.log(e);
-            };
-
             pc.ontrack = (e) => {
                 setUsers((prevUsers) =>
                     prevUsers
@@ -80,8 +76,6 @@ const Video = () => {
                     if (!myStream) return;
                     pc.addTrack(track, myStream);
                 });
-            } else {
-                console.log('no local stream');
             }
 
             return pc;

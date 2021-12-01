@@ -1,4 +1,4 @@
-import './pre-start'; // Must be the first import
+import './pre-start';
 import Socket from './socket/socket';
 
 const socket = new Socket(8000);

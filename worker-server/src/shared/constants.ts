@@ -1,4 +1,3 @@
-//database/service Error
 export const worldListError = 'Fail to get World List';
 
 export const objectListError = 'Fail to get Object List';
@@ -17,6 +16,5 @@ export const characterError = 'Fail to get Charater List';
 export const setUserError = 'Fail to set User Info';
 export const addUserError = 'Fail to add User Info';
 
-//socket/socket Constant
 export const ROOM_CAPACITY = 6;
 export const WORLD = -1;

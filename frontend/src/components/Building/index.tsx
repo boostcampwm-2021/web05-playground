@@ -14,7 +14,15 @@ import buildObjectState from '../../store/buildObjectState';
 
 import { IBuilding, IObject, IProps } from '../../utils/model';
 import currentModalState from '../../store/currentModalState';
-import { DEFAULT_INDEX, NONE } from '../../utils/constants';
+import {
+    COMMON_HEIGHT,
+    COMMON_WIDTH,
+    DEFAULT_INDEX,
+    MIN_HEIGHT,
+    MIN_WIDTH,
+    NONE,
+    TILE_SIZE,
+} from '../../utils/constants';
 
 import {
     buildingData,
@@ -23,18 +31,15 @@ import {
     objectListForCharacter,
 } from '../../utils/variables/buildingData';
 
-const commonWidth = 70;
-const commonHeight = 50;
-const tileSize = 32;
 const OBJECT = 1;
 let ctx: CanvasRenderingContext2D | null;
 let checkingCtx: CanvasRenderingContext2D | null;
-const buildingImageCache = new Map();
+const itemImageCache = new Map();
 
 const objCanvas = document.createElement('canvas');
 const objctx = objCanvas.getContext('2d');
-objCanvas.width = commonWidth * tileSize;
-objCanvas.height = commonHeight * tileSize;
+objCanvas.width = COMMON_WIDTH * TILE_SIZE;
+objCanvas.height = COMMON_HEIGHT * TILE_SIZE;
 
 let cnt = 0;
 
@@ -56,15 +61,15 @@ const Building = (props: IProps) => {
         if (socketClient === undefined) return;
         socketClient.on('buildBuilding', (data: IBuilding) => {
             if (user.isInBuilding === -1) {
-                fillBuildingPosition(data);
-                drawOriginBuildings(data);
+                fillItemPosition(data);
+                drawOriginItem(data);
             }
         });
         socketClient.on('buildObject', (data: IObject) => {
             const bid = data.bid === 1 ? -1 : data.bid;
             if (bid === user.isInBuilding) {
-                fillBuildingPosition(data);
-                drawOriginBuildings(data);
+                fillItemPosition(data);
+                drawOriginItem(data);
             }
         });
         return () => {
@@ -97,15 +102,15 @@ const Building = (props: IProps) => {
 
         if (buildingList.length !== 0 && buildingList[DEFAULT_INDEX].id !== -1) {
             buildingList.forEach((building) => {
-                fillBuildingPosition(building);
-                drawOriginBuildings(building);
+                fillItemPosition(building);
+                drawOriginItem(building);
             });
         }
 
         if (objectList.length !== 0 && objectList[0].id !== -1) {
             objectList.forEach((object) => {
-                fillBuildingPosition(object);
-                drawOriginBuildings(object);
+                fillItemPosition(object);
+                drawOriginItem(object);
             });
         }
     }, [buildingList, objectList]);
@@ -155,19 +160,19 @@ const Building = (props: IProps) => {
     }, [currentModal]);
 
     // 빌딩 오브젝트 둘 중 하나 처리하는 함수인데 이름은 그냥 빌딩으로 해놨음
-    const fillBuildingPosition = (building: IBuilding | IObject) => {
-        const { id, x, y } = building;
-        const dataSize = Object.keys(building).includes('uid') ? 2 : 1;
+    const fillItemPosition = (item: IBuilding | IObject) => {
+        const { id, x, y } = item;
+        const dataSize = Object.keys(item).includes('uid') ? 2 : 1;
 
         for (let i = x - dataSize; i < x + dataSize; i++) {
             for (let j = y - dataSize; j < y + dataSize; j++) {
                 const index = getIndex(i, j);
                 if (dataSize === 1) {
                     objectData[index] = id;
-                    objectListForCharacter.set(id, building);
+                    objectListForCharacter.set(id, item);
                 } else {
                     buildingData[index] = id;
-                    buildingListForCharacter.set(id, building);
+                    buildingListForCharacter.set(id, item);
                 }
             }
         }
@@ -176,19 +181,19 @@ const Building = (props: IProps) => {
     const getLayerPos = () => {
         const width = Math.floor(window.innerWidth / 2);
         const height = Math.floor(window.innerHeight / 2);
-        const dx = width - (width % tileSize);
-        const dy = height - (height % tileSize);
-        const layerX = user.x! - dx / tileSize;
-        const layerY = user.y! - dy / tileSize;
+        const dx = width - (width % TILE_SIZE);
+        const dy = height - (height % TILE_SIZE);
+        const layerX = user.x! - dx / TILE_SIZE;
+        const layerY = user.y! - dy / TILE_SIZE;
 
         return { layerX, layerY };
     };
 
     const isValidPosition = () => {
         return (
-            buildTargetX >= 0 &&
+            buildTargetX >= MIN_WIDTH &&
             buildTargetX <= window.innerWidth &&
-            buildTargetY >= 0 &&
+            buildTargetY >= MIN_HEIGHT &&
             buildTargetY <= window.innerHeight
         );
     };
@@ -201,7 +206,6 @@ const Building = (props: IProps) => {
         const { src, isLocated, isData } = cur;
 
         if (!isData && src !== 'none' && !isLocated) {
-            // 없어도 될듯??
             if (flag === 0) {
                 setBuildBuilding({
                     ...buildBuilding,
@@ -255,12 +259,12 @@ const Building = (props: IProps) => {
         const isData = currentModal === 'buildBuilding' ? buildBuilding.isData : buildObject.isData;
         if (!checkingCtx || !isData) return;
 
-        buildTargetX = Math.floor(e.pageX / tileSize);
-        buildTargetY = Math.floor(e.pageY / tileSize);
+        buildTargetX = Math.floor(e.pageX / TILE_SIZE);
+        buildTargetY = Math.floor(e.pageY / TILE_SIZE);
 
         checkingCtx.clearRect(0, 0, window.innerWidth, window.innerHeight);
 
-        drawBuildingOfMove();
+        drawItemOfMove();
         drawPossibleBox();
     };
 
@@ -276,22 +280,22 @@ const Building = (props: IProps) => {
         ctx.drawImage(img, sx, sy, dx, dy);
     };
 
-    const drawBuildingOfMove = () => {
+    const drawItemOfMove = () => {
         if (!checkingCtx) return;
 
         const size = currentModal === 'buildBuilding' ? 4 : 2;
 
         checkingCtx.globalAlpha = 1.0;
-        const buildingOutputSize = tileSize * size;
+        const itemOutputSize = TILE_SIZE * size;
 
         const src = currentModal === 'buildBuilding' ? buildBuilding.src : buildObject.src;
 
-        const cachingImage = buildingImageCache.get(src);
+        const cachingImage = itemImageCache.get(src);
 
-        const sx = buildTargetX * tileSize - buildingOutputSize / 2;
-        const sy = buildTargetY * tileSize - buildingOutputSize / 2;
-        const dx = buildingOutputSize;
-        const dy = buildingOutputSize;
+        const sx = buildTargetX * TILE_SIZE - itemOutputSize / 2;
+        const sy = buildTargetY * TILE_SIZE - itemOutputSize / 2;
+        const dx = itemOutputSize;
+        const dy = itemOutputSize;
         if (cachingImage) {
             drawFunction(checkingCtx, cachingImage, sx, sy, dx, dy);
         } else {
@@ -300,7 +304,7 @@ const Building = (props: IProps) => {
 
             buildObject.onload = () => {
                 drawFunction(checkingCtx, buildObject, sx, sy, dx, dy);
-                buildingImageCache.set(src, buildObject);
+                itemImageCache.set(src, buildObject);
             };
         }
     };
@@ -312,21 +316,21 @@ const Building = (props: IProps) => {
 
         const { layerX, layerY } = getLayerPos();
 
-        const possibleAreaOutputSize = tileSize * size;
+        const possibleAreaOutputSize = TILE_SIZE * size;
         checkingCtx.fillStyle = isPosssibleArea(buildTargetX + layerX, buildTargetY + layerY)
             ? '#C6FCAC'
             : '#F35F5F';
         checkingCtx.globalAlpha = 0.5;
         checkingCtx.fillRect(
-            buildTargetX * tileSize - possibleAreaOutputSize / 2,
-            buildTargetY * tileSize - possibleAreaOutputSize / 2,
+            buildTargetX * TILE_SIZE - possibleAreaOutputSize / 2,
+            buildTargetY * TILE_SIZE - possibleAreaOutputSize / 2,
             possibleAreaOutputSize,
             possibleAreaOutputSize,
         );
     };
 
     const getIndex = (x: number, y: number) => {
-        return y * commonWidth + x;
+        return y * COMMON_WIDTH + x;
     };
 
     const isPosssibleArea = (col: number, row: number) => {
@@ -345,22 +349,22 @@ const Building = (props: IProps) => {
         return true;
     };
 
-    const drawOriginBuildings = (building: IBuilding | IObject) => {
+    const drawOriginItem = (item: IBuilding | IObject) => {
         if (!ctx) return;
         if (!objctx) return;
 
-        const dataSize = Object.keys(building).includes('uid') ? 4 : 2;
+        const dataSize = Object.keys(item).includes('uid') ? 4 : 2;
 
-        const buildingOutputSize = tileSize * dataSize;
-        const sx = building.x * tileSize - buildingOutputSize / 2;
-        const sy = building.y * tileSize - buildingOutputSize / 2;
-        const dx = buildingOutputSize;
-        const dy = buildingOutputSize;
+        const itemOutputSize = TILE_SIZE * dataSize;
+        const sx = item.x * TILE_SIZE - itemOutputSize / 2;
+        const sy = item.y * TILE_SIZE - itemOutputSize / 2;
+        const dx = itemOutputSize;
+        const dy = itemOutputSize;
 
         const worldFlag = buildingList.length > 0 ? -1 : 0;
         const itemsLength = buildingList.length + objectList.length + worldFlag;
 
-        const cachingImage = buildingImageCache.get(building.imageUrl);
+        const cachingImage = itemImageCache.get(item.imageUrl);
         if (cachingImage) {
             drawFunction(objctx, cachingImage, sx, sy, dx, dy);
             cnt++;
@@ -369,10 +373,10 @@ const Building = (props: IProps) => {
             }
         } else {
             const buildingObject = new Image();
-            buildingObject.src = building.imageUrl;
+            buildingObject.src = item.imageUrl;
             buildingObject.onload = () => {
                 drawFunction(objctx, buildingObject, sx, sy, dx, dy);
-                buildingImageCache.set(building.imageUrl, buildingObject);
+                itemImageCache.set(item.imageUrl, buildingObject);
                 cnt++;
                 if (cnt >= itemsLength) {
                     drawObjCanvas();
@@ -386,10 +390,10 @@ const Building = (props: IProps) => {
 
         const { layerX, layerY } = getLayerPos();
 
-        const sx = -layerX * tileSize;
-        const sy = -layerY * tileSize;
-        const dx = commonWidth * tileSize;
-        const dy = commonHeight * tileSize;
+        const sx = -layerX * TILE_SIZE;
+        const sy = -layerY * TILE_SIZE;
+        const dx = COMMON_WIDTH * TILE_SIZE;
+        const dy = COMMON_HEIGHT * TILE_SIZE;
         drawFunction(ctx, objCanvas, sx, sy, dx, dy);
     };
 

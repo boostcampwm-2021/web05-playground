@@ -50,7 +50,6 @@ const setBuildingModal = React.memo(() => {
 
         if (file === undefined) socketClient.emit('buildObject', objectInfo);
         else {
-            // console.log({ file, name: file.name, mimeType: file.type, bid: buildObject.roomId });
             const url = [worldInfo.id, buildObject.roomId, userInfo.id, Date.now(), file.name].join(
                 '/',
             );
