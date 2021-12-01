@@ -7,6 +7,8 @@ import { RouteComponentProps } from 'react-router';
 import { getWorldList, getAccessToken } from '../../utils/query';
 import { WorldSelector } from '../../components/SelectWorld';
 import userState from '../../store/userState';
+import Loading from '../Loading';
+import ErrorPage from '../Error';
 
 const SelectWorld = (props: RouteComponentProps) => {
     const { loading, error, data } = useQuery(getWorldList);
@@ -34,16 +36,17 @@ const SelectWorld = (props: RouteComponentProps) => {
         props.history.push('/setting');
     };
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error :(</p>;
+    if (loading) return <Loading />;
+    if (error) return <ErrorPage type={500} />;
+
     return (
-        <Backgroud>
+        <Background>
             <Logo>
                 <img src="/assets/logo.png" height="180px" />
             </Logo>
             <Setting onClick={redirectSetting}>Setting</Setting>
             <WorldSelector props={props} data={data.worldList} />
-        </Backgroud>
+        </Background>
     );
 };
 export default SelectWorld;
@@ -74,7 +77,7 @@ const Setting = styled.button`
     }
 `;
 
-const Backgroud = styled.div`
+const Background = styled.div`
     background-color: #f1ea65;
     height: 100vh;
     width: 100vw;

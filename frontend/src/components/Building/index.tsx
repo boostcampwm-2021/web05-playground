@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable consistent-return */
 /* eslint-disable no-plusplus */
 /* eslint-disable react/destructuring-assignment */
@@ -121,6 +122,19 @@ const Building = (props: IProps) => {
 
     useEffect(() => {
         drawObjCanvas();
+        if (buildBuilding.isData || buildObject.isData) {
+            checkingCtx?.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            const DefaultVal = {
+                src: 'none',
+                id: NONE,
+                roomId: NONE,
+                locationX: NONE,
+                locationY: NONE,
+                isLocated: false,
+                isData: false,
+            };
+            buildBuilding.isData ? setBuildBuilding(DefaultVal) : setBuildObject(DefaultVal);
+        }
     }, [user]);
 
     useEffect(() => {

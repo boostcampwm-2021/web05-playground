@@ -6,7 +6,6 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 
 import styled from 'styled-components';
 import currentWorldState from '../../store/currentWorldState';
-import userState from '../../store/userState';
 import { DEFAULT_INDEX } from '../../utils/constants';
 import { Clickable } from '../../utils/css';
 import { useSlide } from '../../utils/hooks/useSlide';
@@ -17,8 +16,6 @@ export function WorldSelector({ props, data }: { props: RouteComponentProps; dat
     const [currentWorld, setCurrentWorld] = useRecoilState<IWorld>(currentWorldState);
     const [current, nextClick, prevClick] = useSlide(data, setCurrentWorld);
     const [creationState, setCreationState] = useState(false);
-
-    const user = useRecoilValue(userState);
 
     useEffect(() => {
         setCurrentWorld(data[DEFAULT_INDEX]);
@@ -43,10 +40,6 @@ export function WorldSelector({ props, data }: { props: RouteComponentProps; dat
         </>
     );
 }
-
-const create = () => {
-    return 0;
-};
 
 const World = styled.div<{ thumbnail: string }>`
     height: 400px;
