@@ -22,6 +22,8 @@ const BuildingInfo = () => {
             }
             const updatedUser = { ...user };
             updatedUser.isInBuilding = buildingInfo.id;
+            updatedUser.x = Math.floor(Math.random() * 7) + 3;
+            updatedUser.y = Math.floor(Math.random() * 7) + 3;
             setUser(updatedUser);
             cancle();
         });

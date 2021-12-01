@@ -211,9 +211,10 @@ export const Character = React.memo(() => {
             socketClient.emit('leaveRoom', user.isInBuilding);
 
             const updatedUser = { ...user };
+            const { x, y } = findBuilding(user.isInBuilding);
+            updatedUser.x = x;
+            updatedUser.y = y;
             updatedUser.isInBuilding = -1;
-            updatedUser.x = buildingInfo.x;
-            updatedUser.y = buildingInfo.y;
             setUser(updatedUser);
         }
         isObject(newLocation.x!, newLocation.y!);
@@ -227,11 +228,6 @@ export const Character = React.memo(() => {
                 isBuilding: true,
                 ...building,
             });
-
-            const updatedUser = { ...user };
-            updatedUser.x = Math.floor(Math.random() * 7) + 3;
-            updatedUser.y = Math.floor(Math.random() * 7) + 3;
-            setUser(updatedUser);
         } else {
             setBuildingInfo({
                 isBuilding: false,
