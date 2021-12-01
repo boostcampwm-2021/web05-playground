@@ -51,7 +51,9 @@ const World = (props: RouteComponentProps) => {
     const objectInfo = useRecoilValue(objectInfoState);
     const user = useRecoilValue(userState);
 
-    const { loading, error, data } = useQuery(getBuildingAndObjectUrls);
+    const { loading, error, data } = useQuery(getBuildingAndObjectUrls, {
+        fetchPolicy: 'cache-first',
+    });
 
     if (currentWorld.name === 'default') {
         props.history.push('/selectworld');

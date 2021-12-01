@@ -8,16 +8,30 @@ import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import userState from '../../store/userState';
-import { fetchCreateWorld } from '../../utils/query';
+import { IWorld } from '../../utils/model';
+import { fetchCreateWorld, getWorldList } from '../../utils/query';
 
 interface customSetFunctions {
     [FunctionType: string]: React.Dispatch<React.SetStateAction<string>>;
 }
 
+interface IWorldList {
+    worldList: IWorld[];
+}
+
 const SetWorldModal = ({ setModalState }: { setModalState: Dispatch<SetStateAction<boolean>> }) => {
     const [name, setName] = useState('');
     const user = useRecoilValue(userState);
-    const [createWorld] = useMutation(fetchCreateWorld);
+    const [createWorld] = useMutation(fetchCreateWorld, {
+        update(cache, { data: { createWorld } }) {
+            const { worldList } = cache.readQuery<IWorldList>({ query: getWorldList })!;
+            cache.writeQuery({
+                query: getWorldList,
+                data: { worldList: worldList.concat([createWorld]) },
+            });
+        },
+    });
+
     const setFunctions: customSetFunctions = {
         name: setName,
     };
