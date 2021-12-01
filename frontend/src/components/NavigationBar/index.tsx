@@ -12,7 +12,7 @@ const NavigationBar = ({ props }: { props: RouteComponentProps }) => {
     return (
         <FixedDiv>
             <SideDiv>
-                <Exit />
+                <Exit props={props} />
                 <UserLog />
             </SideDiv>
             <img src="/assets/navLogo.png" width="90px" height="80px" />
