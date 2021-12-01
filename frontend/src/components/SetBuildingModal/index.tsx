@@ -46,6 +46,12 @@ const setBuildingModal = React.memo(() => {
         setRange(value);
     };
 
+    const resetInput = () => {
+        setDescription('');
+        setRange('private');
+        setPassword('');
+    };
+
     const cancleBuild = () => {
         const selectedBuildingInfo = {
             src: 'none',
@@ -57,6 +63,7 @@ const setBuildingModal = React.memo(() => {
             isData: false,
         };
         setBuildBuilding(selectedBuildingInfo);
+        resetInput();
     };
 
     const completeBuild = () => {
@@ -84,6 +91,7 @@ const setBuildingModal = React.memo(() => {
             };
             setBuildBuilding(selectedBuildingInfo);
             alert('추가되었습니다.');
+            resetInput();
         }
     };
 

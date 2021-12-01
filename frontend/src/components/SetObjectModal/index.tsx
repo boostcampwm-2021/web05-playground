@@ -36,6 +36,7 @@ const setBuildingModal = React.memo(() => {
             isData: false,
         };
         setBuildObject(selectedObjectInfo);
+        setFile(undefined);
     };
 
     const completeBuild = async () => {
@@ -74,6 +75,7 @@ const setBuildingModal = React.memo(() => {
         };
         setBuildObject(selectedObjectInfo);
         alert('추가되었습니다.');
+        setFile(undefined);
     };
 
     const makeFileList = (e: React.ChangeEvent<HTMLInputElement>) => {
