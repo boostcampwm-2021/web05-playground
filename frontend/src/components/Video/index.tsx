@@ -186,6 +186,9 @@ const Video = () => {
                 pcsRef.current[user.id].close();
                 delete pcsRef.current[user.id];
             });
+            myStream.getTracks().forEach((track: MediaStreamTrack) => {
+                track.stop();
+            });
         };
     }, [socketClient, createPeerConnection, getMedia]);
 

@@ -22,6 +22,9 @@ const Menu = ({ props }: { props: RouteComponentProps }) => {
     };
 
     const menuList = icons.map((icon) => {
+        if (user.isInBuilding !== -1 && icon === 'buildBuilding') {
+            return null;
+        }
         return (
             <Icons
                 key={icon}

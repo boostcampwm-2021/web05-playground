@@ -65,7 +65,6 @@ export default class RoomSocket {
             });
             socket.on('checkCapacity', (data: string) => {
                 const usersInRoom = rooms.get(data);
-                console.log(usersInRoom);
                 const isFull =
                     usersInRoom === undefined ||
                     usersInRoom.length < ROOM_CAPACITY
@@ -227,7 +226,6 @@ export default class RoomSocket {
             .get(roomId)
             .filter((user: string) => socket.id !== user);
         rooms.set(roomId, users);
-        console.log(roomId, socket.id);
         this.io.sockets.to(roomId).emit('userExit', socket.id);
     }
 }

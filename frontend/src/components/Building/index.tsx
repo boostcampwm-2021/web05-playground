@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable consistent-return */
 /* eslint-disable no-plusplus */
 /* eslint-disable react/destructuring-assignment */
@@ -123,6 +124,19 @@ const Building = (props: IProps) => {
 
     useEffect(() => {
         drawObjCanvas();
+        if (buildBuilding.isData || buildObject.isData) {
+            checkingCtx?.clearRect(0, 0, window.innerWidth, window.innerHeight);
+            const DefaultVal = {
+                src: 'none',
+                id: NONE,
+                roomId: NONE,
+                locationX: NONE,
+                locationY: NONE,
+                isLocated: false,
+                isData: false,
+            };
+            buildBuilding.isData ? setBuildBuilding(DefaultVal) : setBuildObject(DefaultVal);
+        }
     }, [user]);
 
     useEffect(() => {
@@ -252,7 +266,14 @@ const Building = (props: IProps) => {
         drawPossibleBox();
     };
 
-    const drawFunction = (ctx: any, img: any, sx: any, sy: any, dx: any, dy: any) => {
+    const drawFunction = (
+        ctx: CanvasRenderingContext2D | null,
+        img: HTMLCanvasElement | HTMLImageElement,
+        sx: number,
+        sy: number,
+        dx: number,
+        dy: number,
+    ) => {
         if (!ctx) return;
         ctx.drawImage(img, sx, sy, dx, dy);
     };
