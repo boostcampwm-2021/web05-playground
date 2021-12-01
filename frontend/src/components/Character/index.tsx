@@ -22,7 +22,7 @@ import {
 const commonWidth = 70;
 const commonHeight = 50;
 
-export const Character = () => {
+export const Character = React.memo(() => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [user, setUser] = useRecoilState(userState);
     const [characters, setCharacters] = useState<UserMap>({});
@@ -300,7 +300,7 @@ export const Character = () => {
             ref={canvasRef}
         />
     );
-};
+});
 
 const Canvas = styled.canvas`
     bottom: 0;

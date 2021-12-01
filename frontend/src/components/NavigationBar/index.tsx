@@ -8,7 +8,7 @@ import Exit from './Exit';
 import UserLog from './UserLog';
 import Menu from './Menu';
 
-const NavigationBar = ({ props }: { props: RouteComponentProps }) => {
+const NavigationBar = React.memo(({ props }: { props: RouteComponentProps }) => {
     return (
         <FixedDiv>
             <SideDiv>
@@ -21,7 +21,7 @@ const NavigationBar = ({ props }: { props: RouteComponentProps }) => {
             </SideDiv>
         </FixedDiv>
     );
-};
+});
 
 export default NavigationBar;
 
