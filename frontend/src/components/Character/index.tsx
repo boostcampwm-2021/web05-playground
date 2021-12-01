@@ -26,7 +26,7 @@ export const Character = React.memo(() => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [user, setUser] = useRecoilState(userState);
     const [characters, setCharacters] = useState<UserMap>({});
-    const setBuildingInfo = useSetRecoilState(buildingInfoState);
+    const [buildingInfo, setBuildingInfo] = useRecoilState(buildingInfoState);
     const setObjectInfo = useSetRecoilState(objectInfoState);
 
     const characterWidth = 32;
@@ -209,8 +209,11 @@ export const Character = React.memo(() => {
             isBuilding(newLocation.x!, newLocation.y!);
         } else if ((user.x! === 2 || user.x! === 3) && user.y! <= 0) {
             socketClient.emit('leaveRoom', user.isInBuilding);
+
             const updatedUser = { ...user };
             updatedUser.isInBuilding = -1;
+            updatedUser.x = buildingInfo.x;
+            updatedUser.y = buildingInfo.y;
             setUser(updatedUser);
         }
         isObject(newLocation.x!, newLocation.y!);
@@ -224,6 +227,11 @@ export const Character = React.memo(() => {
                 isBuilding: true,
                 ...building,
             });
+
+            const updatedUser = { ...user };
+            updatedUser.x = Math.floor(Math.random() * 7) + 3;
+            updatedUser.y = Math.floor(Math.random() * 7) + 3;
+            setUser(updatedUser);
         } else {
             setBuildingInfo({
                 isBuilding: false,
