@@ -29,6 +29,8 @@ import buildingInfoState from '../../store/buildingInfoState';
 import userState from '../../store/userState';
 import { NONE } from '../../utils/constants';
 import ObjectInfo from '../../components/Modal/ObjectInfo';
+import Loading from '../Loading';
+import ErrorPage from '../Error';
 
 interface customWorldInfo {
     [world: string]: typeof worldPark;
@@ -87,8 +89,8 @@ const World = (props: RouteComponentProps) => {
         }
     }, [data]);
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error :(</p>;
+    if (loading) return <Loading />;
+    if (error) return <ErrorPage type={500} />;
 
     return (
         <Inner>
