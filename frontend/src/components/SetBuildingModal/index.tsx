@@ -99,7 +99,7 @@ const setBuildingModal = React.memo(() => {
         <ModalDiv active={buildBuilding.isLocated}>
             <ElementDiv>
                 <TitleTag>설명</TitleTag>
-                <InputDescription id="description" onChange={changed} />
+                <InputDescription id="description" value={description} onChange={changed} />
             </ElementDiv>
             <ElementDiv>
                 <TitleTag>공개여부</TitleTag>
@@ -110,7 +110,7 @@ const setBuildingModal = React.memo(() => {
                             name="range"
                             value="private"
                             id="range"
-                            defaultChecked
+                            checked={range === 'private'}
                             onClick={rangeClicked}
                         />
                         private
@@ -121,6 +121,7 @@ const setBuildingModal = React.memo(() => {
                             name="range"
                             value="public"
                             id="range"
+                            checked={range === 'public'}
                             onClick={rangeClicked}
                         />
                         public
@@ -133,6 +134,7 @@ const setBuildingModal = React.memo(() => {
                     id="password"
                     onChange={changed}
                     readOnly={range === 'public'}
+                    value={password}
                     type="password"
                 />
             </ElementDiv>
