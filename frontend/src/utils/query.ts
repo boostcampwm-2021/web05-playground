@@ -1,5 +1,6 @@
 import { gql } from '@apollo/client';
 
+// cache-and-network
 export const getWorldList = gql`
     query Query {
         worldList {
@@ -12,15 +13,7 @@ export const getWorldList = gql`
     }
 `;
 
-export const getBuildingUrl = gql`
-    query Query {
-        buildingUrl {
-            id
-            url
-        }
-    }
-`;
-
+// cache-first
 export const getCharacterList = gql`
     query Query {
         characterList {
@@ -30,17 +23,7 @@ export const getCharacterList = gql`
     }
 `;
 
-export const setUserInfo = gql`
-    mutation Mutation($id: Int, $nickname: String, $imageUrl: String) {
-        setUserInfo(id: $id, nickname: $nickname, imageUrl: $imageUrl) {
-            id
-            email
-            nickname
-            imageUrl
-        }
-    }
-`;
-
+// cache-first
 export const getBuildingAndObjectUrls = gql`
     query Query {
         buildingUrl {
@@ -50,6 +33,18 @@ export const getBuildingAndObjectUrls = gql`
         objectUrl {
             id
             url
+        }
+    }
+`;
+
+// update를 이용하면, 기존 데이터 캐싱적용
+export const setUserInfo = gql`
+    mutation Mutation($id: Int, $nickname: String, $imageUrl: String) {
+        setUserInfo(id: $id, nickname: $nickname, imageUrl: $imageUrl) {
+            id
+            email
+            nickname
+            imageUrl
         }
     }
 `;

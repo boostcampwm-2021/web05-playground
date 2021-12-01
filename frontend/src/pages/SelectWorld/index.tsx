@@ -11,7 +11,9 @@ import Loading from '../Loading';
 import ErrorPage from '../Error';
 
 const SelectWorld = (props: RouteComponentProps) => {
-    const { loading, error, data } = useQuery(getWorldList);
+    const { loading, error, data } = useQuery(getWorldList, {
+        fetchPolicy: 'cache-and-network',
+    });
     const [fetchUser] = useMutation(getAccessToken);
     const [user, setUser] = useRecoilState(userState);
 
