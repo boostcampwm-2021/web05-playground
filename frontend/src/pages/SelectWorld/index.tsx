@@ -9,6 +9,7 @@ import { WorldSelector } from '../../components/SelectWorld';
 import userState from '../../store/userState';
 import Loading from '../Loading';
 import ErrorPage from '../Error';
+import { NONE } from '../../utils/constants';
 
 const SelectWorld = (props: RouteComponentProps) => {
     const { loading, error, data } = useQuery(getWorldList, {
@@ -25,7 +26,7 @@ const SelectWorld = (props: RouteComponentProps) => {
         if (code) {
             const Login = async (code: string) => {
                 const userInfo = (await fetchUser({ variables: { code } })).data.user;
-                userInfo.isInBuilding = -1;
+                userInfo.isInBuilding = NONE;
                 setUser(userInfo);
             };
             Login(code);

@@ -63,7 +63,7 @@ const Character = styled.div<{ thumbnail: string }>`
     line-height: 400px;
     background-image: url('${(props) => props.thumbnail}');
     background-color: #c4c4c4;
-    background-size: cover;
+    background-size: 400%;
     border-radius: 20px;
 
     font-family: Roboto;

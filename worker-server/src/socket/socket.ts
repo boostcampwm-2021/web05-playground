@@ -56,7 +56,6 @@ export default class RoomSocket {
 
     public connect() {
         this.io.on('connection', (socket: MySocket) => {
-            console.log(`${socket.id} 연결되었습니다.`);
             socket.on('user', (user: IUser) =>
                 this.addUserHandler(user, socket),
             );
@@ -195,7 +194,6 @@ export default class RoomSocket {
             await deleteUserInfo(socket.uid, this.userMap);
         this.io.emit('user', this.userMap);
         this.io.emit('exitUser', this.userMap);
-        console.log(`${socket.id} 끊어졌습니다.`);
     }
 
     async joinRoomHandler(data: number, socket: MySocket) {

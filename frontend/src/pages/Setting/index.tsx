@@ -9,9 +9,7 @@ import Loading from '../Loading';
 import ErrorPage from '../Error';
 
 const Setting = (props: RouteComponentProps) => {
-    const { loading, error, data } = useQuery(getCharacterList, {
-        fetchPolicy: 'cache-first',
-    });
+    const { loading, error, data } = useQuery(getCharacterList);
 
     if (loading) return <Loading />;
     if (error) return <ErrorPage type={500} />;

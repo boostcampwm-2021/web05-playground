@@ -3,7 +3,7 @@
 /* eslint-disable import/no-absolute-path */
 /* eslint-disable no-plusplus */
 import React, { useRef, useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import userState from '../../store/userState';
 
@@ -14,6 +14,14 @@ import { Character } from '../Character';
 import Video from '../Video';
 import allUserListState from '../../store/allUserListState';
 import currentModalState from '../../store/currentModalState';
+import {
+    COMMON_HEIGHT,
+    COMMON_WIDTH,
+    MIN_HEIGHT,
+    MIN_WIDTH,
+    NONE,
+    TILE_SIZE,
+} from '../../utils/constants';
 
 interface ILayer {
     data: number[];
@@ -39,31 +47,29 @@ const WorldBackground = (props: IProps) => {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [tileBackground, setTileBackground] = useState<HTMLImageElement[]>();
     const user = useRecoilValue(userState);
-    const [allUser, setAllUser] = useRecoilState(allUserListState);
-    const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
-    const commonWidth = layers[0].width;
-    const tileSize = 32;
+    const setAllUser = useSetRecoilState(allUserListState);
+    const setCurrentModal = useSetRecoilState(currentModalState);
 
     const [buildingInfo, setBuildingInfo] = useState({
         buildings: [
             {
-                id: -1,
+                id: NONE,
                 x: 3,
                 y: 3,
                 uid: 1,
-                description: '테스트1',
+                description: '',
                 scope: 'private',
                 password: '1234',
-                imageUrl: 'http://localhost:3000/assets/home.png',
+                imageUrl: '',
             },
         ],
         objects: [
             {
-                id: -1,
-                bid: -1,
+                id: NONE,
+                bid: NONE,
                 x: 3,
                 y: 3,
-                imageUrl: 'http://localhost:3000/assets/home.png',
+                imageUrl: '',
                 fileUrl: '',
             },
         ],
@@ -73,11 +79,9 @@ const WorldBackground = (props: IProps) => {
     let sourceX = 0;
     let sourceY = 0;
 
-    const spriteTileSize = 32;
-
     const getIndex = (x: number, y: number) => {
         if (x < 0) return -1;
-        return y * commonWidth + x;
+        return y * COMMON_WIDTH + x;
     };
 
     useEffect(() => {
@@ -141,20 +145,20 @@ const WorldBackground = (props: IProps) => {
     const drawBackground = (layer: ILayer, indexOfLayers: number) => {
         const width = Math.floor(window.innerWidth / 2);
         const height = Math.floor(window.innerHeight / 2);
-        const dx = width - (width % tileSize);
-        const dy = height - (height % tileSize);
-        const layerX = user.x! - dx / tileSize;
-        const layerY = user.y! - dy / tileSize;
+        const dx = width - (width % TILE_SIZE);
+        const dy = height - (height % TILE_SIZE);
+        const layerX = user.x! - dx / TILE_SIZE;
+        const layerY = user.y! - dy / TILE_SIZE;
 
         if (!ctx || !tileBackground) return;
 
         let colEnd = layer.height + layerY;
         let rowEnd = layer.width + layerX;
 
-        if (colEnd < 0) colEnd = 0;
-        if (rowEnd < 0) rowEnd = 0;
-        if (colEnd > 50) colEnd = 50;
-        if (rowEnd > 70) rowEnd = 70;
+        if (colEnd < MIN_HEIGHT) colEnd = MIN_HEIGHT;
+        if (rowEnd < MIN_WIDTH) rowEnd = MIN_WIDTH;
+        if (colEnd > COMMON_HEIGHT) colEnd = COMMON_HEIGHT;
+        if (rowEnd > COMMON_WIDTH) rowEnd = COMMON_WIDTH;
 
         if (layerY === colEnd && layerX === rowEnd) return;
 
@@ -163,18 +167,18 @@ const WorldBackground = (props: IProps) => {
                 let tileVal = layer.data[getIndex(row, col)];
                 if (tileVal !== 0) {
                     tileVal -= 1;
-                    sourceY = Math.floor(tileVal / layer.columnCount) * spriteTileSize;
-                    sourceX = (tileVal % layer.columnCount) * spriteTileSize;
+                    sourceY = Math.floor(tileVal / layer.columnCount) * TILE_SIZE;
+                    sourceX = (tileVal % layer.columnCount) * TILE_SIZE;
                     ctx.drawImage(
                         tileBackground[indexOfLayers],
                         sourceX,
                         sourceY,
-                        spriteTileSize,
-                        spriteTileSize,
-                        (row - layerX) * tileSize,
-                        (col - layerY) * tileSize,
-                        tileSize,
-                        tileSize,
+                        TILE_SIZE,
+                        TILE_SIZE,
+                        (row - layerX) * TILE_SIZE,
+                        (col - layerY) * TILE_SIZE,
+                        TILE_SIZE,
+                        TILE_SIZE,
                     );
                 }
             }

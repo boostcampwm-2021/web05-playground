@@ -14,8 +14,6 @@ import compression from 'compression';
 
 import schema from './graphql/schema';
 
-import BaseRouter from './routes';
-
 const app = express();
 
 const server = new ApolloServer({
@@ -24,13 +22,6 @@ const server = new ApolloServer({
 });
 
 const { BAD_REQUEST } = StatusCodes;
-
-const corsOption: cors.CorsOptions = {
-    allowedHeaders: ['Origin', 'Content-Type', 'Accept', 'X-Access-Token'],
-    credentials: true,
-    methods: '*',
-    origin: process.env.CORS_HOST,
-};
 
 app.use(compression());
 
@@ -51,9 +42,6 @@ if (process.env.NODE_ENV === 'development') {
 } else if (process.env.NODE_ENV === 'production') {
     app.use(helmet());
 }
-
-//Route
-app.use('/api', BaseRouter);
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {

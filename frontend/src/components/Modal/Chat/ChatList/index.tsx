@@ -1,8 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { nanoid } from 'nanoid';
 import styled from 'styled-components';
-
 import { MessageInfo, MessageInfos } from '../../../../utils/model';
+
+interface ITarget {
+    target: string;
+}
 
 const ChatList = ({ messageInfos }: MessageInfos) => {
     const scrollRef = useRef<HTMLInputElement>(null);
@@ -78,7 +81,7 @@ const IdDiv = styled.div`
     color: #808080;
 `;
 
-const Target = styled.span<any>`
+const Target = styled.span<ITarget>`
     color: ${(props) => (props.target === 'World' ? '#9986ee' : '#369F36')};
 `;
 

@@ -11,7 +11,6 @@ const userResolver: IResolvers = {
             _: void,
             args: { id: number; nickname: string; imageUrl: string },
         ): Promise<IUser> {
-            console.log(args);
             const result = await setUser(args.id, args.nickname, args.imageUrl);
 
             if (
@@ -23,10 +22,11 @@ const userResolver: IResolvers = {
         },
 
         async user(_: void, args: { code: string }): Promise<IUser> {
-            const clientId = '2cc30cf9721c0fef25ed';
-            const secret = '19e333403d70d77cca8dda1cddb4301a181052af';
-            const TOKEN_URL = `https://github.com/login/oauth/access_token?client_id=${clientId}&client_secret=${secret}&code=${args.code}`;
-            const { data } = await axios.post(TOKEN_URL);
+            const tokenURL = process.env.TOKEN_URL
+                ? process.env.TOKEN_URL?.concat(args.code)
+                : '';
+
+            const { data } = await axios.post(tokenURL);
 
             const searchParams = new URLSearchParams(data);
             const accessToken = searchParams.get('access_token');
