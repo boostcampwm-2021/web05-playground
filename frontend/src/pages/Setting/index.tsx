@@ -3,14 +3,16 @@ import React from 'react';
 import { useQuery } from '@apollo/client';
 import styled from 'styled-components';
 import { RouteComponentProps } from 'react-router';
-import { getCharacterList, getWorldList } from '../../utils/query';
+import { getCharacterList } from '../../utils/query';
 import { CharacterSelector } from '../../components/SelectCharacter';
+import Loading from '../Loading';
+import ErrorPage from '../Error';
 
 const Setting = (props: RouteComponentProps) => {
     const { loading, error, data } = useQuery(getCharacterList);
 
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error :(</p>;
+    if (loading) return <Loading />;
+    if (error) return <ErrorPage type={500} />;
 
     return (
         <Background>
