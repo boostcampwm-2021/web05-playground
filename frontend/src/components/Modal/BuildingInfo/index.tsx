@@ -77,7 +77,7 @@ const BuildingInfo = () => {
             {buildingInfo.scope === 'private' ? (
                 <ElementDiv>
                     <TitleTag>비밀번호</TitleTag>
-                    <InputPassword onChange={changed} />
+                    <InputPassword type="password" onChange={changed} />
                 </ElementDiv>
             ) : (
                 <></>
