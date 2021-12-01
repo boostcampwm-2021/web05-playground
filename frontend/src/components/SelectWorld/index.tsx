@@ -29,7 +29,9 @@ export function WorldSelector({ props, data }: { props: RouteComponentProps; dat
         <>
             <Selector>
                 <ArrowButton src="/assets/prevbtn.png" onClick={prevClick} />
-                <World thumbnail={current.thumbnail}>{current.name}</World>
+                <World thumbnail={current.thumbnail} fontSize={400 / current.name.length}>
+                    {current.name}
+                </World>
                 <ArrowButton src="/assets/nextbtn.png" onClick={nextClick} />
             </Selector>
             <BtnGroup>
@@ -41,7 +43,7 @@ export function WorldSelector({ props, data }: { props: RouteComponentProps; dat
     );
 }
 
-const World = styled.div<{ thumbnail: string }>`
+const World = styled.div<{ thumbnail: string; fontSize: number }>`
     height: 400px;
     width: 400px;
     text-align: center;
@@ -54,7 +56,7 @@ const World = styled.div<{ thumbnail: string }>`
     font-family: Roboto;
     font-style: normal;
     font-weight: bold;
-    font-size: 80px;
+    font-size: ${(props) => props.fontSize}px;
 `;
 
 const ArrowButton = styled.img`
@@ -82,10 +84,10 @@ const SelectBtn = styled.div`
     margin: 40px;
     height: 60px;
     width: 400px;
-    background-color: #c4c4c4;
+    background-color: rgb(77, 119, 225);
     text-align: center;
     line-height: 60px;
-    border-radius: 20px;
+    border-radius: 13px;
 
     font-family: Roboto;
     font-style: normal;
@@ -103,7 +105,7 @@ const CreateBtn = styled.div`
     background-color: #c4c4c4;
     text-align: center;
     line-height: 60px;
-    border-radius: 20px;
+    border-radius: 13px;
 
     font-family: Roboto;
     font-style: normal;

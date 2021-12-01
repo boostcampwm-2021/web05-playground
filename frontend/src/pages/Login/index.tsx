@@ -17,7 +17,10 @@ const Login = () => {
             <TitleImg src={mainTitleLogo} alt="메인 타이틀 로고" />
             <BackgroundImg src={mainBackground} alt="메인 배경" />
             <Form onSubmit={requestLogin}>
-                <LoginBtn type="submit">Github로 로그인</LoginBtn>
+                <LoginBtn type="submit">
+                    <LogoImg src="/assets/github.png" height="100%" />
+                    <LoginTitle>Github로 로그인</LoginTitle>
+                </LoginBtn>
             </Form>
         </Wrapper>
     );
@@ -40,21 +43,34 @@ const BackgroundImg = styled.img`
     height: 43vh;
 `;
 
+const LogoImg = styled.img`
+    position: relative;
+    left: 0px;
+    top: 0px;
+`;
+
+const LoginTitle = styled.div`
+    width: 100%;
+    margin-top: 20px;
+`;
+
 const Form = styled.form`
     width: 33%;
     margin: 0px auto;
 
     & > button {
-        display: block;
+        display: flex;
+        justify-content: space-between;
         width: 420px;
         height: 8vh;
         margin: 0px auto;
-
-        background-color: rgb(6, 214, 160);
+        background-color: #f35f5f;
         border: 2px solid transparent;
-        border-radius: 32px;
-        font-weight: bold;
+        border-radius: 18px;
+        font-weight: 700;
         font-size: large;
+        color: #000;
+        border: 5px solid #f35f5f;
     }
 `;
 
