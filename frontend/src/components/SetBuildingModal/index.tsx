@@ -46,6 +46,12 @@ const setBuildingModal = React.memo(() => {
         setRange(value);
     };
 
+    const resetInput = () => {
+        setDescription('');
+        setRange('private');
+        setPassword('');
+    };
+
     const cancleBuild = () => {
         const selectedBuildingInfo = {
             src: 'none',
@@ -57,6 +63,7 @@ const setBuildingModal = React.memo(() => {
             isData: false,
         };
         setBuildBuilding(selectedBuildingInfo);
+        resetInput();
     };
 
     const completeBuild = () => {
@@ -84,6 +91,7 @@ const setBuildingModal = React.memo(() => {
             };
             setBuildBuilding(selectedBuildingInfo);
             alert('추가되었습니다.');
+            resetInput();
         }
     };
 
@@ -91,7 +99,7 @@ const setBuildingModal = React.memo(() => {
         <ModalDiv active={buildBuilding.isLocated}>
             <ElementDiv>
                 <TitleTag>설명</TitleTag>
-                <InputDescription id="description" onChange={changed} />
+                <InputDescription id="description" value={description} onChange={changed} />
             </ElementDiv>
             <ElementDiv>
                 <TitleTag>공개여부</TitleTag>
@@ -102,7 +110,7 @@ const setBuildingModal = React.memo(() => {
                             name="range"
                             value="private"
                             id="range"
-                            defaultChecked
+                            checked={range === 'private'}
                             onClick={rangeClicked}
                         />
                         private
@@ -113,6 +121,7 @@ const setBuildingModal = React.memo(() => {
                             name="range"
                             value="public"
                             id="range"
+                            checked={range === 'public'}
                             onClick={rangeClicked}
                         />
                         public
@@ -125,6 +134,7 @@ const setBuildingModal = React.memo(() => {
                     id="password"
                     onChange={changed}
                     readOnly={range === 'public'}
+                    value={password}
                     type="password"
                 />
             </ElementDiv>
@@ -149,7 +159,7 @@ const ModalDiv = styled.div<ActiveModal>`
     background: #c4c4c4;
     margin: -240px 0 0 -200px;
 
-    display: ${(props) => (props.active === true ? 'none' : 'flex')};
+    display: ${(props) => (props.active === true ? 'flex' : 'none')};
     flex-direction: column;
     justify-content: space-around;
     align-items: center;

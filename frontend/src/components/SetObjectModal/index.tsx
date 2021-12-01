@@ -36,6 +36,7 @@ const setBuildingModal = React.memo(() => {
             isData: false,
         };
         setBuildObject(selectedObjectInfo);
+        setFile(undefined);
     };
 
     const completeBuild = async () => {
@@ -74,6 +75,7 @@ const setBuildingModal = React.memo(() => {
         };
         setBuildObject(selectedObjectInfo);
         alert('추가되었습니다.');
+        setFile(undefined);
     };
 
     const makeFileList = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -114,7 +116,7 @@ const ModalDiv = styled.div<ActiveModal>`
     background: #c4c4c4;
     margin: -240px 0 0 -200px;
 
-    display: ${(props) => (props.active === true ? 'none' : 'flex')};
+    display: ${(props) => (props.active === true ? 'flex' : 'none')};
     flex-direction: column;
     justify-content: space-around;
     align-items: center;

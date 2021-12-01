@@ -22,6 +22,8 @@ const BuildingInfo = () => {
             }
             const updatedUser = { ...user };
             updatedUser.isInBuilding = buildingInfo.id;
+            updatedUser.x = Math.floor(Math.random() * 7) + 3;
+            updatedUser.y = Math.floor(Math.random() * 7) + 3;
             setUser(updatedUser);
             cancle();
         });
@@ -75,7 +77,7 @@ const BuildingInfo = () => {
             {buildingInfo.scope === 'private' ? (
                 <ElementDiv>
                     <TitleTag>비밀번호</TitleTag>
-                    <InputPassword onChange={changed} />
+                    <InputPassword type="password" onChange={changed} />
                 </ElementDiv>
             ) : (
                 <></>
