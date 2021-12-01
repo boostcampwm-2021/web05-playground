@@ -69,7 +69,7 @@ const MessageInput = () => {
                 id="message"
                 placeholder="message"
                 ref={inputRef}
-                onKeyDown={(e) => (e.key === 'Enter' ? sendMessage() : null)}
+                onKeyPress={(e) => (e.key === 'Enter' ? sendMessage() : null)}
             />
         </Wrapper>
     );

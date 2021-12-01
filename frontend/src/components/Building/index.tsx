@@ -36,6 +36,8 @@ const objctx = objCanvas.getContext('2d');
 objCanvas.width = commonWidth * tileSize;
 objCanvas.height = commonHeight * tileSize;
 
+let cnt = 0;
+
 const Building = (props: IProps) => {
     const { layers, buildingList, objectList, current: InBuilding } = props;
     const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -44,8 +46,6 @@ const Building = (props: IProps) => {
     const [buildObject, setBuildObject] = useRecoilState(buildObjectState);
     const currentModal = useRecoilValue(currentModalState);
     const user = useRecoilValue(userState);
-
-    let cnt = 0;
 
     const obstacleLayer = layers[OBJECT].data;
 
@@ -58,7 +58,6 @@ const Building = (props: IProps) => {
             if (user.isInBuilding === -1) {
                 fillBuildingPosition(data);
                 drawOriginBuildings(data);
-                drawObjCanvas();
             }
         });
         socketClient.on('buildObject', (data: IObject) => {
@@ -66,7 +65,6 @@ const Building = (props: IProps) => {
             if (bid === user.isInBuilding) {
                 fillBuildingPosition(data);
                 drawOriginBuildings(data);
-                drawObjCanvas();
             }
         });
         return () => {
@@ -95,12 +93,13 @@ const Building = (props: IProps) => {
         ctx = canvas.getContext('2d');
         checkingCtx = checkingCanvas.getContext('2d');
 
+        cnt = 0;
+
         if (buildingList.length !== 0 && buildingList[DEFAULT_INDEX].id !== -1) {
             buildingList.forEach((building) => {
                 fillBuildingPosition(building);
                 drawOriginBuildings(building);
             });
-            drawObjCanvas();
         }
 
         if (objectList.length !== 0 && objectList[0].id !== -1) {
@@ -108,9 +107,8 @@ const Building = (props: IProps) => {
                 fillBuildingPosition(object);
                 drawOriginBuildings(object);
             });
-            drawObjCanvas();
         }
-    }, [buildingList, objectList, window.innerHeight, window.innerWidth]);
+    }, [buildingList, objectList]);
 
     useEffect(() => {
         window.addEventListener('mousedown', processBuild);
@@ -359,12 +357,14 @@ const Building = (props: IProps) => {
         const dx = buildingOutputSize;
         const dy = buildingOutputSize;
 
-        // Todo - 캐싱이미지의 경우 오프스크린에 미리 그려서 캔버스에 입히는 식으로 성능 개선을 해보자
+        const worldFlag = buildingList.length > 0 ? -1 : 0;
+        const itemsLength = buildingList.length + objectList.length + worldFlag;
+
         const cachingImage = buildingImageCache.get(building.imageUrl);
         if (cachingImage) {
             drawFunction(objctx, cachingImage, sx, sy, dx, dy);
             cnt++;
-            if (cnt === buildingList.length) {
+            if (cnt >= itemsLength) {
                 drawObjCanvas();
             }
         } else {
@@ -374,7 +374,7 @@ const Building = (props: IProps) => {
                 drawFunction(objctx, buildingObject, sx, sy, dx, dy);
                 buildingImageCache.set(building.imageUrl, buildingObject);
                 cnt++;
-                if (cnt === buildingList.length - 1) {
+                if (cnt >= itemsLength) {
                     drawObjCanvas();
                 }
             };
