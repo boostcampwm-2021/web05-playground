@@ -114,7 +114,7 @@ const ModalDiv = styled.div<ActiveModal>`
     background: #c4c4c4;
     margin: -240px 0 0 -200px;
 
-    display: ${(props) => (props.active === true ? 'none' : 'flex')};
+    display: ${(props) => (props.active === true ? 'flex' : 'none')};
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
