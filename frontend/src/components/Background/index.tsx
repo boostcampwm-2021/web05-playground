@@ -13,6 +13,7 @@ import { IBuildingInfo, UserMap } from '../../utils/model';
 import { Character } from '../Character';
 import Video from '../Video';
 import allUserListState from '../../store/allUserListState';
+import currentModalState from '../../store/currentModalState';
 
 interface ILayer {
     data: number[];
@@ -39,6 +40,7 @@ const WorldBackground = (props: IProps) => {
     const [tileBackground, setTileBackground] = useState<HTMLImageElement[]>();
     const user = useRecoilValue(userState);
     const [allUser, setAllUser] = useRecoilState(allUserListState);
+    const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
     const commonWidth = layers[0].width;
     const tileSize = 32;
 
@@ -87,6 +89,7 @@ const WorldBackground = (props: IProps) => {
 
         socketClient.on('enter', (data: IBuildingInfo) => {
             setBuildingInfo(data);
+            setCurrentModal('none');
         });
         socketClient.on('allUserList', (data: UserMap) => {
             setAllUser(data);
