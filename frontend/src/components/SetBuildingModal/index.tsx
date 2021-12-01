@@ -25,7 +25,6 @@ interface customSetFunctions {
 }
 
 const setBuildingModal = () => {
-    const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [range, setRange] = useState('private');
     const [password, setPassword] = useState('');
@@ -33,7 +32,6 @@ const setBuildingModal = () => {
     const user = useRecoilValue(userState);
 
     const setFunctions: customSetFunctions = {
-        title: setTitle,
         description: setDescription,
         password: setPassword,
     };
@@ -61,9 +59,8 @@ const setBuildingModal = () => {
     };
 
     const completeBuild = () => {
-        if (title === '' || description === '') alert('값을 모두 입력해주세요');
+        if (description === '') alert('값을 모두 입력해주세요');
         else {
-            // title => 건물이름이 있어야됨, uid는 수정
             const buildingInfo = {
                 x: buildBuilding.locationX,
                 y: buildBuilding.locationY,
@@ -91,10 +88,6 @@ const setBuildingModal = () => {
 
     return (
         <ModalDiv>
-            <ElementDiv>
-                <TitleTag>건물이름</TitleTag>
-                <InputTitle onChange={changed} id="title" />
-            </ElementDiv>
             <ElementDiv>
                 <TitleTag>설명</TitleTag>
                 <InputDescription id="description" onChange={changed} />
@@ -127,7 +120,12 @@ const setBuildingModal = () => {
             </ElementDiv>
             <ElementDiv>
                 <TitleTag>비밀번호</TitleTag>
-                <InputPassword id="password" onChange={changed} readOnly={range === 'public'} />
+                <InputPassword
+                    id="password"
+                    onChange={changed}
+                    readOnly={range === 'public'}
+                    type="password"
+                />
             </ElementDiv>
             <BtnWrapper>
                 <StyledBtn onClick={cancleBuild}>취소</StyledBtn>
@@ -164,14 +162,6 @@ const ElementDiv = styled.div`
 
 const TitleTag = styled.p`
     margin: 0 0 10px 0;
-`;
-
-const InputTitle = styled.input`
-    border: 0;
-    border-bottom: black 1px solid;
-    background-color: #c4c4c4;
-    height: 20px;
-    width: 200px;
 `;
 
 const InputDescription = styled.textarea`

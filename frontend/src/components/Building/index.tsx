@@ -54,14 +54,19 @@ const Building = (props: IProps) => {
     useEffect(() => {
         if (socketClient === undefined) return;
         socketClient.on('buildBuilding', (data: IBuilding) => {
-            fillBuildingPosition(data);
-            drawOriginBuildings(data);
-            drawObjCanvas();
+            if (user.isInBuilding === -1) {
+                fillBuildingPosition(data);
+                drawOriginBuildings(data);
+                drawObjCanvas();
+            }
         });
         socketClient.on('buildObject', (data: IObject) => {
-            fillBuildingPosition(data);
-            drawOriginBuildings(data);
-            drawObjCanvas();
+            const bid = data.bid === 1 ? -1 : data.bid;
+            if (bid === user.isInBuilding) {
+                fillBuildingPosition(data);
+                drawOriginBuildings(data);
+                drawObjCanvas();
+            }
         });
         return () => {
             socketClient.removeListener('buildBuilding');

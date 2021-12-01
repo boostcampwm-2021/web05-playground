@@ -1,12 +1,12 @@
 export interface IBuilding {
-    id: number;
+    id?: number;
     x: number;
     y: number;
     uid: number;
     description: string;
     scope: string;
-    password: string;
-    imageUrl: string;
+    password?: string;
+    imageUrl?: string;
 }
 
 export class Building implements IBuilding {
