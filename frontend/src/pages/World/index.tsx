@@ -5,8 +5,6 @@ import { useQuery } from '@apollo/client';
 
 import styled from 'styled-components';
 import currentWorldState from '../../store/currentWorldState';
-import buildBuildingState from '../../store/buildBuildingState';
-import buildObjectState from '../../store/buildObjectState';
 import buildingUrls from '../../store/buildingUrlState';
 import objectUrls from '../../store/objectUrlState';
 
@@ -45,8 +43,6 @@ const World = (props: RouteComponentProps) => {
     const [currentWorld, setCurrentWorld] = useRecoilState(currentWorldState);
     const [buildingUrl, setBuildingUrl] = useRecoilState(buildingUrls);
     const [objectUrl, setObjectUrl] = useRecoilState(objectUrls);
-    const buildBuilding = useRecoilValue(buildBuildingState);
-    const buildObject = useRecoilValue(buildObjectState);
     const buildingInfo = useRecoilValue(buildingInfoState);
     const objectInfo = useRecoilValue(objectInfoState);
     const user = useRecoilValue(userState);
@@ -96,18 +92,16 @@ const World = (props: RouteComponentProps) => {
 
     return (
         <Inner>
-            {/* 아래 recoil 두 가지 상태에따라 맵이 다시 그려지니까 상태관련된 것은 하위컴포넌트 or 다른 곳으로 빼자 */}
             <Background
                 data={user.isInBuilding === NONE ? mapLayers : buildingLayer}
                 current={user.isInBuilding}
             />
-            {/* 빌딩이면 비디오 컴포넌트 추가 해야함 */}
             {buildingInfo.isBuilding ? <BuildingInfo /> : <></>}
             {objectInfo.isObject ? <ObjectInfo /> : <></>}
             <Modal />
             <NavigationBar props={props} />
-            {buildBuilding.isLocated ? <SetBuildingModal /> : <></>}
-            {buildObject.isLocated ? <SetObjectModal /> : <></>}
+            <SetBuildingModal />
+            <SetObjectModal />
         </Inner>
     );
 };

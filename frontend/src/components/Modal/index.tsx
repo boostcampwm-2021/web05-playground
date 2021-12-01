@@ -12,7 +12,7 @@ import currentModalState from '../../store/currentModalState';
 import { Clickable } from '../../utils/css';
 import { ActiveModal } from '../../utils/model';
 
-const Modal = () => {
+const Modal = React.memo(() => {
     const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
 
     return (
@@ -24,7 +24,7 @@ const Modal = () => {
             <AllUser active={currentModal === 'users'} />
         </ModalDiv>
     );
-};
+});
 
 export default Modal;
 

@@ -15,10 +15,10 @@ import userState from '../../store/userState';
 
 import { DEFAULT_INDEX, NONE } from '../../utils/constants';
 
-import { IUser, IWorld } from '../../utils/model';
+import { ActiveModal, IUser, IWorld } from '../../utils/model';
 import { getUploadUrl } from '../../utils/query';
 
-const setBuildingModal = () => {
+const setBuildingModal = React.memo(() => {
     const worldInfo = useRecoilValue<IWorld>(currentWorldState);
     const userInfo = useRecoilValue<IUser>(userState);
     const [buildObject, setBuildObject] = useRecoilState(buildObjectState);
@@ -83,7 +83,7 @@ const setBuildingModal = () => {
     };
 
     return (
-        <ModalDiv>
+        <ModalDiv active={buildObject.isLocated}>
             <BtnWrapper>
                 <StyledBtn onClick={cancleBuild}>취소</StyledBtn>
                 <StyledInput
@@ -99,11 +99,11 @@ const setBuildingModal = () => {
             </BtnWrapper>
         </ModalDiv>
     );
-};
+});
 
 export default setBuildingModal;
 
-const ModalDiv = styled.div`
+const ModalDiv = styled.div<ActiveModal>`
     position: absolute;
     z-index: 3;
 
@@ -114,7 +114,7 @@ const ModalDiv = styled.div`
     background: #c4c4c4;
     margin: -240px 0 0 -200px;
 
-    display: flex;
+    display: ${(props) => (props.active === true ? 'none' : 'flex')};
     flex-direction: column;
     justify-content: space-around;
     align-items: center;

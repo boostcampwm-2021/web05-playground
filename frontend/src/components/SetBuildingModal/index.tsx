@@ -11,6 +11,7 @@ import { socketClient } from '../../socket/socket';
 import buildBuildingState from '../../store/buildBuildingState';
 import userState from '../../store/userState';
 import { NONE } from '../../utils/constants';
+import { ActiveModal } from '../../utils/model';
 
 interface customEventTarget extends EventTarget {
     value: string;
@@ -24,7 +25,7 @@ interface customSetFunctions {
     [FunctionType: string]: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const setBuildingModal = () => {
+const setBuildingModal = React.memo(() => {
     const [description, setDescription] = useState('');
     const [range, setRange] = useState('private');
     const [password, setPassword] = useState('');
@@ -87,7 +88,7 @@ const setBuildingModal = () => {
     };
 
     return (
-        <ModalDiv>
+        <ModalDiv active={buildBuilding.isLocated}>
             <ElementDiv>
                 <TitleTag>설명</TitleTag>
                 <InputDescription id="description" onChange={changed} />
@@ -133,11 +134,11 @@ const setBuildingModal = () => {
             </BtnWrapper>
         </ModalDiv>
     );
-};
+});
 
 export default setBuildingModal;
 
-const ModalDiv = styled.div`
+const ModalDiv = styled.div<ActiveModal>`
     position: absolute;
     z-index: 3;
 
@@ -148,7 +149,7 @@ const ModalDiv = styled.div`
     background: #c4c4c4;
     margin: -240px 0 0 -200px;
 
-    display: flex;
+    display: ${(props) => (props.active === true ? 'none' : 'flex')};
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
