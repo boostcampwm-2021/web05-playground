@@ -250,7 +250,14 @@ const Building = (props: IProps) => {
         drawPossibleBox();
     };
 
-    const drawFunction = (ctx: any, img: any, sx: any, sy: any, dx: any, dy: any) => {
+    const drawFunction = (
+        ctx: CanvasRenderingContext2D | null,
+        img: HTMLCanvasElement | HTMLImageElement,
+        sx: number,
+        sy: number,
+        dx: number,
+        dy: number,
+    ) => {
         if (!ctx) return;
         ctx.drawImage(img, sx, sy, dx, dy);
     };
