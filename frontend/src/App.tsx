@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React from 'react';
-import { BrowserRouter, Route, RouteComponentProps } from 'react-router-dom';
+import { BrowserRouter, Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { RecoilRoot } from 'recoil';
 
@@ -23,12 +23,14 @@ function App() {
         <ApolloProvider client={client}>
             <RecoilRoot>
                 <BrowserRouter>
-                    <Route exact path="/" component={Login} />
-                    <Route exact path="/login" component={Login} />
-                    <Route exact path="/setting" component={Setting} />
-                    <Route exact path="/selectworld" component={SelectWorld} />
-                    <Route exact path="/world" component={World} />
-                    <Route path="*" component={ErrorPage} />
+                    <Switch>
+                        <Route exact path="/" component={Login} />
+                        <Route exact path="/login" component={Login} />
+                        <Route exact path="/setting" component={Setting} />
+                        <Route exact path="/selectworld" component={SelectWorld} />
+                        <Route exact path="/world" component={World} />
+                        <Route path="*" component={ErrorPage} />
+                    </Switch>
                 </BrowserRouter>
             </RecoilRoot>
         </ApolloProvider>
