@@ -15,6 +15,7 @@ import ErrorPage from './pages/Error';
 const client = new ApolloClient({
     uri: process.env.REACT_APP_BASE_URI,
     cache: new InMemoryCache(),
+    connectToDevTools: true,
 });
 
 function App() {
@@ -27,7 +28,7 @@ function App() {
                     <Route exact path="/setting" component={Setting} />
                     <Route exact path="/selectworld" component={SelectWorld} />
                     <Route exact path="/world" component={World} />
-                    <Route component={ErrorPage} />
+                    <Route path="*" component={ErrorPage} />
                 </BrowserRouter>
             </RecoilRoot>
         </ApolloProvider>
