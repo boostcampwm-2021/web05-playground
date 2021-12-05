@@ -1,9 +1,9 @@
-import { IBuilding } from 'src/database/entities/Building';
-import { IObject } from 'src/database/entities/Object';
-import { IUser } from 'src/database/entities/User';
-import { IWorld } from 'src/database/entities/World';
-import { IUrl } from 'src/database/entities/Url';
-import { ICharacter } from 'src/database/entities/Character';
+import { IBuilding } from '../database/entities/Building';
+import { IObject } from '../database/entities/Object';
+import { IUser } from '../database/entities/User';
+import { IWorld } from '../database/entities/World';
+import { IUrl } from '../database/entities/Url';
+import { ICharacter } from '../database/entities/Character';
 
 export enum STATUS_CODE {
     SUCCESS = 1,

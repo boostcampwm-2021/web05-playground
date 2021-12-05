@@ -1,6 +1,6 @@
 import { STATUS_CODE } from '@shared/db.receiver';
 import { IResolvers } from 'graphql-tools';
-import { getCharacterList } from 'src/database/service/character.service';
+import { getCharacterList } from '../../database/service/character.service';
 
 const characterResolver: IResolvers = {
     Query: {
