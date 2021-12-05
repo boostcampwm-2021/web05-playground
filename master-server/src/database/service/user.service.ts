@@ -62,7 +62,7 @@ export const insertUser = async (
                 id,
                 email,
                 nickname,
-                'assets/character1.png',
+                process.env.DEFAULT_CHARACTER_URL,
             ]);
             return await getUser(id);
         } catch (err) {
