@@ -1,5 +1,5 @@
 import { IResolvers } from 'graphql-tools';
-import { bucketName, S3 } from 'src/objectStorage/s3';
+import { bucketName, S3 } from '../../objectStorage/s3';
 
 const fileResolver: IResolvers = {
     Mutation: {

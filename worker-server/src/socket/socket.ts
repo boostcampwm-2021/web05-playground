@@ -7,8 +7,8 @@ import { addBuildingInfo, getBuildingInfo } from './socket.building';
 import { addObjectInfo, getObjectInfo } from './socket.object';
 
 import { IUser } from '../database/entities/User';
-import { IBuilding } from 'src/database/entities/Building';
-import { IObject } from 'src/database/entities/Object';
+import { IBuilding } from '../database/entities/Building';
+import { IObject } from '../database/entities/Object';
 
 import { WORLD, ROOM_CAPACITY } from '../shared/constants';
 interface IWorldInfo {

@@ -1,6 +1,6 @@
-import { IBuilding } from 'src/database/entities/Building';
-import { IObject } from 'src/database/entities/Object';
-import { IUser } from 'src/database/entities/User';
+import { IBuilding } from '../database/entities/Building';
+import { IObject } from '../database/entities/Object';
+import { IUser } from '../database/entities/User';
 
 export enum STATUS_CODE {
     SUCCESS = 1,

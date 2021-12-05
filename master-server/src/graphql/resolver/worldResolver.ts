@@ -4,7 +4,7 @@ import {
     addWorld,
     getMaxWorldPort,
     getWorldList,
-} from 'src/database/service/world.service';
+} from '../../database/service/world.service';
 import netState from 'node-netstat';
 import { exec } from 'child_process';
 

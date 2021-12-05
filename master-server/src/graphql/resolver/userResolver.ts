@@ -1,7 +1,7 @@
 import { STATUS_CODE } from '@shared/db.receiver';
 import { IResolvers } from 'graphql-tools';
-import { IUser } from 'src/database/entities/User';
-import { insertUser, setUser } from 'src/database/service/user.service';
+import { IUser } from '../../database/entities/User';
+import { insertUser, setUser } from '../../database/service/user.service';
 import axios from 'axios';
 
 const userResolver: IResolvers = {
