@@ -41,7 +41,8 @@ const SetWorldModal = ({ setModalState }: { setModalState: Dispatch<SetStateActi
     };
 
     const completeCreation = async () => {
-        if (name === '') alert('값을 모두 입력해주세요');
+        const regex = new RegExp(/^[a-zA-Z]+$/);
+        if (!regex.test(name)) alert('올바른 이름을 설정해 주세요(영어 대소문자만 가능)');
         else {
             const result = await (
                 await createWorld({ variables: { id: user.id, name } })
