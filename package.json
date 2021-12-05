@@ -1,6 +1,7 @@
 {
   "dependencies": {
     "@aws-sdk/client-s3": "^3.42.0",
-    "@aws-sdk/s3-request-presigner": "^3.42.0"
+    "@aws-sdk/s3-request-presigner": "^3.42.0",
+    "@types/offscreencanvas": "^2019.6.4"
   }
 }
