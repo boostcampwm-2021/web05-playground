@@ -76,7 +76,7 @@ const Building = (props: IProps) => {
             socketClient.removeListener('buildBuilding');
             socketClient.removeListener('buildObject');
         };
-    }, [socketClient, user]);
+    }, [socketClient, user, buildingList, objectList]);
 
     useEffect(() => {
         const canvas: HTMLCanvasElement | null = canvasRef.current;

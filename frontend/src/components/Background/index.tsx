@@ -29,6 +29,7 @@ interface ILayer {
     width: number;
     imgSrc: string;
     columnCount: number;
+    layerType?: string;
 }
 
 interface IProps {
@@ -36,14 +37,17 @@ interface IProps {
     current: number;
 }
 
-interface IEnter {
-    user: string;
-    roomId: number;
-}
+let ctx: CanvasRenderingContext2D | null;
+
+const backgroundCanvas = new OffscreenCanvas(COMMON_WIDTH * TILE_SIZE, COMMON_HEIGHT * TILE_SIZE);
+const backgroundCtx = backgroundCanvas.getContext('2d');
+
+const backgroundImageCache = new Map();
 
 const WorldBackground = (props: IProps) => {
     const layers = props.data;
     const InBuilding = props.current;
+    const layersType = layers[0].layerType;
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [tileBackground, setTileBackground] = useState<HTMLImageElement[]>();
     const user = useRecoilValue(userState);
@@ -75,7 +79,6 @@ const WorldBackground = (props: IProps) => {
         ],
     });
 
-    let ctx: CanvasRenderingContext2D | null;
     let sourceX = 0;
     let sourceY = 0;
 
@@ -83,6 +86,17 @@ const WorldBackground = (props: IProps) => {
         if (x < 0) return -1;
         return y * COMMON_WIDTH + x;
     };
+
+    useEffect(() => {
+        const canvas: HTMLCanvasElement | null = canvasRef.current;
+        if (canvas === null) {
+            return;
+        }
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        ctx = canvas.getContext('2d');
+    }, []);
 
     useEffect(() => {
         const enterInfo = {
@@ -106,6 +120,15 @@ const WorldBackground = (props: IProps) => {
     }, [socketClient, InBuilding]);
 
     useEffect(() => {
+        backgroundCtx?.clearRect(0, 0, backgroundCanvas.width, backgroundCanvas.height);
+
+        const cachingImage = backgroundImageCache.get(layersType);
+
+        if (cachingImage) {
+            drawObjCanvas();
+            return;
+        }
+
         const backgroundImageList: HTMLImageElement[] = [];
         let cnt = 0;
         layers.forEach((layer) => {
@@ -122,27 +145,53 @@ const WorldBackground = (props: IProps) => {
     }, [layers]);
 
     useEffect(() => {
-        const canvas: HTMLCanvasElement | null = canvasRef.current;
-        if (canvas === null) {
-            return;
-        }
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        ctx = canvas.getContext('2d');
         drawGame();
-    }, [tileBackground, user, window.innerWidth, window.innerHeight]);
+        drawObjCanvas();
+    }, [tileBackground]);
+
+    useEffect(() => {
+        drawObjCanvas();
+    }, [user, window.innerWidth, window.innerHeight]);
 
     const drawGame = () => {
-        if (!ctx || !tileBackground) return;
+        if (!backgroundCtx || !tileBackground) return;
 
         layers.forEach((layer) => {
             const indexOfLayers = layers.indexOf(layer);
             drawBackground(layer, indexOfLayers);
         });
+
+        const bgImageBitmap = backgroundCanvas.transferToImageBitmap();
+        backgroundImageCache.set(layersType, bgImageBitmap);
     };
 
     const drawBackground = (layer: ILayer, indexOfLayers: number) => {
+        if (!backgroundCtx || !tileBackground) return;
+
+        for (let col = MIN_HEIGHT; col < COMMON_HEIGHT; ++col) {
+            for (let row = MIN_WIDTH; row < COMMON_WIDTH; ++row) {
+                let tileVal = layer.data[getIndex(row, col)];
+                if (tileVal !== 0) {
+                    tileVal -= 1;
+                    sourceY = Math.floor(tileVal / layer.columnCount) * TILE_SIZE;
+                    sourceX = (tileVal % layer.columnCount) * TILE_SIZE;
+                    backgroundCtx.drawImage(
+                        tileBackground[indexOfLayers],
+                        sourceX,
+                        sourceY,
+                        TILE_SIZE,
+                        TILE_SIZE,
+                        row * TILE_SIZE,
+                        col * TILE_SIZE,
+                        TILE_SIZE,
+                        TILE_SIZE,
+                    );
+                }
+            }
+        }
+    };
+
+    const getLayerPos = () => {
         const width = Math.floor(window.innerWidth / 2);
         const height = Math.floor(window.innerHeight / 2);
         const dx = width - (width % TILE_SIZE);
@@ -150,39 +199,34 @@ const WorldBackground = (props: IProps) => {
         const layerX = user.x! - dx / TILE_SIZE;
         const layerY = user.y! - dy / TILE_SIZE;
 
-        if (!ctx || !tileBackground) return;
+        return { layerX, layerY };
+    };
 
-        let colEnd = layer.height + layerY;
-        let rowEnd = layer.width + layerX;
+    const drawObjCanvas = () => {
+        ctx?.clearRect(0, 0, window.innerWidth, window.innerHeight);
+        const { layerX, layerY } = getLayerPos();
 
-        if (colEnd < MIN_HEIGHT) colEnd = MIN_HEIGHT;
-        if (rowEnd < MIN_WIDTH) rowEnd = MIN_WIDTH;
-        if (colEnd > COMMON_HEIGHT) colEnd = COMMON_HEIGHT;
-        if (rowEnd > COMMON_WIDTH) rowEnd = COMMON_WIDTH;
+        const sx = -layerX * TILE_SIZE;
+        const sy = -layerY * TILE_SIZE;
+        const dx = COMMON_WIDTH * TILE_SIZE;
+        const dy = COMMON_HEIGHT * TILE_SIZE;
 
-        if (layerY === colEnd && layerX === rowEnd) return;
-
-        for (let col = layerY; col < colEnd; ++col) {
-            for (let row = layerX; row < rowEnd; ++row) {
-                let tileVal = layer.data[getIndex(row, col)];
-                if (tileVal !== 0) {
-                    tileVal -= 1;
-                    sourceY = Math.floor(tileVal / layer.columnCount) * TILE_SIZE;
-                    sourceX = (tileVal % layer.columnCount) * TILE_SIZE;
-                    ctx.drawImage(
-                        tileBackground[indexOfLayers],
-                        sourceX,
-                        sourceY,
-                        TILE_SIZE,
-                        TILE_SIZE,
-                        (row - layerX) * TILE_SIZE,
-                        (col - layerY) * TILE_SIZE,
-                        TILE_SIZE,
-                        TILE_SIZE,
-                    );
-                }
-            }
+        const cachingImage = backgroundImageCache.get(layersType);
+        if (cachingImage) {
+            drawFunction(ctx, cachingImage, sx, sy, dx, dy);
         }
+    };
+
+    const drawFunction = (
+        ctx: CanvasRenderingContext2D | null,
+        img: HTMLCanvasElement | HTMLImageElement,
+        sx: number,
+        sy: number,
+        dx: number,
+        dy: number,
+    ) => {
+        if (!ctx) return;
+        ctx.drawImage(img, sx, sy, dx, dy);
     };
 
     return (
