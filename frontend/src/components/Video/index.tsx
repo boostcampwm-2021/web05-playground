@@ -182,7 +182,6 @@ const Video = () => {
             socketClient.removeListener('answer');
             socketClient.removeListener('ice');
             socketClient.removeListener('userExit');
-            socketClient.removeListener('switch');
             users.forEach((user) => {
                 if (!pcsRef.current[user.id]) return;
                 pcsRef.current[user.id].close();
