@@ -3,7 +3,7 @@
 /* eslint-disable no-return-assign */
 /* eslint-disable consistent-return */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
 import OtherVideo from './otherVideo';
@@ -33,7 +33,7 @@ const Video = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const pcsRef = useRef<{ [socketId: string]: RTCPeerConnection }>({});
     const [users, setUsers] = useState<IUserInRoom[]>([]);
-    const device = useRecoilValue(deviceState);
+    const [device, setDevice] = useRecoilState(deviceState);
 
     const getMedia = useCallback(async () => {
         const initialConstrains = {
@@ -169,6 +169,10 @@ const Video = () => {
                 pcsRef.current[id].close();
                 delete pcsRef.current[id];
                 setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+                setDevice({
+                    video: true,
+                    voice: true,
+                });
             });
         };
 
@@ -222,7 +226,7 @@ const Video = () => {
             video: device.video,
             voice: device.voice,
         };
-        socketClient.emit('switch', data);
+        // socketClient.emit('switch', data);
     }, [device.video]);
 
     useEffect(() => {
@@ -235,7 +239,7 @@ const Video = () => {
             video: device.video,
             voice: device.voice,
         };
-        socketClient.emit('switch', data);
+        // socketClient.emit('switch', data);
     }, [device.voice]);
 
     return (
