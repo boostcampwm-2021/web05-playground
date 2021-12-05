@@ -40,6 +40,7 @@ interface ILayer {
     width: number;
     imgSrc: string;
     columnCount: number;
+    layerType?: string;
 }
 
 export interface IBuilding {

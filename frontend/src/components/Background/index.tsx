@@ -29,7 +29,7 @@ interface ILayer {
     width: number;
     imgSrc: string;
     columnCount: number;
-    layerType: string;
+    layerType?: string;
 }
 
 interface IProps {
