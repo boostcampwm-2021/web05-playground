@@ -226,7 +226,7 @@ const Video = () => {
             video: device.video,
             voice: device.voice,
         };
-        // socketClient.emit('switch', data);
+        socketClient.emit('switch', data);
     }, [device.video]);
 
     useEffect(() => {
@@ -239,7 +239,7 @@ const Video = () => {
             video: device.video,
             voice: device.voice,
         };
-        // socketClient.emit('switch', data);
+        socketClient.emit('switch', data);
     }, [device.voice]);
 
     return (
