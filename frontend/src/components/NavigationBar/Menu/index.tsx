@@ -5,16 +5,16 @@ import styled from 'styled-components';
 
 import currentModalState from '../../../store/currentModalState';
 import deviceState from '../../../store/deviceState';
-import isInBuildingState from '../../../store/isInBuildingState';
+import userState from '../../../store/userState';
 
 import { Clickable } from '../../../utils/css';
 
-const icons = ['fileUpload', 'buildBuilding', 'buildObject', 'users', 'chat', 'setting'];
+const icons = ['buildBuilding', 'buildObject', 'users', 'chat', 'setting'];
 
 const Menu = ({ props }: { props: RouteComponentProps }) => {
     const [currentModal, setCurrentModal] = useRecoilState(currentModalState);
     const [device, setDevice] = useRecoilState(deviceState);
-    const isInBuilding = useRecoilValue(isInBuildingState);
+    const user = useRecoilValue(userState);
 
     const redirectSetting = (event: React.MouseEvent) => {
         event.preventDefault();
@@ -22,6 +22,9 @@ const Menu = ({ props }: { props: RouteComponentProps }) => {
     };
 
     const menuList = icons.map((icon) => {
+        if (user.isInBuilding !== -1 && icon === 'buildBuilding') {
+            return null;
+        }
         return (
             <Icons
                 key={icon}
@@ -37,16 +40,31 @@ const Menu = ({ props }: { props: RouteComponentProps }) => {
 
     return (
         <>
-            {isInBuilding !== -1 ? (
-                <Icons
-                    key="voiceChat"
-                    src={
-                        device.video === true ? '/assets/voiceChat.png' : '/assets/voiceChatOff.png'
-                    }
-                    onClick={() => {
-                        setDevice({ ...device, video: !device.video, voice: !device.voice });
-                    }}
-                />
+            {user.isInBuilding !== -1 ? (
+                <>
+                    <Icons
+                        key="voiceChat"
+                        src={
+                            device.voice === true
+                                ? '/assets/voiceChat.png'
+                                : '/assets/voiceChatOff.png'
+                        }
+                        onClick={() => {
+                            setDevice({ ...device, voice: !device.voice });
+                        }}
+                    />
+                    <Icons
+                        key="video"
+                        src={
+                            device.video === true
+                                ? '/assets/videocam.png'
+                                : '/assets/videocamOff.png'
+                        }
+                        onClick={() => {
+                            setDevice({ ...device, video: !device.video });
+                        }}
+                    />
+                </>
             ) : null}
             {menuList}
         </>

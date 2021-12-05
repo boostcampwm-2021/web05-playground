@@ -33,8 +33,6 @@ export const addUserInfo = async (user: IUser, userMap: UserMap) => {
 };
 
 export const deleteUserInfo = async (id: number, userMap: UserMap) => {
-    console.log('delete');
-    console.log(userMap[id]);
     await setExitUser(userMap[id]);
     delete userMap[id];
 };

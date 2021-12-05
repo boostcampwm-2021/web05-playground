@@ -8,7 +8,6 @@ import { socketClient } from '../../../../socket/socket';
 import { ModalToggle } from '../../../../utils/model';
 
 import userState from '../../../../store/userState';
-import isInBuidlingState from '../../../../store/isInBuildingState';
 
 interface customMouseEvent extends React.MouseEvent<HTMLButtonElement, MouseEvent> {
     target: HTMLButtonElement;
@@ -19,7 +18,6 @@ const MessageInput = () => {
     const [selectedGroup, setSelectedGroup] = useState('Everyone');
     const [modalToggle, setModalTogle] = useState(false);
     const useInfo = useRecoilValue(userState);
-    const isInBuidling = useRecoilValue(isInBuidlingState);
 
     const selectGroup = (e: customMouseEvent) => {
         const selectedValue = e.target.innerText;
@@ -40,7 +38,7 @@ const MessageInput = () => {
         };
 
         if (selectedGroup === 'In Building') {
-            socketClient.emit('message', messageInfo, isInBuidling.toString(10));
+            socketClient.emit('message', messageInfo, useInfo.isInBuilding.toString(10));
             return;
         }
         socketClient.emit('message', messageInfo, selectedGroup);
@@ -71,7 +69,7 @@ const MessageInput = () => {
                 id="message"
                 placeholder="message"
                 ref={inputRef}
-                onKeyDown={(e) => (e.key === 'Enter' ? sendMessage() : null)}
+                onKeyPress={(e) => (e.key === 'Enter' ? sendMessage() : null)}
             />
         </Wrapper>
     );

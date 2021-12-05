@@ -1,6 +1,6 @@
 /* eslint-disable no-console */
 import React from 'react';
-import { BrowserRouter, Route } from 'react-router-dom';
+import { BrowserRouter, Route, RouteComponentProps, Switch } from 'react-router-dom';
 import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
 import { RecoilRoot } from 'recoil';
 
@@ -10,10 +10,12 @@ import World from './pages/World';
 
 import './reset.css';
 import Setting from './pages/Setting';
+import ErrorPage from './pages/Error';
 
 const client = new ApolloClient({
     uri: process.env.REACT_APP_BASE_URI,
     cache: new InMemoryCache(),
+    connectToDevTools: true,
 });
 
 function App() {
@@ -21,11 +23,14 @@ function App() {
         <ApolloProvider client={client}>
             <RecoilRoot>
                 <BrowserRouter>
-                    <Route exact path="/" component={Login} />
-                    <Route exact path="/login" component={Login} />
-                    <Route exact path="/setting" component={Setting} />
-                    <Route exact path="/selectworld" component={SelectWorld} />
-                    <Route exact path="/world" component={World} />
+                    <Switch>
+                        <Route exact path="/" component={Login} />
+                        <Route exact path="/login" component={Login} />
+                        <Route exact path="/setting" component={Setting} />
+                        <Route exact path="/selectworld" component={SelectWorld} />
+                        <Route exact path="/world" component={World} />
+                        <Route path="*" component={ErrorPage} />
+                    </Switch>
                 </BrowserRouter>
             </RecoilRoot>
         </ApolloProvider>

@@ -1,17 +1,36 @@
+/* eslint-disable prefer-const */
 /* eslint-disable no-alert */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useRecoilState } from 'recoil';
 
 import styled from 'styled-components';
-import buildingInfoState from '../../store/buildingInfoState';
-import isInBuildingState from '../../store/isInBuildingState';
-import { socketClient } from '../../socket/socket';
-import { NONE } from '../../utils/constants';
+import buildingInfoState from '../../../store/buildingInfoState';
+import userState from '../../../store/userState';
+import { socketClient } from '../../../socket/socket';
+import { NONE } from '../../../utils/constants';
 
 const BuildingInfo = () => {
     const [buildingInfo, setBuildingInfo] = useRecoilState(buildingInfoState);
     const [password, setPassword] = useState('');
-    const [isInbuilding, setIsInBuilding] = useRecoilState(isInBuildingState);
+    const [user, setUser] = useRecoilState(userState);
+
+    useEffect(() => {
+        socketClient.on('checkCapacity', (isFull: boolean) => {
+            if (isFull) {
+                alert('방이 꽉찼습니다!');
+                return;
+            }
+            const updatedUser = { ...user };
+            updatedUser.isInBuilding = buildingInfo.id;
+            updatedUser.x = Math.floor(Math.random() * 7) + 3;
+            updatedUser.y = Math.floor(Math.random() * 7) + 3;
+            setUser(updatedUser);
+            cancle();
+        });
+        return () => {
+            socketClient.removeListener('checkCapacity');
+        };
+    }, [socketClient]);
 
     const cancle = () => {
         setBuildingInfo({
@@ -34,8 +53,7 @@ const BuildingInfo = () => {
     };
 
     const joinRoom = () => {
-        setIsInBuilding(buildingInfo.id);
-        cancle();
+        socketClient.emit('checkCapacity', buildingInfo.id.toString(10));
     };
 
     const changed = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -59,7 +77,7 @@ const BuildingInfo = () => {
             {buildingInfo.scope === 'private' ? (
                 <ElementDiv>
                     <TitleTag>비밀번호</TitleTag>
-                    <InputPassword onChange={changed} />
+                    <InputPassword type="password" onChange={changed} />
                 </ElementDiv>
             ) : (
                 <></>

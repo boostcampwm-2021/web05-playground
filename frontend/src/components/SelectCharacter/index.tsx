@@ -6,12 +6,11 @@ import { RouteComponentProps } from 'react-router';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
 import styled from 'styled-components';
-import currentWorldState from '../../store/currentWorldState';
 import userState from '../../store/userState';
 import { DEFAULT_INDEX } from '../../utils/constants';
 import { Clickable } from '../../utils/css';
 import { useSlide } from '../../utils/hooks/useSlide';
-import { ICharacter, IWorld } from '../../utils/model';
+import { ICharacter } from '../../utils/model';
 import { setUserInfo } from '../../utils/query';
 
 export function CharacterSelector({
@@ -25,11 +24,16 @@ export function CharacterSelector({
     const [current, nextClick, prevClick] = useSlide(characterList, setCharacter);
     const [updateUser, { data, loading, error }] = useMutation(setUserInfo);
     const [user, setUser] = useRecoilState(userState);
-    const [nickname, setNickname] = useState(user.nickname);
+    const [nickname, setNickname] = useState('');
+
+    useEffect(() => {
+        setNickname(user.nickname);
+    }, [user]);
 
     const redirectWorld = async (event: React.MouseEvent) => {
         event.preventDefault();
         setUser({ ...user, nickname, imageUrl: current.imageUrl });
+        updateUser({ variables: { id: user.id, nickname, imageUrl: current.imageUrl } });
         props.history.push('/selectworld');
     };
 
@@ -59,7 +63,7 @@ const Character = styled.div<{ thumbnail: string }>`
     line-height: 400px;
     background-image: url('${(props) => props.thumbnail}');
     background-color: #c4c4c4;
-    background-size: cover;
+    background-size: 400%;
     border-radius: 20px;
 
     font-family: Roboto;

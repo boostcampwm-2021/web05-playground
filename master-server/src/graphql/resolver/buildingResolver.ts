@@ -1,6 +1,6 @@
 import { STATUS_CODE } from '@shared/db.receiver';
 import { IResolvers } from 'graphql-tools';
-import { getBuildingUrl } from 'src/database/service/building.service';
+import { getBuildingUrl } from '../../database/service/building.service';
 
 const buildingResolver: IResolvers = {
     Query: {

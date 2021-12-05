@@ -8,11 +8,11 @@ import Exit from './Exit';
 import UserLog from './UserLog';
 import Menu from './Menu';
 
-const NavigationBar = ({ props }: { props: RouteComponentProps }) => {
+const NavigationBar = React.memo(({ props }: { props: RouteComponentProps }) => {
     return (
         <FixedDiv>
             <SideDiv>
-                <Exit />
+                <Exit props={props} />
                 <UserLog />
             </SideDiv>
             <img src="/assets/navLogo.png" width="90px" height="80px" />
@@ -21,7 +21,7 @@ const NavigationBar = ({ props }: { props: RouteComponentProps }) => {
             </SideDiv>
         </FixedDiv>
     );
-};
+});
 
 export default NavigationBar;
 

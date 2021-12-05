@@ -1,12 +1,14 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-return-assign */
 /* eslint-disable consistent-return */
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import styled from 'styled-components';
 import { socketClient } from '../../socket/socket';
 import OtherVideo from './otherVideo';
 import deviceState from '../../store/deviceState';
+import { Clickable } from '../../utils/css';
 
 let myStream: MediaStream;
 const serverUrls = {
@@ -22,11 +24,16 @@ interface IUserInRoom {
     stream: MediaStream;
 }
 
+interface IData {
+    id: string;
+    video: boolean;
+    voice: boolean;
+}
 const Video = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const pcsRef = useRef<{ [socketId: string]: RTCPeerConnection }>({});
     const [users, setUsers] = useState<IUserInRoom[]>([]);
-    const device = useRecoilValue(deviceState);
+    const [device, setDevice] = useRecoilState(deviceState);
 
     const getMedia = useCallback(async () => {
         const initialConstrains = {
@@ -39,9 +46,7 @@ const Video = () => {
         try {
             myStream = await navigator.mediaDevices.getUserMedia(initialConstrains);
 
-            console.log('asdf');
             if (videoRef.current === undefined || videoRef.current === null) return;
-            console.log('asdf212');
             videoRef.current.srcObject = myStream;
         } catch (e) {
             console.log(e);
@@ -61,10 +66,6 @@ const Video = () => {
                 });
             };
 
-            pc.oniceconnectionstatechange = (e) => {
-                console.log(e);
-            };
-
             pc.ontrack = (e) => {
                 setUsers((prevUsers) =>
                     prevUsers
@@ -81,8 +82,6 @@ const Video = () => {
                     if (!myStream) return;
                     pc.addTrack(track, myStream);
                 });
-            } else {
-                console.log('no local stream');
             }
 
             return pc;
@@ -165,40 +164,83 @@ const Video = () => {
                 },
             );
 
-            socketClient.on('user_exit', (data: { id: string }) => {
-                if (!pcsRef.current[data.id]) return;
-                pcsRef.current[data.id].close();
-                delete pcsRef.current[data.id];
-                setUsers((prevUsers) => prevUsers.filter((user) => user.id !== data.id));
+            socketClient.on('userExit', (id: string) => {
+                if (!pcsRef.current[id]) return;
+                pcsRef.current[id].close();
+                delete pcsRef.current[id];
+                setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
+                setDevice({
+                    video: true,
+                    voice: true,
+                });
             });
         };
 
         if (socketClient !== undefined) {
             init();
         }
+
         return () => {
             socketClient.removeListener('others');
             socketClient.removeListener('offer');
             socketClient.removeListener('answer');
             socketClient.removeListener('ice');
-            socketClient.removeListener('user_exit');
+            socketClient.removeListener('userExit');
             users.forEach((user) => {
                 if (!pcsRef.current[user.id]) return;
                 pcsRef.current[user.id].close();
                 delete pcsRef.current[user.id];
             });
+            myStream.getTracks().forEach((track: MediaStreamTrack) => {
+                track.stop();
+            });
         };
     }, [socketClient, createPeerConnection, getMedia]);
+
+    useEffect(() => {
+        socketClient.on('switch', (data: IData) => {
+            users.map((user) => {
+                if (user.id === data.id) {
+                    user.stream
+                        .getVideoTracks()
+                        .forEach((track: MediaStreamTrack) => (track.enabled = data.video));
+                    user.stream
+                        .getAudioTracks()
+                        .forEach((track: MediaStreamTrack) => (track.enabled = data.voice));
+                }
+                return user;
+            });
+        });
+        return () => {
+            socketClient.removeListener('switch');
+        };
+    }, [users]);
+
+    useEffect(() => {
+        if (!myStream) return;
+        myStream
+            .getVideoTracks()
+            .forEach((track: MediaStreamTrack) => (track.enabled = device.video));
+        const data = {
+            id: socketClient.id,
+            video: device.video,
+            voice: device.voice,
+        };
+        socketClient.emit('switch', data);
+    }, [device.video]);
 
     useEffect(() => {
         if (!myStream) return;
         myStream
             .getAudioTracks()
-            .forEach((track: MediaStreamTrack) => (track.enabled = device.video));
-        myStream
-            .getVideoTracks()
-            .forEach((track: MediaStreamTrack) => (track.enabled = device.video));
-    }, [device]);
+            .forEach((track: MediaStreamTrack) => (track.enabled = device.voice));
+        const data = {
+            id: socketClient.id,
+            video: device.video,
+            voice: device.voice,
+        };
+        socketClient.emit('switch', data);
+    }, [device.voice]);
 
     return (
         <Wrapper>
@@ -213,7 +255,7 @@ const Video = () => {
 export default Video;
 
 const MyVideo = styled.video`
-    z-index: 101;
+    z-index: 4;
     width: 140px;
     height: 100px;
     border: 2px solid #f1ea65;
@@ -223,7 +265,7 @@ const MyVideo = styled.video`
 
 const Wrapper = styled.div`
     position: float;
-    z-index: 101;
+    z-index: 4;
     display: flex;
     justify-content: center;
 `;

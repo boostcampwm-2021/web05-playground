@@ -1,8 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import { nanoid } from 'nanoid';
 import styled from 'styled-components';
-
 import { MessageInfo, MessageInfos } from '../../../../utils/model';
+
+interface ITarget {
+    target: string;
+}
 
 const ChatList = ({ messageInfos }: MessageInfos) => {
     const scrollRef = useRef<HTMLInputElement>(null);
@@ -20,7 +23,12 @@ const ChatList = ({ messageInfos }: MessageInfos) => {
     const messages = () => {
         const result = messageInfos.map((messageInfo: MessageInfo) => (
             <div key={nanoid()}>
-                <IdDiv>from: {messageInfo.id}</IdDiv>
+                <IdDiv>
+                    <div>
+                        from: {messageInfo.id}{' '}
+                        <Target target={messageInfo.target}>to {messageInfo.target}</Target>
+                    </div>
+                </IdDiv>
                 <MessageDiv>{messageInfo.message}</MessageDiv>
             </div>
         ));
@@ -71,6 +79,10 @@ const IdDiv = styled.div`
     font-size: 15px;
     font-weight: bold;
     color: #808080;
+`;
+
+const Target = styled.span<ITarget>`
+    color: ${(props) => (props.target === 'World' ? '#9986ee' : '#369F36')};
 `;
 
 const MessageDiv = styled.div`

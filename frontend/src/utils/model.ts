@@ -1,10 +1,20 @@
+export enum Direction {
+    DOWN,
+    LEFT,
+    UP,
+    RIGHT,
+}
+
 export interface IUser {
     id: number;
-    email: string;
+    email?: string;
     nickname: string;
     x?: number;
     y?: number;
     imageUrl: string;
+    direction?: number;
+    toggle?: number;
+    isInBuilding: number;
 }
 
 export interface UserMap {
@@ -30,6 +40,7 @@ interface ILayer {
     width: number;
     imgSrc: string;
     columnCount: number;
+    layerType?: string;
 }
 
 export interface IBuilding {
@@ -67,6 +78,7 @@ export interface IProps {
 export interface MessageInfo {
     id: string;
     message: string;
+    target: string;
 }
 
 export interface MessageInfos {

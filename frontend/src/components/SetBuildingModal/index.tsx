@@ -11,6 +11,7 @@ import { socketClient } from '../../socket/socket';
 import buildBuildingState from '../../store/buildBuildingState';
 import userState from '../../store/userState';
 import { NONE } from '../../utils/constants';
+import { ActiveModal } from '../../utils/model';
 
 interface customEventTarget extends EventTarget {
     value: string;
@@ -24,8 +25,7 @@ interface customSetFunctions {
     [FunctionType: string]: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const setBuildingModal = () => {
-    const [title, setTitle] = useState('');
+const setBuildingModal = React.memo(() => {
     const [description, setDescription] = useState('');
     const [range, setRange] = useState('private');
     const [password, setPassword] = useState('');
@@ -33,7 +33,6 @@ const setBuildingModal = () => {
     const user = useRecoilValue(userState);
 
     const setFunctions: customSetFunctions = {
-        title: setTitle,
         description: setDescription,
         password: setPassword,
     };
@@ -47,6 +46,12 @@ const setBuildingModal = () => {
         setRange(value);
     };
 
+    const resetInput = () => {
+        setDescription('');
+        setRange('private');
+        setPassword('');
+    };
+
     const cancleBuild = () => {
         const selectedBuildingInfo = {
             src: 'none',
@@ -58,12 +63,12 @@ const setBuildingModal = () => {
             isData: false,
         };
         setBuildBuilding(selectedBuildingInfo);
+        resetInput();
     };
 
     const completeBuild = () => {
-        if (title === '' || description === '') alert('값을 모두 입력해주세요');
+        if (description === '') alert('값을 모두 입력해주세요');
         else {
-            // title => 건물이름이 있어야됨, uid는 수정
             const buildingInfo = {
                 x: buildBuilding.locationX,
                 y: buildBuilding.locationY,
@@ -86,18 +91,15 @@ const setBuildingModal = () => {
             };
             setBuildBuilding(selectedBuildingInfo);
             alert('추가되었습니다.');
+            resetInput();
         }
     };
 
     return (
-        <ModalDiv>
-            <ElementDiv>
-                <TitleTag>건물이름</TitleTag>
-                <InputTitle onChange={changed} id="title" />
-            </ElementDiv>
+        <ModalDiv active={buildBuilding.isLocated}>
             <ElementDiv>
                 <TitleTag>설명</TitleTag>
-                <InputDescription id="description" onChange={changed} />
+                <InputDescription id="description" value={description} onChange={changed} />
             </ElementDiv>
             <ElementDiv>
                 <TitleTag>공개여부</TitleTag>
@@ -108,7 +110,7 @@ const setBuildingModal = () => {
                             name="range"
                             value="private"
                             id="range"
-                            defaultChecked
+                            checked={range === 'private'}
                             onClick={rangeClicked}
                         />
                         private
@@ -119,6 +121,7 @@ const setBuildingModal = () => {
                             name="range"
                             value="public"
                             id="range"
+                            checked={range === 'public'}
                             onClick={rangeClicked}
                         />
                         public
@@ -127,7 +130,13 @@ const setBuildingModal = () => {
             </ElementDiv>
             <ElementDiv>
                 <TitleTag>비밀번호</TitleTag>
-                <InputPassword id="password" onChange={changed} readOnly={range === 'public'} />
+                <InputPassword
+                    id="password"
+                    onChange={changed}
+                    readOnly={range === 'public'}
+                    value={password}
+                    type="password"
+                />
             </ElementDiv>
             <BtnWrapper>
                 <StyledBtn onClick={cancleBuild}>취소</StyledBtn>
@@ -135,11 +144,11 @@ const setBuildingModal = () => {
             </BtnWrapper>
         </ModalDiv>
     );
-};
+});
 
 export default setBuildingModal;
 
-const ModalDiv = styled.div`
+const ModalDiv = styled.div<ActiveModal>`
     position: absolute;
     z-index: 3;
 
@@ -150,7 +159,7 @@ const ModalDiv = styled.div`
     background: #c4c4c4;
     margin: -240px 0 0 -200px;
 
-    display: flex;
+    display: ${(props) => (props.active === true ? 'flex' : 'none')};
     flex-direction: column;
     justify-content: space-around;
     align-items: center;
@@ -164,14 +173,6 @@ const ElementDiv = styled.div`
 
 const TitleTag = styled.p`
     margin: 0 0 10px 0;
-`;
-
-const InputTitle = styled.input`
-    border: 0;
-    border-bottom: black 1px solid;
-    background-color: #c4c4c4;
-    height: 20px;
-    width: 200px;
 `;
 
 const InputDescription = styled.textarea`
