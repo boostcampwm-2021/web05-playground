@@ -29,16 +29,12 @@ interface ILayer {
     width: number;
     imgSrc: string;
     columnCount: number;
+    type: string;
 }
 
 interface IProps {
     data: ILayer[];
     current: number;
-}
-
-interface IEnter {
-    user: string;
-    roomId: number;
 }
 
 const WorldBackground = (props: IProps) => {
