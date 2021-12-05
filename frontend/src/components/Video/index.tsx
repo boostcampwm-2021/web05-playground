@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-expressions */
 /* eslint-disable no-param-reassign */
 /* eslint-disable no-return-assign */
 /* eslint-disable consistent-return */
@@ -23,6 +24,11 @@ interface IUserInRoom {
     stream: MediaStream;
 }
 
+interface IData {
+    id: string;
+    video: boolean;
+    voice: boolean;
+}
 const Video = () => {
     const videoRef = useRef<HTMLVideoElement>(null);
     const pcsRef = useRef<{ [socketId: string]: RTCPeerConnection }>({});
@@ -169,12 +175,14 @@ const Video = () => {
         if (socketClient !== undefined) {
             init();
         }
+
         return () => {
             socketClient.removeListener('others');
             socketClient.removeListener('offer');
             socketClient.removeListener('answer');
             socketClient.removeListener('ice');
             socketClient.removeListener('userExit');
+            socketClient.removeListener('switch');
             users.forEach((user) => {
                 if (!pcsRef.current[user.id]) return;
                 pcsRef.current[user.id].close();
@@ -187,10 +195,35 @@ const Video = () => {
     }, [socketClient, createPeerConnection, getMedia]);
 
     useEffect(() => {
+        socketClient.on('switch', (data: IData) => {
+            users.map((user) => {
+                if (user.id === data.id) {
+                    user.stream
+                        .getVideoTracks()
+                        .forEach((track: MediaStreamTrack) => (track.enabled = data.video));
+                    user.stream
+                        .getAudioTracks()
+                        .forEach((track: MediaStreamTrack) => (track.enabled = data.voice));
+                }
+                return user;
+            });
+        });
+        return () => {
+            socketClient.removeListener('switch');
+        };
+    }, [users]);
+
+    useEffect(() => {
         if (!myStream) return;
         myStream
             .getVideoTracks()
             .forEach((track: MediaStreamTrack) => (track.enabled = device.video));
+        const data = {
+            id: socketClient.id,
+            video: device.video,
+            voice: device.voice,
+        };
+        socketClient.emit('switch', data);
     }, [device.video]);
 
     useEffect(() => {
@@ -198,6 +231,12 @@ const Video = () => {
         myStream
             .getAudioTracks()
             .forEach((track: MediaStreamTrack) => (track.enabled = device.voice));
+        const data = {
+            id: socketClient.id,
+            video: device.video,
+            voice: device.voice,
+        };
+        socketClient.emit('switch', data);
     }, [device.voice]);
 
     return (

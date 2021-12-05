@@ -112,6 +112,10 @@ export default class RoomSocket {
                 });
             });
 
+            socket.on('switch', (data) => {
+                this.io.emit('switch', data);
+            });
+
             socket.on('disconnecting', () => {
                 for (const room of socket.rooms) {
                     if (room !== socket.id) {
