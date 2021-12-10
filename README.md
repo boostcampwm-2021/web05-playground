@@ -70,15 +70,15 @@
 
 |✅  메인 화면|✅  캐릭터 선택 화면|
 |-|-|
-|![image](https://user-images.githubusercontent.com/67899069/144740096-0edb31d0-8e5e-4bb3-bd58-2b9c305150c3.png)|![image](https://user-images.githubusercontent.com/67899069/144740100-34921901-5005-4c22-b3e4-299f0da930e8.png)|
+|![image](https://user-images.githubusercontent.com/67899069/144740096-0edb31d0-8e5e-4bb3-bd58-2b9c305150c3.png)|![image](https://user-images.githubusercontent.com/67899069/144740113-b4de92d3-8b12-485b-93b8-19f03925fe1f.png)|
 
 |✅  건물 내부에서 화상 채팅|✅  월드 선택 화면|
 |-|-|
-|![image](https://user-images.githubusercontent.com/67899069/144740113-b4de92d3-8b12-485b-93b8-19f03925fe1f.png)|![image](https://user-images.githubusercontent.com/67899069/144740116-dbfcd59d-f7a6-44ca-bbb8-39842b3691d5.png)|
+|![image](https://user-images.githubusercontent.com/67899069/144740120-db27eed1-e2ef-4f1e-9447-b8635c85485f.png)|![image](https://user-images.githubusercontent.com/67899069/144740100-34921901-5005-4c22-b3e4-299f0da930e8.png)|
 
 |✅  월드 화면|✅  채팅 화면|
 |--|--|
-|![image](https://user-images.githubusercontent.com/67899069/144740120-db27eed1-e2ef-4f1e-9447-b8635c85485f.png)|![image](https://user-images.githubusercontent.com/67899069/144740126-08b7a88a-b1cb-4205-9a7c-20afb7c44a19.png)|
+|![image](https://user-images.githubusercontent.com/67899069/144740116-dbfcd59d-f7a6-44ca-bbb8-39842b3691d5.png)|![image](https://user-images.githubusercontent.com/67899069/144740126-08b7a88a-b1cb-4205-9a7c-20afb7c44a19.png)|
 
 # 🏗 시스템 구조
 
